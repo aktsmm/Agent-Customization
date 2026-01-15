@@ -1,6 +1,8 @@
 # Prompt: Review Agents & Instructions
 
-Prompt for reviewing agent definitions (.agent.md) and instruction files (.github/instructions/\*_/_.md) with cross-reference validation against project assets.
+Generic prompt for reviewing agent definitions (.agent.md) and instruction files (.instructions.md) with cross-reference validation against project assets.
+
+> **Usage**: This prompt works across any repository with agent workflows. Adapt file paths to your project structure.
 
 ## Identity
 
@@ -10,16 +12,38 @@ Communicate findings clearly with specific file paths and line references.
 
 ## Step 0: Context Collection (Do First)
 
-Read the following files before reviewing:
+### Required Files (Always Read)
 
-- [ ] `README.md` — Project overview and purpose
-- [ ] `AGENTS.md` — Agent registry and role definitions
-- [ ] `.github/agents/*.agent.md` — All agent definitions
-- [ ] `.github/instructions/**/*.md` — Shared rules and constraints
-- [ ] `.github/prompts/*.prompt.md` — Prompt files
+- [ ] `AGENTS.md` — Agent registry and workflow definitions
 - [ ] `.github/copilot-instructions.md` — Global guardrails
+- [ ] `.github/instructions/**/*.md` — All instruction files (use `file_search` to list first)
+- [ ] `.github/agents/*.agent.md` — All agent definitions (use `file_search` to list first)
+
+### Narrow Down Scope (Optional - For Focused Review)
+
+If a specific review target is specified, you may skip unrelated files:
+
+| Target            | Files to Read                                                 |
+| ----------------- | ------------------------------------------------------------- |
+| Specific agent    | Target `.agent.md` + referenced `.instructions.md`            |
+| Specific workflow | Relevant section in AGENTS.md + related agent group           |
+| Prompts only      | `.github/prompts/*.prompt.md` and check for unused/duplicates |
+
+> **Default**: Read all required files above. Narrow down only when explicitly requested.
 
 ## Design Principles Checklist
+
+### 🚀 Quick Check (Check These First)
+
+Check only 5 items first. If any ❌, proceed to detailed review:
+
+| #   | Check Item                                        | Detection Method                                     |
+| --- | ------------------------------------------------- | ---------------------------------------------------- |
+| 1   | **SRP**: 1 agent = 1 responsibility?              | ❌ if Role cannot be stated in 1 sentence            |
+| 2   | **Fail Fast**: Error detection in first 2 steps?  | ❌ if no validation in Workflow Step 1-2             |
+| 3   | **runSubagent delegation**: Orchestrator working? | ❌ if Workflow contains `read_file`/`replace_string` |
+| 4   | **SSOT**: Same definition in 2+ places?           | Use `grep_search` to detect duplicates               |
+| 5   | **Done Criteria**: Verifiable completion?         | ❌ if just "complete" without specific checklist     |
 
 ### Tier 1: Core Principles (Required)
 
@@ -48,6 +72,25 @@ Read the following files before reviewing:
 - [ ] Are Permissions minimal?
 - [ ] Is Workflow broken into steps?
 
+## Workflow Pattern Check (Orchestrator-Workers)
+
+For orchestrator agents, always verify the following:
+
+### 🔴 SRP Violation Detection (Critical)
+
+| Anti-pattern                         | Detection Method                                    | Resolution                       |
+| ------------------------------------ | --------------------------------------------------- | -------------------------------- |
+| Orchestrator doing direct work       | `read_file` or `replace_string_in_file` in Workflow | Change to `runSubagent` delegate |
+| Orchestrator analyzing data          | "verify" or "check" actions in Workflow             | Delegate to Worker agent         |
+| Missing "prohibited actions" section | No prohibition table exists                         | Add explicit prohibition list    |
+
+### runSubagent Delegation Pattern Check
+
+- [ ] Does Orchestrator's Workflow include `runSubagent` call examples?
+- [ ] Does each Worker have a "What this agent actually does" section?
+- [ ] Is Worker's I/O Contract clearly defined in JSON format?
+- [ ] Is retry policy defined (e.g., max 3 retries)?
+
 ## Cross-Reference Validation
 
 - [ ] Does AGENTS.md role description match .agent.md Role section?
@@ -58,19 +101,19 @@ Read the following files before reviewing:
 
 ## Instructions File Review (`.github/instructions/**/*.md`)
 
-### SSOT Validation（ファイル間）
+### SSOT Validation (Cross-file)
 
 - [ ] No duplicate definitions (e.g., page allocation tables, keyword guidelines) across multiple files?
 - [ ] Definitions consolidated in one place with references elsewhere?
 - [ ] No rule duplication between AGENTS.md and instructions?
 
-### SSOT Validation（ファイル内）
+### SSOT Validation (Within-file)
 
 - [ ] Same concept defined only once within a single file? (e.g., Idempotency section appearing twice)
 - [ ] No redundant sections explaining the same logic? (e.g., "Workflow" + "Judgment Logic" + "Summary" all describing the same flow)
 - [ ] No duplicate code examples illustrating the same pattern?
 
-### Redundancy Check（冗長表現）
+### Redundancy Check
 
 - [ ] Code examples ≤ 10 lines each? (longer examples → move to external file or simplify)
 - [ ] ASCII art diagrams not duplicating text explanations? (keep one, remove the other)
@@ -152,44 +195,59 @@ Review is complete when:
 
 ### ✅ Good Points
 
-- **SRP Compliance**: `svg-forge.agent.md` has single responsibility (diagram generation only)
-- **Clear I/O Contract**: Inputs/Outputs section specifies exact file types (.drawio, .md)
-- **Fail Fast**: Input validation occurs in Step 1 of manifest-gateway workflow
+- **SRP Compliance**: `{worker}.agent.md` has single responsibility (clear single purpose)
+- **Clear I/O Contract**: Inputs/Outputs section specifies JSON format with exact fields
+- **Fail Fast**: Phase 0 runs validation and detects structural errors immediately
 
 ### ⚠️ Improvements Needed
 
-- 🟠 **SSOT Violation**: "mxCell structure" defined in both:
+- 🔴 **SRP Violation (Orchestrator)**: `{orchestrator}.agent.md` directly uses `read_file` on data
 
-  - `drawio-compatibility.instructions.md` (L45-60)
-  - `quality-gates.instructions.md` (L78-92)
-    → Consolidate to `drawio-compatibility.instructions.md`
+  - L{line}: `read_file to load target file`
+    → Should delegate to Worker agent via `runSubagent`
 
-- 🟡 **Missing Error Handling**: `manifest-gateway.agent.md` lacks error handling for invalid input types
-  → Add "Error Scenarios" section with recovery steps
+- 🟠 **SSOT Violation**: "{concept}" defined in 2 places:
 
-- 🟡 **Redundant Definition**: "Checkpoint" concept explained in 3 locations:
-  - `agent-workflow-v5.instructions.md` (L20-35)
-  - `flow-orchestrator.agent.md` (L50-65)
-  - `copilot-instructions.md` (L80-85)
-    → Keep in workflow instructions, reference elsewhere
+  - `{file-a}.agent.md` (L{line})
+  - `{file-b}.instructions.md` (L{line})
+    → Designate 1 location as SSOT, reference from others
+
+- 🟡 **Missing Error Handling**: `{agent}.agent.md` has no retry policy
+  → Add "escalate to human after 3 consecutive failures"
+
+- 🟡 **Redundant Definition**: "{definition}" appears in multiple places:
+  - `{file-1}.instructions.md` (L{line}) ← SSOT
+  - `{file-2}.agent.md` (L{line})
+  - `{file-3}.instructions.md` (L{line})
+    → Reference SSOT, remove others
 
 ### Recommendation
 
-1. **Critical**: Merge duplicate mxCell definitions (SSOT fix)
-2. **High**: Add error handling section to manifest-gateway
-3. **Medium**: Consolidate checkpoint documentation
+1. **Critical**: Remove direct work from orchestrator (SRP fix)
+2. **High**: Consolidate duplicate definitions to SSOT
+3. **Medium**: Add error handling section
 
-Overall: 2 SSOT violations found, 1 missing error handling. Address High priority items before next release.
+Overall: {N} SRP violation(s), {M} SSOT violation(s) found. Address Critical items immediately.
 ```
 
 <!--
-References:
+This prompt is generic and can be used across any repository with agent workflows.
+
+Expected file structure:
+- Agent definitions: .github/agents/*.agent.md (or similar)
+- Instructions: .github/instructions/*.instructions.md (or similar)
+- Agent registry: AGENTS.md (recommended)
+- Global rules: .github/copilot-instructions.md (optional)
+
+External References:
 - OpenAI Prompt Engineering: https://platform.openai.com/docs/guides/prompt-engineering
 - Anthropic Building Effective Agents: https://www.anthropic.com/engineering/building-effective-agents
+- Anthropic Context Engineering: https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents
 
 Key concepts applied:
 - Identity section: OpenAI - Message formatting with Markdown and XML
 - Few-shot examples: OpenAI - Few-shot learning
 - Clear evaluation criteria: Anthropic - Evaluator-optimizer workflow
 - Stopping conditions: Anthropic - Agents (completion criteria)
+- SRP / Orchestrator-Workers: Anthropic - Building Effective Agents
 -->
