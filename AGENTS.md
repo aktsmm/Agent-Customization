@@ -50,3 +50,10 @@
 | [review-retrospective-learnings.prompt.md](.github/prompts/review-retrospective-learnings.prompt.md) | 学びを設計資産へ反映（ふりかえり）      |
 | [review-session-export-md.prompt.md](.github/prompts/review-session-export-md.prompt.md)             | セッションエクスポート（Markdown）      |
 | [sample.prompt.md](.github/prompts/sample.prompt.md)                                                 | プロンプト作成用テンプレート            |
+
+<!-- skill-ninja-START -->
+## Installed Skills
+
+No skills installed yet. Use "Agent Skill Ninja: Search Skills" to install skills.
+
+<!-- skill-ninja-END -->
