@@ -4,9 +4,10 @@
 
 ## 手順
 
-0. `git config user.name; git status --short` でユーザー名 + 変更確認（変更なければ「Nothing to commit」で終了）
-1. VS Code コマンド `workbench.action.files.saveAll` で未保存ファイルを保存
-2. `git add .; git commit -m "<コミットメッセージ>"` でステージング & コミット
+0. **ワークスペース確認**: `Get-Location; git remote -v` で現在地とリモートリポジトリを確認し、意図したリポジトリにいることを確認（違う場合は `Set-Location <正しいパス>` で移動）
+1. `git config user.name; git status --short` でユーザー名 + 変更確認（変更なければ「Nothing to commit」で終了）
+2. VS Code コマンド `workbench.action.files.saveAll` で未保存ファイルを保存
+3. `git add .; git commit -m "<コミットメッセージ>"` でステージング & コミット
 
 ## コミットメッセージのフォーマット
 
