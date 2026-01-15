@@ -4,13 +4,11 @@
 
 ## 手順
 
-0. 正しいディレクトリにいることを確認
+0. 正しいディレクトリにいることを確認 → `git pull; git branch --show-current` で pull + ブランチ名取得
 1. VS Code コマンド `workbench.action.files.saveAll` で未保存ファイルを保存
-2. `git config user.name` でコミットユーザー名を確認（出力例に表示用）
-3. `git add .` で新規ファイルを含むすべての変更をステージング
-4. `git commit -m "<コミットメッセージ>"` でコミット
-5. `git push origin main` でリモートにプッシュ
-6. Remote リポジトリへの URL を表示
+2. `git status --short` で変更確認（変更なければ「Nothing to commit」で終了）
+3. `git add .; git commit -m "<コミットメッセージ>"; git push origin <ブランチ名>`（Step 0 で取得したブランチ名を使用）
+4. `git remote get-url origin` で Remote リポジトリ URL を表示
 
 ## コミットメッセージのフォーマット
 
