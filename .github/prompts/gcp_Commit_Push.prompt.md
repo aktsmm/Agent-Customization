@@ -9,10 +9,13 @@
 2. VS Code コマンド `workbench.action.files.saveAll` で未保存ファイルを保存
 3. `git status --short` で変更確認（変更なければ「Nothing to commit」で終了）
 4. `git add .; git commit -m "<コミットメッセージ>"; git push origin <ブランチ名>`（Step 1 で取得したブランチ名を使用）
+5. 完了後、リモートリポジトリの URL をマークダウンリンク形式で表示（例: `[リポジトリ名](https://github.com/owner/repo)`）
 
 ## コミットメッセージのフォーマット
 
 以下の形式でコミットメッセージを作成してください：
+**Conventional Commits** 形式でコミットメッセージを作成してください。
+詳細は [git.instructions.md](../instructions/dev/git.instructions.md) を参照。
 
 ```
 [カテゴリ] 変更内容の要約（25文字以内）- （git config user.name の結果）
