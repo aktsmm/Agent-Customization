@@ -12,7 +12,9 @@
 ## コミットメッセージのフォーマット
 
 以下の形式でコミットメッセージを作成してください：
+**Conventional Commits** 形式でコミットメッセージを作成してください。
+詳細は [git.instructions.md](../instructions/dev/git.instructions.md) を参照。
 
 ```
-[カテゴリ] 変更内容の要約（25文字以内）
+[カテゴリ] 変更内容の要約（25文字以内）- （git config user.name の結果）
 ```
