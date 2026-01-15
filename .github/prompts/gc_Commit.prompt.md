@@ -4,11 +4,9 @@
 
 ## 手順
 
-0. 正しいディレクトリにいることを確認
+0. `git config user.name; git status --short` でユーザー名 + 変更確認（変更なければ「Nothing to commit」で終了）
 1. VS Code コマンド `workbench.action.files.saveAll` で未保存ファイルを保存
-2. `git config user.name` でコミットユーザー名を確認（出力例に表示用）
-3. `git add .` で新規ファイルを含むすべての変更をステージング
-4. `git commit -m "<コミットメッセージ>"` でコミット
+2. `git add .; git commit -m "<コミットメッセージ>"` でステージング & コミット
 
 ## コミットメッセージのフォーマット
 
