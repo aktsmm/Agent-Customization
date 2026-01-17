@@ -3,6 +3,8 @@
 Generic prompt for reviewing agent definitions (.agent.md) and instruction files (.instructions.md) with cross-reference validation against project assets.
 
 > **Usage**: This prompt works across any repository with agent workflows. Adapt file paths to your project structure.
+>
+> **Related Skill**: If available, refer to guidance on workflow design, review, and improvement.
 
 ## Identity
 
@@ -202,12 +204,10 @@ Review is complete when:
 ### ⚠️ Improvements Needed
 
 - 🔴 **SRP Violation (Orchestrator)**: `{orchestrator}.agent.md` directly uses `read_file` on data
-
   - L{line}: `read_file to load target file`
     → Should delegate to Worker agent via `runSubagent`
 
 - 🟠 **SSOT Violation**: "{concept}" defined in 2 places:
-
   - `{file-a}.agent.md` (L{line})
   - `{file-b}.instructions.md` (L{line})
     → Designate 1 location as SSOT, reference from others

@@ -3,6 +3,8 @@
 Extract reusable design insights from events (incident response, errors, fix PRs, conversations)
 and reflect them in design assets for prevention and quality improvement.
 
+> **Related Skill**: If available, refer to guidance on reflecting learnings into design assets.
+
 ## Identity
 
 You are a senior software architect specializing in AI agent systems and prompt engineering.
@@ -163,7 +165,6 @@ Retro is complete when:
 ## Learnings
 
 1. **Learning**: [What was learned]
-
    - Evidence: [What happened]
    - Action: → [target file]
 
@@ -194,7 +195,6 @@ Before applying changes:
 ## Learnings
 
 1. **Learning**: Subagent calls should include explicit success criteria
-
    - Evidence: `runSubagent` returned ambiguous result; caller couldn't determine if task succeeded
    - Action: → `.github/instructions/agents/agent-design.instructions.md`
 
