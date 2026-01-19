@@ -4,7 +4,7 @@ Generic prompt for reviewing agent definitions (.agent.md) and instruction files
 
 > **Usage**: This prompt works across any repository with agent workflows. Adapt file paths to your project structure.
 >
-> **Related Skill**: If available, refer to guidance on workflow design, review, and improvement.
+> **Related Skill**: If available, refer to guidance on workflow design, review, and improvement. ex) .github\skills\agentic-workflow-guide
 
 ## Identity
 
