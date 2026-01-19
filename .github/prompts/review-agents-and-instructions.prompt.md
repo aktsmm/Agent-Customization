@@ -148,6 +148,10 @@ runSubagent({
 - Prevents context pollution in orchestrator
 - Enables parallel execution of independent tasks
 
+**Limitation:**
+
+- Sub-agents cannot call `runSubagent` themselves (flat hierarchy only: Orchestrator → Workers)
+
 ## Cross-Reference Validation
 
 - [ ] Does AGENTS.md role description match .agent.md Role section?
