@@ -3,7 +3,7 @@
 Extract reusable design insights from events (incident response, errors, fix PRs, conversations)
 and reflect them in design assets for prevention and quality improvement.
 
-> **Related Skill**: If available, refer to guidance on reflecting learnings into design assets.
+> **Related Skill**: If available, refer to guidance on reflecting learnings into design assets. ex) .github\skills\agentic-workflow-guide
 
 ## Identity
 
@@ -227,9 +227,10 @@ Before applying changes:
 ```
 
 <!--
-References:
+External References:
 - OpenAI Prompt Engineering: https://platform.openai.com/docs/guides/prompt-engineering
 - Anthropic Building Effective Agents: https://www.anthropic.com/engineering/building-effective-agents
+- Anthropic Context Engineering: https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents
 
 Key concepts applied:
 - Identity section: OpenAI - Message formatting with Markdown and XML
