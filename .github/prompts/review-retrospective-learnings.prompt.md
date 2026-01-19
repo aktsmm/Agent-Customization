@@ -3,7 +3,8 @@
 Extract reusable design insights from events (incident response, errors, fix PRs, conversations)
 and reflect them in design assets for prevention and quality improvement.
 
-> **Related Skill**: If available, refer to guidance on reflecting learnings into design assets. ex) .github\skills\agentic-workflow-guide
+> **Related Skill**: If available, refer to guidance on reflecting learnings into design assets.
+> ex) .github\skills\agentic-workflow-guide
 
 ## Identity
 
