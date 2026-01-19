@@ -19,6 +19,13 @@ Communicate findings with specific evidence and actionable recommendations.
 - When the same type of error occurs repeatedly
 - After a productive conversation that revealed useful patterns
 
+## When NOT to Use
+
+- For trivial fixes with no reusable insights (typos, formatting)
+- When the issue is environment-specific and not reproducible
+- For one-off tasks that won't recur
+- When learnings are already documented elsewhere
+
 ## Premises
 
 - Do not make changes based on assumptions. Always read target files first.
@@ -67,6 +74,7 @@ Identify insights at these levels:
 - Design principle (separation of concerns, idempotency)
 - Workflow (call order, preconditions, error handling)
 - Prompt patterns (effective phrasing, tool usage)
+- Context engineering (compaction, memory, sub-agent isolation)
 
 **If no learnings found:**
 
@@ -237,4 +245,5 @@ Key concepts applied:
 - Few-shot examples: OpenAI - Few-shot learning
 - Clear evaluation criteria: Anthropic - Evaluator-optimizer workflow
 - Stopping conditions: Anthropic - Agents (completion criteria)
+- Structured note-taking: Anthropic - Context Engineering (persisting learnings outside context)
 -->
