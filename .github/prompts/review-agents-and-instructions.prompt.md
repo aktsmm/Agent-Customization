@@ -33,6 +33,14 @@ Communicate findings clearly with specific file paths and line references.
 - Reference existing definitions instead of duplicating content.
 - For destructive recommendations (file deletion, major refactoring), always confirm with user first.
 
+## Context Engineering Considerations
+
+For long-horizon or complex agent workflows, check:
+
+- [ ] **Compaction strategy**: Does the agent handle context window limits? (summarization, clearing old tool results)
+- [ ] **Structured note-taking**: Does the agent persist important state outside context? (memory files, NOTES.md)
+- [ ] **Sub-agent isolation**: Are complex sub-tasks delegated to prevent context pollution?
+
 ## Step 0: Context Collection (Do First)
 
 ### Required Files (Always Read)
@@ -99,6 +107,16 @@ Check only 5 items first. If any ❌, proceed to detailed review:
 
 For orchestrator agents, always verify the following:
 
+### Workflow Patterns Reference (Anthropic)
+
+| Pattern                  | When to Use                           | Detection Method                           |
+| ------------------------ | ------------------------------------- | ------------------------------------------ |
+| **Prompt Chaining**      | Sequential subtasks with dependencies | Steps explicitly depend on previous output |
+| **Routing**              | Different handling per input type     | Classification/branching at workflow start |
+| **Parallelization**      | Independent subtasks for speed        | No data dependency between steps           |
+| **Orchestrator-Workers** | Dynamic subtask breakdown             | `runSubagent` calls in workflow            |
+| **Evaluator-Optimizer**  | Iterative refinement needed           | Review → feedback → improve loop           |
+
 ### 🔴 SRP Violation Detection (Critical)
 
 | Anti-pattern                         | Detection Method                                    | Resolution                       |
@@ -113,6 +131,22 @@ For orchestrator agents, always verify the following:
 - [ ] Does each Worker have a "What this agent actually does" section?
 - [ ] Is Worker's I/O Contract clearly defined in JSON format?
 - [ ] Is retry policy defined (e.g., max 3 retries)?
+
+**Expected runSubagent call pattern:**
+
+```javascript
+runSubagent({
+  prompt: "Analyze the file at {path} and return JSON with {fields}",
+  description: "File analysis task",
+});
+```
+
+**Why sub-agents?** (Context Engineering)
+
+- Each sub-agent works with a clean context window
+- Returns condensed summary (1,000-2,000 tokens) instead of full trace
+- Prevents context pollution in orchestrator
+- Enables parallel execution of independent tasks
 
 ## Cross-Reference Validation
 
