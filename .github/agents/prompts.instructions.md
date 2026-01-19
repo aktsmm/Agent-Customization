@@ -1,5 +1,5 @@
 ---
-applyTo: "prompts/**"
+applyTo: ".github/prompts/**"
 ---
 
 # Prompt Instructions

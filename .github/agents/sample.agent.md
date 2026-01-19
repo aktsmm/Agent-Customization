@@ -1,3 +1,9 @@
+---
+name: sample
+description: エージェント定義のテンプレート
+model: gpt-4o
+---
+
 # Sample Agent
 
 ## Role

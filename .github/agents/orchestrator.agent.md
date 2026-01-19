@@ -1,3 +1,9 @@
+---
+name: orchestrator
+description: サブエージェントを統括する司令塔
+model: gpt-4o
+---
+
 # Orchestrator Agent
 
 ## Role
@@ -61,6 +67,18 @@
 3. **Delegate**: ユーザーの承認後、`runSubagent` でサブエージェントを呼び出す。
 4. **Monitor**: 各サブエージェントの結果を確認し、問題があれば対処する。
 5. **Report**: 全体の結果をユーザーに報告する。
+
+### runSubagent 呼び出し例
+
+```javascript
+// 実装タスクをサブエージェントに委譲
+runSubagent({
+  prompt: "src/handler.ts にエラーハンドリングを追加してください。完了後は JSON で結果を返してください。",
+  description: "実装タスク: エラーハンドリング追加"
+})
+```
+
+> **注意**: サブエージェントは `runSubagent` を呼び出せない（フラット階層のみ）
 
 ## Progress Reporting
 
