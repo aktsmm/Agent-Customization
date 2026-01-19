@@ -14,13 +14,13 @@ Rules applied when editing files in the `.github/agents/` directory.
 
 各エージェントは以下のセクションを持つ（詳細は agent-design.instructions.md 参照）：
 
-| セクション | 必須 | 説明 |
-|------------|------|------|
-| Role | ✅ | 1文での責任定義 |
-| Goals | ✅ | 達成目標のリスト |
-| Done Criteria | ✅ | 検証可能な完了条件 |
-| Permissions | ✅ | 許可/禁止事項 |
-| I/O Contract | ✅ | 入出力の定義 |
+| セクション    | 必須 | 説明               |
+| ------------- | ---- | ------------------ |
+| Role          | ✅   | 1文での責任定義    |
+| Goals         | ✅   | 達成目標のリスト   |
+| Done Criteria | ✅   | 検証可能な完了条件 |
+| Permissions   | ✅   | 許可/禁止事項      |
+| I/O Contract  | ✅   | 入出力の定義       |
 
 ## Best Practices
 

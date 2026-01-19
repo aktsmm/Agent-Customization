@@ -12,16 +12,20 @@ Rules applied when editing files in the `prompts/` directory.
 # {Purpose} Prompt
 
 ## Context
+
 Background information
 
 ## Task
+
 Task description
 
 ## Guidelines
+
 1. Guideline 1
 2. Guideline 2
 
 ## Output Format
+
 Expected output format
 ```
 

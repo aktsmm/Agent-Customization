@@ -73,9 +73,10 @@ model: gpt-4o
 ```javascript
 // 実装タスクをサブエージェントに委譲
 runSubagent({
-  prompt: "src/handler.ts にエラーハンドリングを追加してください。完了後は JSON で結果を返してください。",
-  description: "実装タスク: エラーハンドリング追加"
-})
+  prompt:
+    "src/handler.ts にエラーハンドリングを追加してください。完了後は JSON で結果を返してください。",
+  description: "実装タスク: エラーハンドリング追加",
+});
 ```
 
 > **注意**: サブエージェントは `runSubagent` を呼び出せない（フラット階層のみ）
