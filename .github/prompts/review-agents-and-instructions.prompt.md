@@ -47,9 +47,12 @@ For long-horizon or complex agent workflows, check:
 ### Required Files (Always Read)
 
 - [ ] `AGENTS.md` — Agent registry and workflow definitions
-- [ ] `.github/copilot-instructions.md` — Global guardrails
+- [ ] `CLAUDE.md` — Anthropic Claude Code rules (if exists)
+- [ ] `CODEX.md` — OpenAI Codex CLI rules (if exists)
+- [ ] `.github/copilot-instructions.md` — GitHub Copilot global guardrails
 - [ ] `.github/instructions/**/*.md` — All instruction files (use `file_search` to list first)
 - [ ] `.github/agents/*.agent.md` — All agent definitions (use `file_search` to list first)
+- [ ] `.github/prompts/*.prompt.md` — All prompt files (use `file_search` to list first)
 
 ### Narrow Down Scope (Optional - For Focused Review)
 
@@ -60,6 +63,7 @@ If a specific review target is specified, you may skip unrelated files:
 | Specific agent    | Target `.agent.md` + referenced `.instructions.md`            |
 | Specific workflow | Relevant section in AGENTS.md + related agent group           |
 | Prompts only      | `.github/prompts/*.prompt.md` and check for unused/duplicates |
+| Claude/Codex only | `CLAUDE.md` and/or `CODEX.md` at repository root              |
 
 > **Default**: Read all required files above. Narrow down only when explicitly requested.
 

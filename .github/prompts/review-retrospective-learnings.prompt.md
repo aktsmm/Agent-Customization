@@ -53,9 +53,12 @@ Communicate findings with specific evidence and actionable recommendations.
 1. Read target files:
    - README.md
    - AGENTS.md
+   - CLAUDE.md (if exists) — Anthropic Claude Code rules
+   - CODEX.md (if exists) — OpenAI Codex CLI rules
+   - .github/copilot-instructions.md — GitHub Copilot global guardrails
    - .github/agents/\*.agent.md
    - .github/instructions/\*_/_.md
-   - .github/copilot-instructions.md
+   - .github/prompts/\*.prompt.md
 2. Summarize existing rules in 5 lines or less
 
 **Example:**
