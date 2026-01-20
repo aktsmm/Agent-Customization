@@ -59,37 +59,44 @@ Same IR → Same output. No creativity in transformation.
 
 ### 10. YAML Front Matter Requirements
 
-エージェント定義ファイル（`.agent.md`）には以下の YAML front matter が必須：
+Agent definition files (`.agent.md`) require the following YAML front matter:
 
 ```yaml
 ---
-name: <agent-name> # 必須: @メンション用の識別子
-description: <description> # 必須: 1行での役割説明
-model: <model-name> # 必須: 使用するLLMモデル
+name: <agent-name> # Required: Identifier for @mentions
+description: <description> # Required: One-line role description
+model: <model-name> # Required: LLM model to use
 ---
 ```
 
 ### 11. Tools Field Specification
 
-| 記載方法       | 動作                                         |
-| -------------- | -------------------------------------------- |
-| **省略**       | すべてのツールが利用可能（推奨）             |
-| `tools: []`    | ツールなし                                   |
-| ツール名を列挙 | 指定したツールのみ利用可能（ホワイトリスト） |
+| Specification   | Behavior                         | Use Case                |
+| --------------- | -------------------------------- | ----------------------- |
+| **Omitted**     | All tools available              | General-purpose agent   |
+| `tools: []`     | No tools                         | Conversation only       |
+| List tool names | Only specified tools (whitelist) | When restriction needed |
 
-> **注意**: MCP ツールは実行時に自動的に利用可能になるため、front matter への明示は不要。不明なツール名を記載するとエラーになる。
+#### When to Explicitly Specify Tools
+
+- **Read-only**: Research/analysis agents → Exclude editing tools
+- **Safety-focused**: Prevent destructive operations → Exclude `run_in_terminal`
+- **Cost optimization**: Reduce unnecessary tool calls
+- **Intent clarity**: Reviewers can understand agent capabilities
+
+> **Note**: MCP tools are automatically available at runtime; no need to specify in front matter. Unknown tool names will cause errors.
 
 ### 12. Agent Structure Template
 
-各エージェントは以下のセクションを持つ：
+Each agent should have the following sections:
 
-| セクション     | 必須 | 説明                                 |
-| -------------- | ---- | ------------------------------------ |
-| Role           | ✅   | 1 文での責任定義                     |
-| Goals          | ✅   | 達成目標のリスト                     |
-| Done Criteria  | ✅   | 検証可能な完了条件（**1 箇所のみ**） |
-| Permissions    | ✅   | 許可/禁止事項                        |
-| I/O Contract   | ✅   | 入出力の定義                         |
-| Workflow       | 推奨 | ステップ分けした作業手順             |
-| Error Handling | 推奨 | エラーパターンと対応                 |
-| Idempotency    | 推奨 | 冪等性の保証方法                     |
+| Section        | Required    | Description                                                 |
+| -------------- | ----------- | ----------------------------------------------------------- |
+| Role           | ✅          | One-sentence responsibility definition                      |
+| Goals          | ✅          | List of objectives                                          |
+| Done Criteria  | ✅          | Verifiable completion conditions (**single location only**) |
+| Permissions    | ✅          | Allowed/prohibited actions                                  |
+| I/O Contract   | ✅          | Input/output definitions                                    |
+| Workflow       | Recommended | Step-by-step procedure                                      |
+| Error Handling | Recommended | Error patterns and responses                                |
+| Idempotency    | Recommended | How to ensure idempotency                                   |
