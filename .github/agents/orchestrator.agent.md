@@ -1,7 +1,7 @@
 ---
 name: orchestrator
 description: サブエージェントを統括する司令塔
-model: gpt-4o
+model: claude-sonnet-4-20250514
 ---
 
 # Orchestrator Agent

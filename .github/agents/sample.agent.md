@@ -1,7 +1,7 @@
 ---
 name: sample
 description: エージェント定義のテンプレート
-model: gpt-4o
+model: claude-sonnet-4-20250514
 ---
 
 # Sample Agent
