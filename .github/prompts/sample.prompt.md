@@ -1,3 +1,7 @@
+---
+description: プロンプト作成用テンプレート
+---
+
 ```prompt
 # Prompt: [プロンプト名]
 

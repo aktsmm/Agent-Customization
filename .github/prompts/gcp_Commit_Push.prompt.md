@@ -1,3 +1,7 @@
+---
+description: 保存してコミット＆プッシュ
+---
+
 # Prompt: Commit & Push
 
 保存していないファイルを保存して commit & Push してください。

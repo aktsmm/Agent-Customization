@@ -1,3 +1,7 @@
+---
+description: セッション内容をMarkdownでエクスポート
+---
+
 # Session Export
 
 Extract and structure session content into Markdown for traceable work history.

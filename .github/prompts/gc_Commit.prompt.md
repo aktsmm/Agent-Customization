@@ -1,3 +1,7 @@
+---
+description: 保存してコミット（Pushなし）
+---
+
 # Prompt: Commit
 
 保存していないファイルを保存して commit してください。

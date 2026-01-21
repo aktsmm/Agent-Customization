@@ -1,3 +1,7 @@
+---
+description: セッション終了時のクリーンアップ
+---
+
 # Prompt: Cleanup Session
 
 セッション終了時のクリーンアップ。

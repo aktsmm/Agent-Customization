@@ -1,3 +1,7 @@
+---
+description: エージェント定義とinstructionファイルのレビュー
+---
+
 # Prompt: Review Agents & Instructions
 
 Generic prompt for reviewing agent definitions (.agent.md) and instruction files (.instructions.md) with cross-reference validation against project assets.
