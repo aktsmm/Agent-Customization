@@ -1,3 +1,7 @@
+---
+description: インシデントや会話から設計知見を抽出・反映
+---
+
 Extract reusable design insights from events (incident response, errors, fix PRs, conversations)
 and reflect them in design assets for prevention and quality improvement.
 

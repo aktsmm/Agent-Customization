@@ -1,3 +1,7 @@
+---
+description: セッション内容をMarkdownでエクスポート
+---
+
 Extract and structure session content into Markdown for traceable work history.
 
 > **Related Skill**: If available, refer to guidance on session documentation and knowledge management.

@@ -16,6 +16,18 @@
 > - https://docs.anthropic.com/en/docs/build-with-claude/prompt-engineering/overview — Claude プロンプトエンジニアリング公式ドキュメント。
 > - https://github.com/anthropics/anthropic-cookbook — Anthropic 公式のレシピ集。実践的なコード例が多数。
 
+> **External References (Prompts / Reviews)**
+>
+> - https://platform.openai.com/docs/guides/prompt-engineering — OpenAI のプロンプトエンジニアリング指針。
+> - https://www.anthropic.com/engineering/building-effective-agents — エージェント設計の原則とワークフローパターン。
+> - https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents — コンテキスト設計の考え方と実践。
+> - https://code.claude.com/docs/en/best-practices — Claude Code のベストプラクティス集。
+> - https://learn.microsoft.com/azure/ai-services/openai/concepts/prompt-engineering — Azure OpenAI のプロンプト設計ガイド。
+> - https://cloud.google.com/blog/products/application-development/five-best-practices-for-prompt-engineering — Google Cloud のプロンプトエンジニアリング Best Practices。
+> - https://docs.aws.amazon.com/bedrock/latest/userguide/prompt-engineering-guidelines.html — Amazon Bedrock のプロンプト設計ガイドライン。
+> - https://www.promptingguide.ai/ — Prompt Engineering Guide（体系的なチートシート／手法集）。
+> - https://www.ibm.com/think/prompt-engineering — IBM Think のプロンプトエンジニアリング解説。
+
 ## 収録内容
 
 | パス                              | 説明                                                                                       |
