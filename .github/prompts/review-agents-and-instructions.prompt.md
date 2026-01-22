@@ -79,13 +79,13 @@ If a specific review target is specified, you may skip unrelated files:
 
 Check only 5 items first. If any ❌, proceed to detailed review:
 
-| #   | Check Item                                        | Detection Method                                     |
-| --- | ------------------------------------------------- | ---------------------------------------------------- |
-| 1   | **SRP**: 1 agent = 1 responsibility?              | ❌ if Role cannot be stated in 1 sentence            |
-| 2   | **Fail Fast**: Error detection in first 2 steps?  | ❌ if no validation in Workflow Step 1-2             |
-| 3   | **runSubagent delegation**: Orchestrator working? | ❌ if Workflow contains `read_file`/`replace_string` |
-| 4   | **SSOT**: Same definition in 2+ places?           | Use `grep_search` to detect duplicates               |
-| 5   | **Done Criteria**: Verifiable completion?         | ❌ if just "complete" without specific checklist     |
+| #   | Check Item                                        | Detection Method                                    |
+| --- | ------------------------------------------------- | --------------------------------------------------- |
+| 1   | **SRP**: 1 agent = 1 responsibility?              | ❌ if Role cannot be stated in 1 sentence           |
+| 2   | **Fail Fast**: Error detection in first 2 steps?  | ❌ if no validation in Workflow Step 1-2            |
+| 3   | **runSubagent delegation**: Orchestrator working? | ❌ if Workflow contains direct file-read/edit tools |
+| 4   | **SSOT**: Same definition in 2+ places?           | Use `grep_search` to detect duplicates              |
+| 5   | **Done Criteria**: Verifiable completion?         | ❌ if just "complete" without specific checklist    |
 
 ### Tier 1: Core Principles (Required)
 
