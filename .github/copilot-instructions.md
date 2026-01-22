@@ -6,12 +6,10 @@
 ## エージェント行動指針 (Agent Behavior)
 
 1.  **計画重視 (Plan First)**:
-
     - 複雑なタスク（機能追加、リファクタリング、デバッグ）に着手する前に、必ずステップバイステップの計画を提示してください。
     - ユーザーの承認を得てから実行に移ることを基本とします（明示的な許可がある場合を除く）。
 
 2.  **コンテキスト認識 (Context Awareness)**:
-
     - 作業前に必ず関連ファイル（`README.md`, `package.json`, 関連ソースコード）を読み込み、プロジェクトの文脈を理解してください。
     - 推測でコードを書かず、`grep_search` や `file_search` を活用して既存の実装パターンを確認してください。
 
@@ -19,18 +17,22 @@
     - コードを変更した後は、可能な限り検証（ビルド、テスト実行、リンターチェック）を行ってください。
     - エラーが発生した場合は、エラーメッセージを分析し、修正案を提示・実行してください。
 
+4.  **コンテキスト最小化 (Context Minimalism)**:
+    - 目的達成に必要な最小限の情報だけを読み込み、不要な長文の貼り付けや広範な検索を避けてください。
+    - 参照は高信号のファイル/セクションに限定し、根拠を明示してください。
+
 ## コミュニケーションスタイル
 
 - **結論ファースト**: 結論を先に述べ、その後に理由や詳細を記述する
 - **日本語で回答**: ユーザーが日本語なら日本語で応答する
-- 詳細ルール: [Communication Rules](instructions/core/communication.instructions.md)
+- 詳細ルール: [Communication Rules](instructions/core/communication.instructions.md)（存在する場合）
 
 ## コーディング規約 & ツール使用
 
 - **DRY & SOLID**: 重複を避け、単一責任の原則に従ったコード生成を心がけてください。
 - **SSOT (Single Source of Truth)**: 情報は一箇所で管理し、他はそこを参照する。設定やドキュメントの重複を避け、変更時の不整合を防ぐ。
 - **MCP 活用**: 利用可能な MCP ツール（Azure, GitHub, Docs 等）を積極的に活用し、最新の公式情報に基づいた回答を行ってください。
-- **詳細ルール**: 以下のインストラクションファイルに従ってください。
+- **詳細ルール**: 以下のインストラクションファイルに従ってください（存在する場合）。
   - [Terminal Rules](instructions/dev/terminal.instructions.md) (PowerShell 互換、破壊的操作の禁止)
   - [Git Rules](instructions/dev/git.instructions.md) (コミット規約、Push 禁止)
   - [Python Rules](instructions/dev/python.instructions.md) (仮想環境必須、uv 推奨)
@@ -39,11 +41,11 @@
 
 ## エージェント設計
 
-- 詳細ルール: [Agent Design](instructions/agents/agent-design.instructions.md)
+- 詳細ルール: [Agent Design](instructions/agents/agent-design.instructions.md)（存在する場合）
 
 ## セキュリティとコンプライアンス
 
-- 詳細ルール: [Security Rules](instructions/core/security.instructions.md)
+- 詳細ルール: [Security Rules](instructions/core/security.instructions.md)（存在する場合）
 
 ## Skills の活用
 
@@ -52,8 +54,8 @@
 | Skill                                                            | 用途                              | トリガー                                          |
 | ---------------------------------------------------------------- | --------------------------------- | ------------------------------------------------- |
 | [agentic-workflow-guide](skills/agentic-workflow-guide/SKILL.md) | ワークフロー設計・レビュー・改善  | `.github/` 配下のファイル編集、エージェント設計時 |
-| [skill-finder](skills/skill-finder/SKILL.md)                     | Skills の検索・インストール・管理 | 新しい Skill を探すとき                           |
+| skill-finder（存在する場合）                                      | Skills の検索・インストール・管理 | 新しい Skill を探すとき                           |
 
 ## ファイルマップ
 
-エージェント一覧・関連アセットの詳細は [AGENTS.md](../AGENTS.md) を参照してください。
+エージェント一覧・関連アセットの詳細は [AGENTS.md](../AGENTS.md) を参照してください（存在する場合）。

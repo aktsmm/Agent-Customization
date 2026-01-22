@@ -48,15 +48,17 @@ For long-horizon or complex agent workflows, check:
 
 ## Step 0: Context Collection (Do First)
 
-### Required Files (Always Read)
+### Required Files (If Exists)
 
-- [ ] `AGENTS.md` — Agent registry and workflow definitions
-- [ ] `CLAUDE.md` — Anthropic Claude Code rules (if exists)
-- [ ] `CODEX.md` — OpenAI Codex CLI rules (if exists)
-- [ ] `.github/copilot-instructions.md` — GitHub Copilot global guardrails
-- [ ] `.github/instructions/**/*.md` — All instruction files (use `file_search` to list first)
-- [ ] `.github/agents/*.agent.md` — All agent definitions (use `file_search` to list first)
-- [ ] `.github/prompts/*.prompt.md` — All prompt files (use `file_search` to list first)
+- [ ] `AGENTS.md` — Agent registry and workflow definitions（存在する場合）
+- [ ] `CLAUDE.md` — Anthropic Claude Code rules（存在する場合）
+- [ ] `CODEX.md` — OpenAI Codex CLI rules（存在する場合）
+- [ ] `.github/copilot-instructions.md` — GitHub Copilot global guardrails（存在する場合）
+- [ ] `.github/instructions/**/*.md` — All instruction files（存在する場合、`file_search` で一覧）
+- [ ] `.github/agents/*.agent.md` — All agent definitions（存在する場合、`file_search` で一覧）
+- [ ] `.github/prompts/*.prompt.md` — All prompt files（存在する場合、`file_search` で一覧）
+
+> If key files are missing, ask the user to provide paths or excerpts and proceed with what is available.
 
 ### Narrow Down Scope (Optional - For Focused Review)
 
@@ -311,6 +313,7 @@ External References:
 - OpenAI Prompt Engineering: https://platform.openai.com/docs/guides/prompt-engineering
 - Anthropic Building Effective Agents: https://www.anthropic.com/engineering/building-effective-agents
 - Anthropic Context Engineering: https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents
+- Claude Code Best Practices: https://code.claude.com/docs/en/best-practices
 
 Key concepts applied:
 - Identity section: OpenAI - Message formatting with Markdown and XML

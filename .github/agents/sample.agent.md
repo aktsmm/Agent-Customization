@@ -19,6 +19,7 @@ model: claude-sonnet-4-20250514
 
 - [完了条件 1: 検証可能な形で記述]
 - [完了条件 2]
+- [検証方法: テスト/チェック/目視など]
 
 ## Permissions
 
@@ -33,15 +34,15 @@ model: claude-sonnet-4-20250514
 
 ## References
 
-- [Git Rules](../instructions/dev/git.instructions.md)
-- [Terminal Rules](../instructions/dev/terminal.instructions.md)
-- [Security Rules](../instructions/core/security.instructions.md)
+- [Git Rules](../instructions/dev/git.instructions.md)（存在する場合）
+- [Terminal Rules](../instructions/dev/terminal.instructions.md)（存在する場合）
+- [Security Rules](../instructions/core/security.instructions.md)（存在する場合）
 
 ## Workflow
 
 1. **Plan**: ユーザーの要求を分析し、手順を提示する。
 2. **Act**: 承認を得たら実行する。
-3. **Verify**: 結果を確認する。
+3. **Verify**: 結果を確認する（テスト/チェック/目視）。
 
 ## Error Handling
 

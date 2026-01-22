@@ -6,7 +6,7 @@ Copilot で扱う構造化エージェントのマニフェストを置く場所
    - `sample.agent.md` — 最小構成の例（Role/Goals/Permissions/References/Workflow 構成）
    - `orchestrator.agent.md` — サブエージェントを統括する司令塔の例
 2. `AGENTS.md` に行を追加して、ここに置いたマニフェストへリンクさせる。
-3. 必要に応じて `.github/copilot-instructions.md` から読み込む。
+3. 必要に応じて `.github/copilot-instructions.md` から読み込む（存在する場合）。
 4. runSubagent を使うときは「コンテキスト隔離」が主目的。計画 → 実装 → レビューのように工程を分ける用途に向いている一方、軽いタスクには向かないのでツール選択欄に書きすぎない。
 5. runSubagent 自体は Copilot 側のビルトインツールで、ここに置く Markdown では「いつ runSubagent を呼び出すか」「サブエージェントへ何を渡すか」を記述するだけ。`tools: ["runSubagent", ...]` と書けば利用でき、別途 runSubagent 用ファイルを用意する必要はない。
 6. 使い方の例: orchestrator.agent.md で `tools` に runSubagent を含め、本文で「#tool:runSubagent で issue.agent.md を呼び出し、要望を Issue に変換」と指示する。VS Code の Copilot Chat でそのエージェントを選んで話しかけると、runSubagent が裏で issue.agent.md 用のサブセッションを起動し、処理結果だけが戻る。

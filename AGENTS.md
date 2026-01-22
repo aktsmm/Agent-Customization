@@ -19,20 +19,20 @@
 
 ### 共有ガードレール
 
-- [copilot-instructions.md](.github/copilot-instructions.md) — Copilot の振る舞い・回答スタイル・検証手順を定義
+- [copilot-instructions.md](.github/copilot-instructions.md) — Copilot の振る舞い・回答スタイル・検証手順を定義（存在する場合）
 
 ### Instructions（ドメイン別ルール）
 
-| ファイル                                                                                           | 説明                                                           |
-| -------------------------------------------------------------------------------------------------- | -------------------------------------------------------------- |
-| [git.instructions.md](.github/instructions/dev/git.instructions.md)                                | Git コミット規約（Conventional Commits、Push 禁止）            |
-| [terminal.instructions.md](.github/instructions/dev/terminal.instructions.md)                      | ターミナル操作規約（PowerShell 互換、破壊的操作の注意）        |
-| [python.instructions.md](.github/instructions/dev/python.instructions.md)                          | Python 環境設定（仮想環境必須、uv 推奨）                       |
-| [nodejs.instructions.md](.github/instructions/dev/nodejs.instructions.md)                          | Node.js 環境設定（nvm 推奨、パッケージマネージャー）           |
-| [agent-design.instructions.md](.github/instructions/agents/agent-design.instructions.md)           | エージェント設計原則（単一責任、冪等性、オーケストレーション） |
-| [security.instructions.md](.github/instructions/core/security.instructions.md)                     | セキュリティガイドライン（機密情報、外部 API、入力検証）       |
-| [communication.instructions.md](.github/instructions/core/communication.instructions.md)           | コミュニケーションスタイル（結論ファースト、言語設定）         |
-| [microsoft-docs.instructions.md](.github/instructions/integrations/microsoft-docs.instructions.md) | Microsoft 公式ドキュメント参照（MCP ツール活用、ソース明記）   |
+| ファイル                                                                                           | 説明                                                                         |
+| -------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------- |
+| [git.instructions.md](.github/instructions/dev/git.instructions.md)                                | Git コミット規約（Conventional Commits、Push 禁止、存在する場合）            |
+| [terminal.instructions.md](.github/instructions/dev/terminal.instructions.md)                      | ターミナル操作規約（PowerShell 互換、破壊的操作の注意、存在する場合）        |
+| [python.instructions.md](.github/instructions/dev/python.instructions.md)                          | Python 環境設定（仮想環境必須、uv 推奨、存在する場合）                       |
+| [nodejs.instructions.md](.github/instructions/dev/nodejs.instructions.md)                          | Node.js 環境設定（nvm 推奨、パッケージマネージャー、存在する場合）           |
+| [agent-design.instructions.md](.github/instructions/agents/agent-design.instructions.md)           | エージェント設計原則（単一責任、冪等性、オーケストレーション、存在する場合） |
+| [security.instructions.md](.github/instructions/core/security.instructions.md)                     | セキュリティガイドライン（機密情報、外部 API、入力検証、存在する場合）       |
+| [communication.instructions.md](.github/instructions/core/communication.instructions.md)           | コミュニケーションスタイル（結論ファースト、言語設定、存在する場合）         |
+| [microsoft-docs.instructions.md](.github/instructions/integrations/microsoft-docs.instructions.md) | Microsoft 公式ドキュメント参照（MCP ツール活用、ソース明記、存在する場合）   |
 
 ### Prompts（再利用可能なプロンプト）
 
@@ -52,8 +52,13 @@
 | [sample.prompt.md](.github/prompts/sample.prompt.md)                                                 | プロンプト作成用テンプレート            |
 
 <!-- skill-ninja-START -->
+
 ## Installed Skills
 
-No skills installed yet. Use "Agent Skill Ninja: Search Skills" to install skills.
+The following skills are available in this workspace.
+
+| Skill                                                                    | When to Use                                                                |
+| ------------------------------------------------------------------------ | -------------------------------------------------------------------------- |
+| [agentic-workflow-guide](.github/skills/agentic-workflow-guide/SKILL.md) | Use this skill when creating, reviewing, or updating agents and workflows: |
 
 <!-- skill-ninja-END -->

@@ -1,9 +1,3 @@
----
-description: セッション内容をMarkdownでエクスポート
----
-
-# Session Export
-
 Extract and structure session content into Markdown for traceable work history.
 
 > **Related Skill**: If available, refer to guidance on session documentation and knowledge management.
@@ -69,7 +63,13 @@ Focus on final results, not intermediate attempts or failures.
 
 ## References
 
-- [Title](URL) - {Why it was referenced}
+- [Title](https://example.com) - {Why it was referenced}
+
+<!--
+External References (Optional):
+- Anthropic Building Effective Agents: https://www.anthropic.com/engineering/building-effective-agents
+- Claude Code Best Practices: https://code.claude.com/docs/en/best-practices
+-->
 
 ## Next Steps
 
@@ -103,6 +103,7 @@ External References:
 - OpenAI Prompt Engineering: https://platform.openai.com/docs/guides/prompt-engineering
 - Anthropic Building Effective Agents: https://www.anthropic.com/engineering/building-effective-agents
 - Anthropic Context Engineering: https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents
+- Claude Code Best Practices: https://code.claude.com/docs/en/best-practices
 
 Key concepts applied:
 - Identity section: OpenAI - Message formatting with Markdown and XML

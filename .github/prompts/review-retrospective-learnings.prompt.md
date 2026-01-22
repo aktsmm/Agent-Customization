@@ -1,9 +1,3 @@
----
-description: インシデントや会話から設計知見を抽出・反映
----
-
-# Prompt: Agent Design Retro
-
 Extract reusable design insights from events (incident response, errors, fix PRs, conversations)
 and reflect them in design assets for prevention and quality improvement.
 
@@ -63,7 +57,8 @@ Communicate findings with specific evidence and actionable recommendations.
    - .github/agents/\*.agent.md
    - .github/instructions/\*_/_.md
    - .github/prompts/\*.prompt.md
-2. Summarize existing rules in 5 lines or less
+2. If any referenced file is missing, request the relevant excerpts from the user and proceed with the available sources.
+3. Summarize existing rules in 5 lines or less
 
 **Example:**
 
@@ -203,6 +198,12 @@ Before applying changes:
 - [ ] Target files are writable
 ```
 
+<!--
+External References (Optional):
+- Anthropic Building Effective Agents: https://www.anthropic.com/engineering/building-effective-agents
+- Claude Code Best Practices: https://code.claude.com/docs/en/best-practices
+-->
+
 ### Example Output
 
 ```markdown
@@ -247,6 +248,7 @@ External References:
 - OpenAI Prompt Engineering: https://platform.openai.com/docs/guides/prompt-engineering
 - Anthropic Building Effective Agents: https://www.anthropic.com/engineering/building-effective-agents
 - Anthropic Context Engineering: https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents
+- Claude Code Best Practices: https://code.claude.com/docs/en/best-practices
 
 Key concepts applied:
 - Identity section: OpenAI - Message formatting with Markdown and XML

@@ -16,7 +16,8 @@ instructions/
 │   ├── python.instructions.md             # Python環境設定
 │   └── nodejs.instructions.md             # Node.js環境設定
 ├── agents/                                # エージェント設計系
-│   └── agent-design.instructions.md       # 設計原則
+│   ├── agent-design.instructions.md       # 設計原則
+│   └── agents.instructions.md             # .github/agents 向けルール
 └── integrations/                          # 外部連携系
     └── microsoft-docs.instructions.md     # MS Docs MCP連携
 ```

@@ -17,10 +17,15 @@ description: 保存してコミット＆プッシュ
 
 ## コミットメッセージのフォーマット
 
-以下の形式でコミットメッセージを作成してください：
 **Conventional Commits** 形式でコミットメッセージを作成してください。
-詳細は [git.instructions.md](../instructions/dev/git.instructions.md) を参照。
+詳細は [git.instructions.md](../instructions/dev/git.instructions.md) を参照（存在する場合）。
 
 ```
-[カテゴリ] 変更内容の要約（25文字以内）- （git config user.name の結果）
+<type>(<scope>): <subject> - <user.name>
 ```
+
+例（`git config user.name` を反映）:
+
+- `feat(auth): ログイン機能を追加 - <user.name>`
+- `fix(api): タイムアウトエラーを修正 - <user.name>`
+- `docs(readme): セットアップ手順を更新 - <user.name>`

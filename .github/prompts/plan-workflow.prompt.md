@@ -8,8 +8,10 @@ description: 複数エージェントのオーケストレーション計画
 
 ## 前提条件
 
-- 参照: `AGENTS.md` (利用可能なエージェント一覧)
-- 参照: `.github/instructions/agents/agent-design.instructions.md` (設計原則)
+- 参照: `AGENTS.md` (利用可能なエージェント一覧、存在する場合)
+- 参照: `.github/instructions/agents/agent-design.instructions.md` (設計原則、存在する場合)
+
+> 参照ファイルが無い場合は、利用可能なエージェント一覧と制約をユーザーに確認する。
 
 ## 指示
 

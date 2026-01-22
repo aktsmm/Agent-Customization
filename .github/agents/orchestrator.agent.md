@@ -55,10 +55,10 @@ model: claude-sonnet-4-20250514
 
 ## References
 
-- [Git Rules](../instructions/dev/git.instructions.md)
-- [Terminal Rules](../instructions/dev/terminal.instructions.md)
-- [Agent Design Rules](../instructions/agents/agent-design.instructions.md)
-- [Security Rules](../instructions/core/security.instructions.md)
+- [Git Rules](../instructions/dev/git.instructions.md)（存在する場合）
+- [Terminal Rules](../instructions/dev/terminal.instructions.md)（存在する場合）
+- [Agent Design Rules](../instructions/agents/agent-design.instructions.md)（存在する場合）
+- [Security Rules](../instructions/core/security.instructions.md)（存在する場合）
 
 ## Workflow
 
