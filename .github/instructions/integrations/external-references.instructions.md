@@ -6,14 +6,14 @@
 
 ## クイックリファレンス — いつ何を見る？
 
-| ジャンル | いつ使う？ | 参照先 |
-|---------|-----------|--------|
-| **プロンプト基礎** | プロンプトの書き方・構成を学ぶとき | OpenAI / Microsoft / Google / Amazon / IBM |
-| **技法カタログ** | CoT, RAG, few-shot など特定技法を調べるとき | Prompt Engineering Guide |
-| **エージェント設計** | マルチエージェント・ワークフロー設計時 | OpenAI Agents / Anthropic (Building Agents) / Agent Skills |
-| **コンテキスト管理** | 長いタスク・記憶管理・情報の取捨選択 | Anthropic (Context Engineering) |
-| **実践・コード例** | 具体的な実装パターン・API の使い方 | OpenAI Cookbook |
-| **ツール運用** | Claude Code / Copilot での実装ベストプラクティス | Claude Code / GitHub Copilot Best Practices |
+| ジャンル             | いつ使う？                                       | 参照先                                                     |
+| -------------------- | ------------------------------------------------ | ---------------------------------------------------------- |
+| **プロンプト基礎**   | プロンプトの書き方・構成を学ぶとき               | OpenAI / Microsoft / Google / Amazon / IBM                 |
+| **技法カタログ**     | CoT, RAG, few-shot など特定技法を調べるとき      | Prompt Engineering Guide                                   |
+| **エージェント設計** | マルチエージェント・ワークフロー設計時           | OpenAI Agents / Anthropic (Building Agents) / Agent Skills |
+| **コンテキスト管理** | 長いタスク・記憶管理・情報の取捨選択             | Anthropic (Context Engineering)                            |
+| **実践・コード例**   | 具体的な実装パターン・API の使い方               | OpenAI Cookbook                                            |
+| **ツール運用**       | Claude Code / Copilot での実装ベストプラクティス | Claude Code / GitHub Copilot Best Practices                |
 
 ---
 
