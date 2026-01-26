@@ -35,7 +35,7 @@
 | `.github/copilot-instructions.md` | 共有ガードレール。Copilot が最初に読み込み、回答トーンやレビュー方針を決める。             |
 | `.github/agents/`                 | エージェント定義（`sample`, `orchestrator`）。新規エージェントを増やすときはこの例を複製。 |
 | `.github/instructions/`           | ドメインガイド（`core/`, `dev/`, `agents/`, `integrations/` にカテゴリ分類）。             |
-| `.github/prompts/`                | 再利用可能なプロンプト（ワークフロー設計、デバッグ、テスト生成、Git 操作など）。           |
+| `.github/prompts/`                | 再利用可能なプロンプト（設計、レビュー、計画、デバッグ、テスト、Git 操作など）。           |
 | `AGENTS.md`                       | 登録済みエージェントの目次。新しいマニフェストを追加したらここにも追記する。               |
 
 ## 使い方
@@ -145,6 +145,7 @@ Copilot Chat で以下のショートカットを使う：
 | write-tests                    | `@workspace /prompt write-tests`                    | テスト生成（計画 → 実装 → 検証）         |
 | review-retrospective-learnings | `@workspace /prompt review-retrospective-learnings` | 振り返りと学びの抽出                     |
 | review-session-export-md       | `@workspace /prompt review-session-export-md`       | セッション内容を Markdown でエクスポート |
+| wrap-up-work                   | `@workspace /prompt wrap-up-work`                   | 作業の締め・要約                         |
 | gc_Commit                      | `@workspace /prompt gc_Commit`                      | 変更をコミット                           |
 | gcp_Commit_Push                | `@workspace /prompt gcp_Commit_Push`                | コミットしてプッシュ                     |
 | gpull                          | `@workspace /prompt gpull`                          | リモートからプル                         |

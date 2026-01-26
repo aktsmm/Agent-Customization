@@ -21,23 +21,30 @@
     - 目的達成に必要な最小限の情報だけを読み込み、不要な長文の貼り付けや広範な検索を避けてください。
     - 参照は高信号のファイル/セクションに限定し、根拠を明示してください。
 
+5.  **フェイルファースト (Fail Fast)**:
+    - 作業開始前に「Phase 0: 事前チェック」を実施してください。
+    - 主要ファイル/設定の存在確認（例: `AGENTS.md`, `.github/instructions/**`, 対象ファイルパスの検証）。
+    - `manage_todo_list` にゲート条件を設定し、未充足なら中断・是正してから再開。
+
 ## コミュニケーションスタイル
 
 - **結論ファースト**: 結論を先に述べ、その後に理由や詳細を記述する
 - **日本語で回答**: ユーザーが日本語なら日本語で応答する
 - 詳細ルール: [Communication Rules](instructions/core/communication.instructions.md)（存在する場合）
+- **成果物は構造化**: 出力は箇条書き/表/コードフェンスで構造化しフォーマル、会話はカジュアルでOK。
 
 ## コーディング規約 & ツール使用
 
 - **DRY & SOLID**: 重複を避け、単一責任の原則に従ったコード生成を心がけてください。
 - **SSOT (Single Source of Truth)**: 情報は一箇所で管理し、他はそこを参照する。設定やドキュメントの重複を避け、変更時の不整合を防ぐ。
 - **MCP 活用**: 利用可能な MCP ツール（Azure, GitHub, Docs 等）を積極的に活用し、最新の公式情報に基づいた回答を行ってください。
+- **参照の明記**: 回答には必ず参照元 URL と根拠（どのファイル/公式ページか）を明記してください。
 - **詳細ルール**: 以下のインストラクションファイルに従ってください（存在する場合）。
   - [Terminal Rules](instructions/dev/terminal.instructions.md) (PowerShell 互換、破壊的操作の禁止)
   - [Git Rules](instructions/dev/git.instructions.md) (コミット規約、Push 禁止)
   - [Python Rules](instructions/dev/python.instructions.md) (仮想環境必須、uv 推奨)
   - [Node.js Rules](instructions/dev/nodejs.instructions.md) (nvm 推奨、パッケージマネージャー)
-  - [Microsoft Docs](instructions/integrations/microsoft-docs.instructions.md) (MCP 連携、ソース明記)
+  - [Microsoft Docs](instructions/integrations/microsoft-docs.instructions.md) (MCP 連携、ソース明記) - Microsoft Docs MCP ツール名（正規）: `mcp_microsoftdocs_microsoft_docs_search`, `mcp_microsoftdocs_microsoft_code_sample_search`, `mcp_microsoftdocs_microsoft_docs_fetch`
 
 ## エージェント設計
 
