@@ -19,6 +19,7 @@
 | `gpull.prompt.md`                          | Git プル                                     |
 | `review-retrospective-learnings.prompt.md` | 学びを抽象化して設計資産へ反映（ふりかえり） |
 | `review-session-export-md.prompt.md`       | セッション内容を Markdown 形式でエクスポート |
+| `export-log.prompt.md`                     | 汎用作業ログ（AI可読・構造化）               |
 | `wrap-up-work.prompt.md`                   | 作業の締め・要約                             |
 | `sample.prompt.md`                         | カスタムプロンプト作成用テンプレート         |
 
