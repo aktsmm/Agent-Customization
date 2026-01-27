@@ -54,10 +54,10 @@ Automatically detect session type, extract metadata, and compress repetitive att
 ## Output Path
 
 ```
-/output_sessions/YYYY_MM_DD--{type}_{topic}.md
+/output_sessions/YYYYMMDD--{topic}.md
 ```
 
-**例**: `2026_01_27--coding_auth-fix.md`
+**例**: `20260127--auth-fix.md`
 
 ## Output Format
 
@@ -124,18 +124,18 @@ outcome_status: { success|partial|failed }
 ### Step 0: Check Existing Files
 
 1. Check if `/output_sessions/` directory exists (create if not)
-2. Look for file matching `YYYY_MM_DD--*.md` pattern for today
+2. Look for file matching `YYYYMMDD--*.md` pattern for today
 3. If found: Read content, prepare to append new session section
-4. If not found: Create new file with naming format `YYYY_MM_DD--{type}_{topic}.md`
+4. If not found: Create new file with naming format `YYYYMMDD--{topic}.md`
 
 ### Step 1: Extract Session Metadata
 
 1. Identify session type from conversation content
 2. Find first timestamp from conversation start (or estimate)
-3. **Get current time for `ended_at`**:
-   ```powershell
-   Get-Date -Format "yyyy-MM-ddTHH:mm:ss"
-   ```
+3. **Get current time for `ended_at`** using appropriate command for the environment:
+   - **PowerShell**: `Get-Date -Format "yyyy-MM-ddTHH:mm:ss"`
+   - **Bash/Zsh**: `date "+%Y-%m-%dT%H:%M:%S"`
+   - **Python**: `python -c "from datetime import datetime; print(datetime.now().strftime('%Y-%m-%dT%H:%M:%S'))"`
 4. Calculate duration in minutes
 5. List all tools used (from tool calls)
 6. Determine outcome status

@@ -145,6 +145,7 @@ Copilot Chat で以下のショートカットを使う：
 | write-tests                    | `@workspace /prompt write-tests`                    | テスト生成（計画 → 実装 → 検証）         |
 | review-retrospective-learnings | `@workspace /prompt review-retrospective-learnings` | 振り返りと学びの抽出                     |
 | review-session-export-md       | `@workspace /prompt review-session-export-md`       | セッション内容を Markdown でエクスポート |
+| export-log                     | `@workspace /prompt export-log`                     | 汎用作業ログ（AI可読・構造化）           |
 | wrap-up-work                   | `@workspace /prompt wrap-up-work`                   | 作業の締め・要約                         |
 | gc_Commit                      | `@workspace /prompt gc_Commit`                      | 変更をコミット                           |
 | gcp_Commit_Push                | `@workspace /prompt gcp_Commit_Push`                | コミットしてプッシュ                     |
