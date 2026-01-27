@@ -8,7 +8,12 @@ Python プロジェクトでは**必ず仮想環境を使用**してください
 
 [uv](https://docs.astral.sh/uv/) は pip より 10〜100 倍高速な Rust 製パッケージマネージャー。pip / venv / pyenv を 1 つに統合します。
 
-> 参考: [Python 環境で泣かない！Windows で uv を使った Python ベストプラクティス](https://yamapan.tokyo/?p=4064)
+### uv のメリット
+
+- **高速**: pip の 10〜100 倍速（Rust 製）
+- **統合**: Python バージョン管理 + 仮想環境 + パッケージ管理を 1 ツールで
+- **互換**: pip コマンドと同じ感覚で使える（`uv pip install`）
+- **ロックファイル**: `uv.lock` で再現性を担保
 
 ```powershell
 # インストール
