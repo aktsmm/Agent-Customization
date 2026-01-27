@@ -69,12 +69,6 @@ Focus on final results, not intermediate attempts or failures.
 
 - [Title](https://example.com) - {Why it was referenced}
 
-<!--
-External References (Optional):
-- Anthropic Building Effective Agents: https://www.anthropic.com/engineering/building-effective-agents
-- Claude Code Best Practices: https://code.claude.com/docs/en/best-practices
--->
-
 ## Next Steps
 
 - [ ] {Task 1}
