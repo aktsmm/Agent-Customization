@@ -15,3 +15,6 @@ LICENSE_MIT.MD
 
 # Skills (installed locally)
 .github/skills/
+
+# Session logs (local only)
+output_sessions/
