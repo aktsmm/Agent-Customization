@@ -19,14 +19,25 @@
 > **External References (Prompts / Reviews)**
 >
 > - https://platform.openai.com/docs/guides/prompt-engineering — OpenAI のプロンプトエンジニアリング指針。
+> - https://platform.openai.com/docs/guides/agents — OpenAI Agents ガイド。
 > - https://www.anthropic.com/engineering/building-effective-agents — エージェント設計の原則とワークフローパターン。
 > - https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents — コンテキスト設計の考え方と実践。
+> - https://www.anthropic.com/engineering/writing-tools-for-agents — エージェント向けツール設計。
 > - https://code.claude.com/docs/en/best-practices — Claude Code のベストプラクティス集。
 > - https://learn.microsoft.com/azure/ai-services/openai/concepts/prompt-engineering — Azure OpenAI のプロンプト設計ガイド。
 > - https://cloud.google.com/blog/products/application-development/five-best-practices-for-prompt-engineering — Google Cloud のプロンプトエンジニアリング Best Practices。
 > - https://docs.aws.amazon.com/bedrock/latest/userguide/prompt-engineering-guidelines.html — Amazon Bedrock のプロンプト設計ガイドライン。
 > - https://www.promptingguide.ai/ — Prompt Engineering Guide（体系的なチートシート／手法集）。
 > - https://www.ibm.com/think/prompt-engineering — IBM Think のプロンプトエンジニアリング解説。
+>
+> **GitHub Copilot / VS Code References**
+>
+> - https://docs.github.com/en/copilot/how-tos/chat-with-copilot/chat-in-ide — Chat modes, subagents, plan mode。
+> - https://code.visualstudio.com/docs/copilot/customization/custom-agents — VS Code Custom Agents 設定。
+> - https://docs.github.com/en/copilot/how-tos/use-copilot-agents/coding-agent/create-custom-agents — Custom Agents 作成ガイド。
+> - https://docs.github.com/en/copilot/reference/custom-agents-configuration — Custom Agents YAML リファレンス。
+> - https://docs.github.com/en/copilot/using-github-copilot/best-practices-for-using-github-copilot — GitHub Copilot ベストプラクティス。
+> - https://github.com/github/awesome-copilot — awesome-copilot（エージェント例・ツール集）。
 
 ## 収録内容
 
@@ -36,7 +47,7 @@
 | `.github/agents/`                 | エージェント定義（`sample`, `orchestrator`）。新規エージェントを増やすときはこの例を複製。 |
 | `.github/instructions/`           | ドメインガイド（`core/`, `dev/`, `agents/`, `integrations/` にカテゴリ分類）。             |
 | `.github/prompts/`                | 再利用可能なプロンプト（設計、レビュー、計画、デバッグ、テスト、Git 操作など）。           |
-| `output_sessions/`                | 作業ログ出力先（.gitignore 済み、ローカル専用）。                                         |
+| `output_sessions/`                | 作業ログ出力先（.gitignore 済み、ローカル専用）。                                          |
 | `AGENTS.md`                       | 登録済みエージェントの目次。新しいマニフェストを追加したらここにも追記する。               |
 
 ## 使い方
