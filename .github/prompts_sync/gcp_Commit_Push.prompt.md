@@ -10,6 +10,8 @@ description: 保存してコミット＆プッシュ
 
 ## 手順
 
+> ワークスペース確認の詳細は [terminal.instructions.md](../instructions/dev/terminal.instructions.md) を参照
+
 0. **ワークスペース確認**: `Get-Location; git remote -v` で現在地とリモートリポジトリを確認し、意図したリポジトリにいることを確認（違う場合は `Set-Location <正しいパス>` で移動）
 1. `git config user.name; git remote get-url origin; git pull; git branch --show-current; git log --oneline -5` でユーザー名 + Remote URL + pull + ブランチ名 + 直近 5 件のコミット（変更サマリ）を一括取得
 2. VS Code コマンド `workbench.action.files.saveAll` で未保存ファイルを保存

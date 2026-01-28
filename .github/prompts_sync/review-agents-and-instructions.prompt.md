@@ -58,7 +58,21 @@ For long-horizon or complex agent workflows, check:
 - [ ] `.github/agents/*.agent.md` — All agent definitions（存在する場合、`file_search` で一覧）
 - [ ] `.github/prompts/*.prompt.md` — All prompt files（存在する場合、`file_search` で一覧）
 
-> If key files are missing, ask the user to provide paths or excerpts and proceed with what is available.
+### Gate: Minimum Required Files
+
+**At least ONE of the following must exist to proceed:**
+
+- `AGENTS.md`
+- `CLAUDE.md`
+- `CODEX.md`
+
+**If NONE exist:**
+
+1. Report: "No agent registry file found in this repository."
+2. Ask user: "Would you like to create a new agent workflow? Use `/prompt create-workflow` to get started."
+3. **STOP here** — Do not proceed with review.
+
+> Other files (`.github/copilot-instructions.md`, `.github/agents/*.agent.md`, etc.) are optional and will be reviewed if they exist.
 
 ### Narrow Down Scope (Optional - For Focused Review)
 

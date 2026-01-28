@@ -45,6 +45,12 @@ Communicate findings with specific evidence and actionable recommendations.
 - Git changes (diff, commit messages)
 - **Chat context (conversation history, Q&A exchanges, problem-solving threads)**
 
+**If NONE of the above are available:**
+
+1. Report: "No input data found for retrospective analysis."
+2. Ask user: "Please provide one of: error logs, git diff, or describe what happened in the session."
+3. **STOP here** — Do not proceed without input.
+
 **Optional:**
 
 - Terminal history (commands executed, outputs, errors)
