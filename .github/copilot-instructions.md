@@ -39,13 +39,8 @@
 - **SSOT (Single Source of Truth)**: 情報は一箇所で管理し、他はそこを参照する。設定やドキュメントの重複を避け、変更時の不整合を防ぐ。
 - **MCP 活用**: 利用可能な MCP ツール（Azure, GitHub, Docs 等）を積極的に活用し、最新の公式情報に基づいた回答を行ってください。
 - **参照の明記**: 回答には必ず参照元 URL と根拠（どのファイル/公式ページか）を明記してください。
-- **詳細ルール**: 以下のインストラクションファイルに従ってください（存在する場合）。
-  - [Naming Conventions](instructions_sync/core/naming-conventions.instructions.md) (ファイル・フォルダ・変数の命名規則)
-  - [Terminal Rules](instructions_sync/dev/terminal.instructions.md) (PowerShell 互換、破壊的操作の禁止)
-  - [Git Rules](instructions_sync/dev/git.instructions.md) (コミット規約、Push 禁止)
-  - [Python Rules](instructions_sync/dev/python.instructions.md) (仮想環境必須、uv 推奨)
-  - [Node.js Rules](instructions_sync/dev/nodejs.instructions.md) (nvm 推奨、パッケージマネージャー)
-  - [Microsoft Docs](instructions_sync/integrations/microsoft-docs.instructions.md) (MCP 連携、ソース明記) - Microsoft Docs MCP ツール名（正規）: `mcp_microsoftdocs_microsoft_docs_search`, `mcp_microsoftdocs_microsoft_code_sample_search`, `mcp_microsoftdocs_microsoft_docs_fetch`
+
+> **Note**: グローバル同期されているインストラクション（`instructions_sync/` 配下）は自動的に適用されます。
 
 ## エージェント設計
 

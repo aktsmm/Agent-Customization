@@ -9,6 +9,7 @@
 **形式**: `<動詞>-<対象>[-<補足>].prompt.md`
 
 **良い例:**
+
 - `git-commit.prompt.md` - 動詞-対象で明確
 - `git-commit-push.prompt.md` - 動詞-対象-補足
 - `create-workflow.prompt.md` - 動詞-対象
@@ -16,6 +17,7 @@
 - `export-session-log.prompt.md` - 動詞-対象-補足
 
 **避けるべき例:**
+
 - `gc_Commit.prompt.md` - アンダースコア混在、頭字語不明
 - `gpull.prompt.md` - 頭字語のみ
 - `doStuff.prompt.md` - camelCase不可
@@ -25,6 +27,7 @@
 **形式**: `<対象>[-<補足>].instructions.md`
 
 **例:**
+
 - `git.instructions.md` - 対象のみ
 - `terminal.instructions.md` - 対象のみ
 - `microsoft-docs.instructions.md` - 対象-補足
@@ -35,6 +38,7 @@
 **形式**: `<役割>[-<補足>].agent.md`
 
 **例:**
+
 - `orchestrator.agent.md` - 役割のみ
 - `sync-to-global.agent.md` - 役割-補足
 - `sample.agent.md` - テンプレート用
@@ -95,13 +99,12 @@ class PromptManager:
 ```javascript
 // 推奨: camelCase (関数・変数)
 function copyPromptFiles() {
-    const sourceDir = "...";
-    const targetFiles = [];
+  const sourceDir = "...";
+  const targetFiles = [];
 }
 
 // 推奨: PascalCase (クラス)
-class PromptManager {
-}
+class PromptManager {}
 ```
 
 ## 例外
