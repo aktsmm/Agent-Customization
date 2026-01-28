@@ -2,6 +2,8 @@
 description: セッション終了時のクリーンアップ
 ---
 
+<!-- syncToGlobal: true -->
+
 # Prompt: Cleanup Session
 
 セッション終了時のクリーンアップ。
@@ -14,7 +16,7 @@ description: セッション終了時のクリーンアップ
 - [ ] エラーが残っていないか（`get_errors` で確認）
 - [ ] コミットすべき変更があるか（`git status`）
 - [ ] TODO リストが完了しているか
-- [ ] 重要な学びがあれば `/review-session-export-md` でエクスポート済みか
+- [ ] 重要な学びがあれば `export-log.prompt.md` でエクスポート済みか
 
 ## コマンド実行
 

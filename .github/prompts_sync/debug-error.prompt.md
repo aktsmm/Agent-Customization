@@ -2,6 +2,8 @@
 description: エラーを分析し、原因特定から解決までを段階的に実行
 ---
 
+<!-- syncToGlobal: true -->
+
 # Debug Error
 
 エラーを分析して解決してね！✨

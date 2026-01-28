@@ -2,6 +2,8 @@
 description: 保存してコミット＆プッシュ
 ---
 
+<!-- syncToGlobal: true -->
+
 # Prompt: Commit & Push
 
 保存していないファイルを保存して commit & Push してください。

@@ -1,3 +1,9 @@
+---
+applyTo: "**"
+---
+
+<!-- syncToGlobal: true -->
+
 # Git Commit Instructions
 
 このプロジェクトでは **Conventional Commits** に従ったコミットメッセージを必須とします。

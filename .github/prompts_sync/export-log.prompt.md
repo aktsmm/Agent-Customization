@@ -2,6 +2,8 @@
 description: 作業セッションログ（AI可読・構造化）
 ---
 
+<!-- syncToGlobal: true -->
+
 Extract and structure work session logs into AI-readable Markdown with automated metadata.
 
 > **Related Skill**: If available, refer to guidance on session documentation and knowledge management.

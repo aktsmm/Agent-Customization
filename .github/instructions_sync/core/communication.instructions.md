@@ -1,3 +1,9 @@
+---
+applyTo: "**"
+---
+
+<!-- syncToGlobal: true -->
+
 # Communication Instructions
 
 エージェントがユーザーとコミュニケーションを取る際のスタイルガイドです。
@@ -111,4 +117,33 @@
 対処法:
 1. `types/user.ts` に `email: string` を追加する
 2. または、該当コードで optional chaining を使用する
+```
+
+---
+
+## 6. コード生成
+
+コードを生成する際のルールです。
+
+### 基本原則
+
+- **コメント必須**: コード例には必ずコメントを含めてください
+- **CLI 活用**: GitHub CLI、Azure CLI、PowerShell を積極的に利用してください
+- **再現性**: コピペでそのまま動くコードを提供してください
+
+### コメントの例
+
+```typescript
+// ユーザー情報を取得する
+async function getUser(id: string): Promise<User> {
+  // APIからユーザーを取得
+  const response = await fetch(`/api/users/${id}`);
+
+  // エラーハンドリング
+  if (!response.ok) {
+    throw new Error(`User not found: ${id}`);
+  }
+
+  return response.json();
+}
 ```

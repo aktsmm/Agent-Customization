@@ -2,6 +2,8 @@
 description: リモートからPullして変更箇所を表示
 ---
 
+<!-- syncToGlobal: true -->
+
 # Prompt:Pull
 
 リモートレポジトリの最新状態に合わせて(Pull)、変更箇所を教えてください。

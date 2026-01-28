@@ -1,3 +1,9 @@
+---
+applyTo: "**"
+---
+
+<!-- syncToGlobal: true -->
+
 # Terminal Command Execution Instructions
 
 エージェントがターミナルでコマンドを実行する際の安全基準です。

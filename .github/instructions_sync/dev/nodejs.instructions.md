@@ -1,3 +1,9 @@
+---
+applyTo: "**/*.{js,ts,mjs,cjs,jsx,tsx},**/package.json"
+---
+
+<!-- syncToGlobal: true -->
+
 # Node.js Environment Instructions
 
 Node.js プロジェクトでは**バージョン管理ツールを使用**してください。直接インストールよりも柔軟に対応できます。
@@ -62,3 +68,31 @@ pnpm install
 2. **package.json を尊重** — `engines` フィールドがあれば従う
 3. **lock ファイルを維持** — `package-lock.json` / `pnpm-lock.yaml` をコミット
 4. **グローバルインストールは最小限** — 開発ツール以外は devDependencies へ
+
+---
+
+## やってはいけないこと
+
+- ❌ `npm install -g <package>` の多用（devDependencies 推奨）
+- ❌ `package-lock.json` / `pnpm-lock.yaml` の削除（再現性が壊れる）
+- ❌ `node_modules/` をコミット
+- ❌ `engines` フィールドを無視したバージョンで実行
+- ❌ 異なるパッケージマネージャーの混在（npm と pnpm を同一プロジェクトで使うなど）
+
+---
+
+## 検証方法
+
+```powershell
+# Node.js バージョン確認
+node --version
+
+# 依存関係の整合性チェック
+npm ci  # または pnpm install --frozen-lockfile
+
+# 脆弱性スキャン
+npm audit
+
+# package.json の engines フィールド確認
+npm pkg get engines
+```

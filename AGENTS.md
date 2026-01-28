@@ -4,10 +4,11 @@
 
 > `sample.agent.md` が最小構成の例、`orchestrator.agent.md` がオーケストレーター構成の例です。テンプレ用途で増やすときはここに行を追加してください。
 
-| エージェント名     | マニフェスト                           | 主な役割                             |
-| ------------------ | -------------------------------------- | ------------------------------------ |
-| Sample Agent       | `.github/agents/sample.agent.md`       | エージェント定義のテンプレート       |
-| Orchestrator Agent | `.github/agents/orchestrator.agent.md` | サブエージェントを統括する司令塔の例 |
+| エージェント名     | マニフェスト                             | 主な役割                                    |
+| ------------------ | ---------------------------------------- | ------------------------------------------- |
+| Sample Agent       | `.github/agents/sample.agent.md`         | エージェント定義のテンプレート              |
+| Orchestrator Agent | `.github/agents/orchestrator.agent.md`   | サブエージェントを統括する司令塔の例        |
+| Sync to Global     | `.github/agents/sync-to-global.agent.md` | instructions/prompts をグローバル設定に同期 |
 
 ## 使い方
 

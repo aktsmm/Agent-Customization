@@ -1,3 +1,9 @@
+---
+applyTo: "**"
+---
+
+<!-- syncToGlobal: true -->
+
 # Security Instructions
 
 エージェントがコードを生成・操作する際のセキュリティガイドラインです。
@@ -65,3 +71,45 @@ secrets/
 
 - **サニタイズ**: ユーザー入力やファイル内容を処理する際は、インジェクション攻撃（SQL, コマンド, XSS 等）を防ぐためにサニタイズしてください。
 - **パス検証**: ファイルパスを扱う際は、ディレクトリトラバーサル（`../`）を防止してください。
+
+---
+
+## 6. 検証方法
+
+セキュリティチェックは以下のコマンドで実施：
+
+### シークレットスキャン
+
+```powershell
+# git-secrets（要インストール）
+git secrets --scan
+
+# または gitleaks
+gitleaks detect --source .
+
+# GitHub の場合: Secret Scanning が自動で動作
+```
+
+### 依存関係の脆弱性チェック
+
+| 言語    | コマンド                           |
+| ------- | ---------------------------------- |
+| Node.js | `npm audit` / `pnpm audit`         |
+| Python  | `pip-audit` / `safety check`       |
+| .NET    | `dotnet list package --vulnerable` |
+
+### .gitignore 確認
+
+```powershell
+# 機密ファイルが除外されているか確認
+Get-Content .gitignore | Select-String -Pattern '\.env|\*.pem|\*.key|secrets'
+```
+
+### チェックリスト
+
+```markdown
+- [ ] `.env` が .gitignore に含まれている
+- [ ] API キーがハードコードされていない
+- [ ] `npm audit` / `pip-audit` で高リスク脆弱性がない
+- [ ] Secret Scanning が有効（GitHub）
+```

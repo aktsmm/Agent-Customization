@@ -1,3 +1,9 @@
+---
+applyTo: "**/*.py,**/pyproject.toml,**/requirements*.txt"
+---
+
+<!-- syncToGlobal: true -->
+
 # Python Environment Instructions
 
 Python プロジェクトでは**必ず仮想環境を使用**してください。グローバル環境への直接インストールは禁止です。
