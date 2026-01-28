@@ -83,8 +83,7 @@ Get-ChildItem -Path ".github\agents_sync" -Recurse -Filter "*.md" -ErrorAction S
     }
 }
 
-if ($num -eq 0) { Write-Host "`n差分なし - 全て同期済み" -ForegroundColor Green }
-else { Write-Host "`n合計: $num ファイルに差分があります" -ForegroundColor Cyan }
+if ($num -eq 0) { Write-Host "`n差分なし - 全て同期済み" -ForegroundColor Green } else { Write-Host "`n合計: $num ファイルに差分があります" -ForegroundColor Cyan }
 ```
 
 ### Step 3: ユーザーに選択肢を提示

@@ -49,7 +49,8 @@ Automatically detect session type, extract metadata, and compress repetitive att
 
 ### File Handling
 
-- If existing file found for same date: Append as new session section
+- If existing file found for same date **and same topic**: Append as new session section
+- If existing file found for same date **but different topic**: Create new file with different topic slug
 - Use consistent heading levels for searchability
 - Preserve existing content when appending
 
