@@ -124,9 +124,10 @@ outcome_status: { success|partial|failed }
 ### Step 0: Check Existing Files
 
 1. Check if `/output_sessions/` directory exists (create if not)
-2. Look for file matching `YYYYMMDD--*.md` pattern for today
-3. If found: Read content, prepare to append new session section
-4. If not found: Create new file with naming format `YYYYMMDD--{topic}.md`
+2. Generate topic slug from session content (e.g., `auth-fix`, `db-migration`)
+3. Look for file matching `YYYYMMDD--{topic}.md` for today with **same topic**
+4. If found with same topic: Append new session section
+5. If not found or different topic: Create new file with `YYYYMMDD--{topic}.md`
 
 ### Step 1: Extract Session Metadata
 
