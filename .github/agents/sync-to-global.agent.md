@@ -1,12 +1,12 @@
 ---
 name: sync-to-global
-description: テンプレートの instructions/prompts をグローバル設定に選択式コピー
+description: テンプレートの instructions/prompts/agents をグローバル設定に選択式コピー
 tools: ["runInTerminal", "readFile"]
 ---
 
 # Sync to Global Agent
 
-テンプレートリポジトリの `.github/instructions_sync/` および `.github/prompts_sync/` 配下のファイルを、VS Code のグローバル設定（ユーザープロファイル）にコピーする同期エージェントです。
+テンプレートリポジトリの `.github/instructions_sync/`、`.github/prompts_sync/`、`.github/agents_sync/` 配下のファイルを、VS Code のグローバル設定（ユーザープロファイル）にコピーする同期エージェントです。
 
 **ポイント**: `_sync` フォルダはテンプレートリポジトリでは VS Code に認識されないため、二重適用を防げます。
 
@@ -28,6 +28,7 @@ tools: ["runInTerminal", "readFile"]
 
 - `.github/instructions_sync/` → グローバルの `instructions/` にコピー
 - `.github/prompts_sync/` → グローバルの `prompts/` にコピー
+- `.github/agents_sync/` → グローバルの `prompts/` にコピー（エージェントも prompts 配下）
 
 ```powershell
 $templateRoot = Get-Location
@@ -54,6 +55,22 @@ Write-Host "`n=== Prompts ===" -ForegroundColor Cyan
 Get-ChildItem -Path ".github\prompts_sync" -Recurse -Filter "*.md" -ErrorAction SilentlyContinue | ForEach-Object {
     # prompts_sync → prompts に変換
     $relativePath = $_.FullName -replace [regex]::Escape("$templateRoot\.github\prompts_sync\"), "prompts\"
+    $globalPath = Join-Path $globalRoot $relativePath
+    if (-not (Test-Path $globalPath)) {
+        $script:num++; Write-Host "[$script:num] [NEW] $relativePath" -ForegroundColor Green
+    } else {
+        $tHash = (Get-FileHash $_.FullName).Hash
+        $gHash = (Get-FileHash $globalPath).Hash
+        if ($tHash -ne $gHash) {
+            $script:num++; Write-Host "[$script:num] [UPDATED] $relativePath" -ForegroundColor Yellow
+        }
+    }
+}
+
+Write-Host "`n=== Agents ===" -ForegroundColor Cyan
+Get-ChildItem -Path ".github\agents_sync" -Recurse -Filter "*.md" -ErrorAction SilentlyContinue | ForEach-Object {
+    # agents_sync → prompts に変換（エージェントも prompts 配下）
+    $relativePath = $_.FullName -replace [regex]::Escape("$templateRoot\.github\agents_sync\"), "prompts\"
     $globalPath = Join-Path $globalRoot $relativePath
     if (-not (Test-Path $globalPath)) {
         $script:num++; Write-Host "[$script:num] [NEW] $relativePath" -ForegroundColor Green
@@ -118,6 +135,16 @@ Get-ChildItem -Path ".github\prompts_sync" -Recurse -Filter "*.md" | ForEach-Obj
     Copy-Item -Path $_.FullName -Destination $dest -Force
     Write-Host "[COPIED] $relativePath" -ForegroundColor Green
 }
+
+# agents_sync → prompts に変換してコピー
+Get-ChildItem -Path ".github\agents_sync" -Recurse -Filter "*.md" | ForEach-Object {
+    $relativePath = $_.FullName -replace ".*\.github\\agents_sync\\", "prompts\"
+    $dest = Join-Path $globalRoot $relativePath
+    $destDir = Split-Path $dest -Parent
+    if (-not (Test-Path $destDir)) { New-Item -ItemType Directory -Path $destDir -Force | Out-Null }
+    Copy-Item -Path $_.FullName -Destination $dest -Force
+    Write-Host "[COPIED] $relativePath" -ForegroundColor Green
+}
 ```
 
 ### Step 5: 結果サマリーを表示
@@ -128,9 +155,9 @@ Get-ChildItem -Path ".github\prompts_sync" -Recurse -Filter "*.md" | ForEach-Obj
 
 ## Configuration
 
-- テンプレート: `.github/instructions_sync/`, `.github/prompts_sync/`
+- テンプレート: `.github/instructions_sync/`, `.github/prompts_sync/`, `.github/agents_sync/`
 - グローバル: `$env:APPDATA\Code\User\instructions/`, `prompts/`
-- パス変換: `instructions_sync` → `instructions`, `prompts_sync` → `prompts`
+- パス変換: `instructions_sync` → `instructions`, `prompts_sync` → `prompts`, `agents_sync` → `prompts`
 
 ## Permissions
 
