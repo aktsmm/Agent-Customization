@@ -9,35 +9,35 @@
 **形式**: `<動詞>-<対象>[-<補足>].prompt.md`
 
 **良い例:**
-- ✅ `git-commit.prompt.md` - 動詞-対象で明確
-- ✅ `git-commit-push.prompt.md` - 動詞-対象-補足
-- ✅ `create-workflow.prompt.md` - 動詞-対象
-- ✅ `review-agents-and-instructions.prompt.md` - 動詞-複数対象
-- ✅ `export-session-log.prompt.md` - 動詞-対象-補足
+- `git-commit.prompt.md` - 動詞-対象で明確
+- `git-commit-push.prompt.md` - 動詞-対象-補足
+- `create-workflow.prompt.md` - 動詞-対象
+- `review-agents-and-instructions.prompt.md` - 動詞-複数対象
+- `export-session-log.prompt.md` - 動詞-対象-補足
 
 **避けるべき例:**
-- ❌ `gc_Commit.prompt.md` - アンダースコア混在、頭字語不明
-- ❌ `gpull.prompt.md` - 頭字語のみ
-- ❌ `doStuff.prompt.md` - camelCase不可
+- `gc_Commit.prompt.md` - アンダースコア混在、頭字語不明
+- `gpull.prompt.md` - 頭字語のみ
+- `doStuff.prompt.md` - camelCase不可
 
 ### インストラクションファイル (`.instructions.md`)
 
 **形式**: `<対象>[-<補足>].instructions.md`
 
 **例:**
-- ✅ `git.instructions.md` - 対象のみ
-- ✅ `terminal.instructions.md` - 対象のみ
-- ✅ `microsoft-docs.instructions.md` - 対象-補足
-- ✅ `naming-conventions.instructions.md` - 対象-補足
+- `git.instructions.md` - 対象のみ
+- `terminal.instructions.md` - 対象のみ
+- `microsoft-docs.instructions.md` - 対象-補足
+- `naming-conventions.instructions.md` - 対象-補足
 
 ### エージェントファイル (`.agent.md`)
 
 **形式**: `<役割>[-<補足>].agent.md`
 
 **例:**
-- ✅ `orchestrator.agent.md` - 役割のみ
-- ✅ `sync-to-global.agent.md` - 役割-補足
-- ✅ `sample.agent.md` - テンプレート用
+- `orchestrator.agent.md` - 役割のみ
+- `sync-to-global.agent.md` - 役割-補足
+- `sample.agent.md` - テンプレート用
 
 ## 一般原則
 
@@ -51,12 +51,12 @@
 
 ### 禁止
 
-- ❌ `snake_case` - アンダースコアは使わない
-- ❌ `camelCase` - キャメルケースは使わない
-- ❌ `PascalCase` - パスカルケースは使わない
-- ❌ 日本語 - ファイル名に日本語を含めない
-- ❌ 頭字語のみ - `gc.md`, `gcp.md` など意味不明な短縮は避ける
-- ❌ スペース - `my file.md` はNG、`my-file.md` にする
+- `snake_case` - アンダースコアは使わない
+- `camelCase` - キャメルケースは使わない
+- `PascalCase` - パスカルケースは使わない
+- 日本語 - ファイル名に日本語を含めない
+- 頭字語のみ - `gc.md`, `gcp.md` など意味不明な短縮は避ける
+- スペース - `my file.md` はNG、`my-file.md` にする
 
 ## フォルダ命名規則
 
