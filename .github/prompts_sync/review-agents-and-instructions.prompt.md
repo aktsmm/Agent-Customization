@@ -2,14 +2,21 @@
 description: エージェント定義とinstructionファイルのレビュー
 ---
 
+<!--
+Complexity Self-Check (339 lines):
+🔴 This prompt exceeds 50 lines - splitting may be beneficial
+→ If "missed" or "overlooked" errors occur, see SKILL.md > When to Escalate
+→ Consider: runSubagent for Step 0 (file reads) to isolate context
+-->
+
 # Prompt: Review Agents & Instructions
 
 Generic prompt for reviewing agent definitions (.agent.md) and instruction files (.instructions.md) with cross-reference validation against project assets.
 
 > **Usage**: This prompt works across any repository with agent workflows. Adapt file paths to your project structure.
 >
-> **Related Skill**: If available, refer to guidance on workflow design, review, and improvement.
-> ex) .github\skills\agentic-workflow-guide
+> **Related Skill**: See `.github/skills/agentic-workflow-guide/SKILL.md` for workflow design guidance.
+> → Especially: **When to Escalate** and **Quick Split Check** sections.
 
 ## Identity
 
