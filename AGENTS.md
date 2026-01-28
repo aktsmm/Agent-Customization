@@ -4,18 +4,18 @@
 
 > `sample.agent.md` が最小構成の例、`orchestrator.agent.md` がオーケストレーター構成の例です。テンプレ用途で増やすときはここに行を追加してください。
 
-| エージェント名     | マニフェスト                                | 主な役割                                    |
-| ------------------ | ------------------------------------------- | ------------------------------------------- |
-| Sample Agent       | `.github/agents/sample.agent.md`            | エージェント定義のテンプレート              |
-| Orchestrator Agent | `.github/agents/orchestrator.agent.md`      | サブエージェントを統括する司令塔の例        |
-| Sync to Global     | `.github/agents/sync-to-global.agent.md`    | instructions/prompts をグローバル設定に同期 |
+| エージェント名     | マニフェスト                             | 主な役割                                    |
+| ------------------ | ---------------------------------------- | ------------------------------------------- |
+| Sample Agent       | `.github/agents/sample.agent.md`         | エージェント定義のテンプレート              |
+| Orchestrator Agent | `.github/agents/orchestrator.agent.md`   | サブエージェントを統括する司令塔の例        |
+| Sync to Global     | `.github/agents/sync-to-global.agent.md` | instructions/prompts をグローバル設定に同期 |
 
 ### グローバルエージェント（agents_sync/）
 
 以下のエージェントは `@sync-to-global` でグローバル設定に同期し、全ワークスペースで使用可能になります。
 
-| エージェント名    | ソース                                       | 主な役割                                   |
-| ----------------- | -------------------------------------------- | ------------------------------------------ |
+| エージェント名    | ソース                                           | 主な役割                                   |
+| ----------------- | ------------------------------------------------ | ------------------------------------------ |
 | Workflow Designer | `.github/agents_sync/workflow-designer.agent.md` | エージェント設計・レビュー・改善を統合支援 |
 | Deep Research     | `.github/agents_sync/DeepResearch.agent.md`      | 深い調査・引用付きレポート生成             |
 

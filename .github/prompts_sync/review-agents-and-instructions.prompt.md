@@ -100,13 +100,14 @@ If a specific review target is specified, you may skip unrelated files:
 
 Check only 5 items first. If any ❌, proceed to detailed review:
 
-| #   | Check Item                                        | Detection Method                                    |
-| --- | ------------------------------------------------- | --------------------------------------------------- |
-| 1   | **SRP**: 1 agent = 1 responsibility?              | ❌ if Role cannot be stated in 1 sentence           |
-| 2   | **Fail Fast**: Error detection in first 2 steps?  | ❌ if no validation in Workflow Step 1-2            |
-| 3   | **runSubagent delegation**: Orchestrator working? | ❌ if Workflow contains direct file-read/edit tools |
-| 4   | **SSOT**: Same definition in 2+ places?           | Use `grep_search` to detect duplicates              |
-| 5   | **Done Criteria**: Verifiable completion?         | ❌ if just "complete" without specific checklist    |
+| #   | Check Item                                         | Detection Method                                        |
+| --- | -------------------------------------------------- | ------------------------------------------------------- |
+| 1   | **SRP**: 1 agent = 1 responsibility?               | ❌ if Role cannot be stated in 1 sentence               |
+| 2   | **Fail Fast**: Error detection in first 2 steps?   | ❌ if no validation in Workflow Step 1-2                |
+| 3   | **runSubagent delegation**: Orchestrator working?  | ❌ if Workflow contains direct file-read/edit tools     |
+| 4   | **SSOT**: Same definition in 2+ places?            | Use `grep_search` to detect duplicates                  |
+| 5   | **Done Criteria**: Verifiable completion?          | ❌ if just "complete" without specific checklist        |
+| 6   | **Architecture Balance**: Agent count appropriate? | ❌ if single-use agents in separate files, or God Agent |
 
 ### Tier 1: Core Principles (Required)
 
@@ -192,6 +193,73 @@ runSubagent({
 - [ ] Does workflow align with project context described in README.md?
 - [ ] Does workflow respect dependencies defined in other agents?
 
+## Architecture Refactoring Review
+
+Evaluate whether the current agent structure is appropriately sized—neither over-engineered nor under-engineered.
+
+### Consolidation Check (統合すべき兆候)
+
+Look for opportunities to merge or inline agents:
+
+| Signal                                    | Detection                                     | Action                                                 |
+| ----------------------------------------- | --------------------------------------------- | ------------------------------------------------------ |
+| **Single-use sub-agent in separate file** | `.agent.md` referenced by only 1 orchestrator | → Inline into orchestrator's prompt                    |
+| **Duplicate prompts across agents**       | Same instructions in 2+ `.agent.md` files     | → Extract to shared `.instructions.md` or merge agents |
+| **Micro-agents**                          | Agent file < 30 lines with trivial logic      | → Inline or merge with related agent                   |
+| **< 30 min session tasks**                | Simple task using sub-agents                  | → Direct processing, remove sub-agent overhead         |
+| **File sprawl**                           | > 10 agent files for simple workflow          | → Consolidate related responsibilities                 |
+
+**Consolidation Checklist:**
+
+- [ ] Are there single-use sub-agents that should be inlined?
+- [ ] Do multiple agents share > 50% of their prompts? (→ merge candidates)
+- [ ] Is the agent count justified by truly independent responsibilities?
+- [ ] Are there agents that could be replaced by a simple prompt + instructions?
+
+### Splitting Check (分割すべき兆候)
+
+Look for agents that are too large or have multiple responsibilities:
+
+| Signal               | Threshold                                          | Action                                                 |
+| -------------------- | -------------------------------------------------- | ------------------------------------------------------ |
+| **Long prompt**      | > 50 lines of instructions                         | → Split into focused agents or extract to instructions |
+| **Many steps**       | > 5-7 sequential steps                             | → Split into phases (Plan → Implement → Review)        |
+| **Context overload** | Expected usage > 70%                               | → Delegate to sub-agents                               |
+| **Multiple outputs** | Agent produces 3+ unrelated artifact types         | → Split by output type                                 |
+| **God Agent**        | Single agent handles all workflow responsibilities | → Decompose into Orchestrator-Workers                  |
+
+**Splitting Checklist:**
+
+- [ ] Can the agent's role be stated in one sentence? (if no → split)
+- [ ] Does the agent handle multiple independent concerns? (→ SRP violation)
+- [ ] Would the agent benefit from parallel execution of subtasks?
+- [ ] Is context pollution occurring from diverse tool outputs?
+
+### Inline vs File-based Decision
+
+| Scenario                        | Recommendation                      |
+| ------------------------------- | ----------------------------------- |
+| Reused by 2+ orchestrators      | → Separate `.agent.md` file         |
+| Single-use, task-specific       | → **Inline** in orchestrator prompt |
+| Complex multi-step behavior     | → Separate `.agent.md` file         |
+| Simple extraction/summarization | → **Inline** definition             |
+
+### Anti-Pattern Detection
+
+**Over-Engineering (過剰設計):**
+
+- [ ] ❌ **Premature Complexity**: Multi-agent system for a task solvable by single prompt
+- [ ] ❌ **File Sprawl**: Many small `.agent.md` files (> 10) for simple workflow
+- [ ] ❌ **Unnecessary Abstraction**: Shared instructions file referenced by only 1 agent
+- [ ] ❌ **Sub-agents for < 5 min tasks**: Overhead exceeds benefit
+
+**Under-Engineering (過少設計):**
+
+- [ ] ❌ **God Agent**: All responsibilities in one 300+ line agent
+- [ ] ❌ **Context Overload**: Passing full file contents when summary suffices
+- [ ] ❌ **Missing Delegation**: Orchestrator doing worker tasks directly
+- [ ] ❌ **No Phase Separation**: Long workflow without Plan/Implement/Review handoffs
+
 ## Instructions File Review (`.github/instructions/**/*.md`)
 
 ### SSOT Validation (Cross-file)
@@ -251,7 +319,9 @@ runSubagent({
 | ----------- | --------------------------------------------- | ------------------ |
 | 🔴 Critical | Cross-reference failures, broken dependencies | Blocking           |
 | 🟠 High     | SSOT violations, missing I/O contracts        | Inconsistency risk |
+| � High      | God Agent (SRP violation), Context overload   | Scalability risk   |
 | 🟡 Medium   | Redundancy, missing error handling            | Maintenance burden |
+| 🟡 Medium   | Consolidation opportunities (file sprawl)     | Maintenance burden |
 | 🟢 Low      | Style, formatting, minor suggestions          | Nice to have       |
 
 ## Completion Criteria
@@ -312,13 +382,23 @@ Review is complete when:
   - `{file-3}.instructions.md` (L{line})
     → Reference SSOT, remove others
 
+- 🟡 **Consolidation Opportunity**: Single-use sub-agents should be inlined:
+  - `{worker-a}.agent.md` — referenced only by `{orchestrator}.agent.md`
+  - `{worker-b}.agent.md` — referenced only by `{orchestrator}.agent.md`
+    → Inline these into orchestrator's runSubagent prompt parameter
+
+- 🟠 **File Sprawl**: {N} agent files for simple {M}-step workflow
+  - Consider merging related agents or using inline definitions
+
 ### Recommendation
 
 1. **Critical**: Remove direct work from orchestrator (SRP fix)
 2. **High**: Consolidate duplicate definitions to SSOT
-3. **Medium**: Add error handling section
+3. **High**: Split God Agent into focused sub-agents (if detected)
+4. **Medium**: Inline single-use sub-agents to reduce file count
+5. **Medium**: Add error handling section
 
-Overall: {N} SRP violation(s), {M} SSOT violation(s) found. Address Critical items immediately.
+Overall: {N} SRP violation(s), {M} SSOT violation(s), {K} refactoring opportunity(ies) found. Address Critical items immediately.
 ```
 
 <!--
