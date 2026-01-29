@@ -62,8 +62,8 @@ $ARGUMENT
 
 ### Allowed
 
-- Web ページの取得と分析（Web Search 拡張機能の活用）
-- Microsoft Docs MCP による公式ドキュメント検索
+- Web ページの取得と分析
+- Microsoft/Azure 関連トピックの場合: Microsoft Docs MCP による公式ドキュメント検索
 - `research/` へのファイル作成・編集
 - サブエージェントの起動
 
@@ -85,11 +85,14 @@ $ARGUMENT
 
 ### Phase 0: 意図理解（Intent Understanding）
 
-1. ユーザーの入力意図を理解するため、まず簡易検索を実行する。
-   - Microsoft Docs MCP で関連ドキュメントを検索
-   - Web 検索で概要を把握
-2. 約3つの調査観点をリストアップする（例: 定義確認、アーキテクチャ比較、価格モデルなど）
-3. **ユーザーに調査アプローチが意図に沿っているか確認する**。沿っていなければ調整。
+1. ユーザーの入力からトピックの種類を判定する：
+   - **Microsoft/Azure 関連**: Azure, Microsoft 365, .NET, Visual Studio, GitHub, Windows, Power Platform 等
+   - **汎用トピック**: 上記以外
+2. トピック種類に応じた検索を実行する：
+   - **Microsoft/Azure 関連の場合**: Microsoft Docs MCP を優先使用 + Web 検索で補完
+   - **汎用トピックの場合**: Web 検索を中心に公式ドキュメント・技術ブログを収集
+3. 約3つの調査観点をリストアップする（例: 定義確認、アーキテクチャ比較、価格モデルなど）
+4. **ユーザーに調査アプローチが意図に沿っているか確認する**。沿っていなければ調整。
 
 ### Phase 1: 準備
 
@@ -109,8 +112,9 @@ agentName: (inline definition - see below)
 ```
 
 - **検索戦略**: 広く始めて絞り込む（短い広いクエリ → 具体的なクエリ）
-- **ソース優先順位**: 公式ドキュメント > 公式ブログ > 技術ブログ > コミュニティ投稿 > SNS
-
+   - **ソース優先順位**:
+     - Microsoft/Azure 関連: Microsoft Docs > 公式ブログ > 技術ブログ > コミュニティ
+     - 汎用トピック: 公式ドキュメント > 公式ブログ > 技術ブログ > コミュニティ投稿 > SNS
 7. 調査結論をまとめる。
 
 ### Phase 3: 評価・改善
@@ -175,8 +179,8 @@ agentName: (inline definition - see below)
 
 1. レポートファイルを読み込み、調査内容・概要・既存の調査結果を理解する。
 2. 指定された観点に基づいて関連情報を検索する。
-   - **Microsoft Docs MCP**: 公式ドキュメント優先
-   - **Web 検索**: 補完的な情報収集
+   - **Microsoft/Azure 関連トピックの場合**: Microsoft Docs MCP を優先使用 + Web 検索で補完
+   - **汎用トピックの場合**: Web 検索を中心に公式ドキュメント・技術ブログを収集
 3. 検索結果を分析し、重要な情報を抽出する。
 4. 抽出した情報を整理し、レポートに記録する。
 
@@ -188,9 +192,17 @@ agentName: (inline definition - see below)
 
 ### ソース品質基準（優先順位）
 
-1. 公式ドキュメント（Microsoft Docs, GitHub Docs など）
-2. 公式ブログ（Azure Blog, GitHub Blog など）
-3. 技術ブログ（Zenn, Qiita, dev.to など）
+**Microsoft/Azure 関連の場合:**
+1. Microsoft Learn / Docs（learn.microsoft.com, docs.microsoft.com）
+2. 公式ブログ（Azure Blog, Microsoft Tech Community）
+3. GitHub Docs / Microsoft OSS リポジトリ
+4. 技術ブログ（Zenn, Qiita, dev.to など）
+5. コミュニティ投稿（Stack Overflow, Reddit）
+
+**汎用トピックの場合:**
+1. 公式ドキュメント（製品・サービスの公式サイト）
+2. 公式ブログ・アナウンス
+3. 技術ブログ（Zenn, Qiita, dev.to, Medium など）
 4. コミュニティ投稿（Stack Overflow, Reddit など）
 5. SNS（Twitter/X）← 最終手段
 
