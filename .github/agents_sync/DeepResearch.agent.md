@@ -112,9 +112,10 @@ agentName: (inline definition - see below)
 ```
 
 - **検索戦略**: 広く始めて絞り込む（短い広いクエリ → 具体的なクエリ）
-   - **ソース優先順位**:
-     - Microsoft/Azure 関連: Microsoft Docs > 公式ブログ > 技術ブログ > コミュニティ
-     - 汎用トピック: 公式ドキュメント > 公式ブログ > 技術ブログ > コミュニティ投稿 > SNS
+  - **ソース優先順位**:
+    - Microsoft/Azure 関連: Microsoft Docs > 公式ブログ > 技術ブログ > コミュニティ
+    - 汎用トピック: 公式ドキュメント > 公式ブログ > 技術ブログ > コミュニティ投稿 > SNS
+
 7. 調査結論をまとめる。
 
 ### Phase 3: 評価・改善
@@ -193,6 +194,7 @@ agentName: (inline definition - see below)
 ### ソース品質基準（優先順位）
 
 **Microsoft/Azure 関連の場合:**
+
 1. Microsoft Learn / Docs（learn.microsoft.com, docs.microsoft.com）
 2. 公式ブログ（Azure Blog, Microsoft Tech Community）
 3. GitHub Docs / Microsoft OSS リポジトリ
@@ -200,6 +202,7 @@ agentName: (inline definition - see below)
 5. コミュニティ投稿（Stack Overflow, Reddit）
 
 **汎用トピックの場合:**
+
 1. 公式ドキュメント（製品・サービスの公式サイト）
 2. 公式ブログ・アナウンス
 3. 技術ブログ（Zenn, Qiita, dev.to, Medium など）
