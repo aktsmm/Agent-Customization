@@ -63,6 +63,7 @@
 | [review-retrospective-learnings.prompt.md](.github/prompts/review-retrospective-learnings.prompt.md) | 学びを設計資産へ反映（ふりかえり）      |
 | [review-session-export-md.prompt.md](.github/prompts/review-session-export-md.prompt.md)             | セッションエクスポート（Markdown）      |
 | [export-log.prompt.md](.github/prompts/export-log.prompt.md)                                         | 汎用作業ログ（AI可読・構造化）          |
+| [export-session-dialogue.prompt.md](.github/prompts_sync/export-session-dialogue.prompt.md)          | セッション対話ログ・成果エクスポート    |
 | [sample.prompt.md](.github/prompts/sample.prompt.md)                                                 | プロンプト作成用テンプレート            |
 
 <!-- skill-ninja-START -->
