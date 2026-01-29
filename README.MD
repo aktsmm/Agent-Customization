@@ -27,8 +27,8 @@ cp -r .github /path/to/your-project/
 
 | パス                              | 説明                                                           |
 | --------------------------------- | -------------------------------------------------------------- |
-| `.github/copilot-instructions.md` | 共有ガードレール（回答トーン、レビュー方針）                   |
-| `.github/agents/`                 | エージェント定義（`sample`, `orchestrator`, `sync-to-global`） |
+| `.github/copilot-instructions.md` | 共有ガードレール（回答トーン、レビュー方針）                                  |
+| `.github/agents/`                 | エージェント定義（`sample`, `orchestrator`, `sync-to-global`, `ghc-research`） |
 | `.github/instructions/`           | ドメイン別ガイド（サブフォルダを作成して整理）                 |
 | `.github/prompts/`                | 再利用可能なプロンプト（`create-workflow`, `sample`）          |
 | `.github/skills/`                 | Copilot Skills（`agentic-workflow-guide`）                     |
@@ -43,6 +43,7 @@ Copilot Chat で `/agent` コマンドを使用：
 ```
 /agent sample          # サンプルエージェント
 /agent orchestrator    # オーケストレーター
+/agent ghc-research    # GitHub Copilot/VS Code 関連の調査
 ```
 
 ### 2. プロンプトを呼び出す
