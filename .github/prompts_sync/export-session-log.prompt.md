@@ -56,11 +56,27 @@ Automatically detect session type, extract metadata, and compress repetitive att
 
 ## Output Path
 
+### Default Path
+
 ```
 /output_sessions/YYYYMMDD--{topic}.md
 ```
 
 **例**: `20260127--auth-fix.md`
+
+### Blog Path (Conditional)
+
+セッション内容に以下のキーワードが含まれる場合は、ブログ用パスに出力：
+
+**トリガーキーワード**: `ブログ`, `blog`, `記事`, `article`, `post`, `Zenn`, `Qiita`, `はてな`
+
+```
+D:\11_My_Personal_Blog\drafts\YYYYMMDD--{topic}.md
+```
+
+**例**: `D:\11_My_Personal_Blog\drafts\20260127--copilot-agent-tips.md`
+
+> **判定ロジック**: ユーザーのプロンプトまたはセッション内容をスキャンし、上記キーワードが1つでも含まれていればブログパスを使用。
 
 ## Output Format
 
@@ -124,13 +140,17 @@ outcome_status: { success|partial|failed }
 
 ## Steps
 
-### Step 0: Check Existing Files
+### Step 0: Determine Output Path & Check Existing Files
 
-1. Check if `/output_sessions/` directory exists (create if not)
-2. Generate topic slug from session content (e.g., `auth-fix`, `db-migration`)
-3. Look for file matching `YYYYMMDD--{topic}.md` for today with **same topic**
-4. If found with same topic: Append new session section
-5. If not found or different topic: Create new file with `YYYYMMDD--{topic}.md`
+1. **Scan session content for blog keywords**: `ブログ`, `blog`, `記事`, `article`, `post`, `Zenn`, `Qiita`, `はてな`
+2. **Determine output directory**:
+   - If blog keyword found → `D:\11_My_Personal_Blog\drafts\`
+   - Otherwise → `/output_sessions/`
+3. Check if output directory exists (create if not)
+4. Generate topic slug from session content (e.g., `auth-fix`, `db-migration`)
+5. Look for file matching `YYYYMMDD--{topic}.md` for today with **same topic**
+6. If found with same topic: Append new session section
+7. If not found or different topic: Create new file with `YYYYMMDD--{topic}.md`
 
 ### Step 1: Extract Session Metadata
 

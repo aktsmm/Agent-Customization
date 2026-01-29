@@ -105,3 +105,14 @@
 ## ファイルマップ
 
 エージェント一覧・関連アセットの詳細は [AGENTS.md](../AGENTS.md) を参照してください。
+
+<!-- skill-ninja-START -->
+## Installed Skills
+
+The following skills are available in this workspace.
+
+| Skill | When to Use |
+|-------|-------------|
+| [agentic-workflow-guide](skills/agentic-workflow-guide/SKILL.md) | Create: New .agent.md, workflow architecture, scaffolding; Review: Orchestrator not delegating, design principle check, context overflow |
+
+<!-- skill-ninja-END -->
