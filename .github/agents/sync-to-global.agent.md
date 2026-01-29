@@ -8,7 +8,8 @@ tools: ["runInTerminal", "readFile"]
 
 テンプレートリポジトリの `.github/instructions_sync/`、`.github/prompts_sync/`、`.github/agents_sync/` 配下のファイルと、VS Code のグローバル設定（ユーザープロファイル）を**双方向同期**するエージェントです。
 
-**ポイント**: 
+**ポイント**:
+
 - `_sync` フォルダはテンプレートリポジトリでは VS Code に認識されないため、二重適用を防げます。
 - **新しい方を残す**: タイムスタンプを比較し、新しい方への同期を推奨。
 
@@ -33,6 +34,7 @@ tools: ["runInTerminal", "readFile"]
 - `.github/agents_sync/` → グローバルの `prompts/` にコピー（エージェントも prompts 配下）
 
 **差分検出ロジック**:
+
 - ハッシュ値が異なる場合は差分あり
 - タイムスタンプを比較して、どちらが新しいか表示
 - 新しい方に `← NEWER` マークを付与
@@ -44,7 +46,7 @@ $num = 0
 
 function Compare-Files {
     param($templatePath, $globalPath, $relativePath)
-    
+
     if (-not (Test-Path $globalPath)) {
         $script:num++
         Write-Host "[$script:num] [NEW] $relativePath" -ForegroundColor Green
@@ -115,7 +117,8 @@ if ($num -eq 0) { Write-Host "`n差分なし - 全て同期済み" -ForegroundCo
 - `none` : キャンセル
 ```
 
-**重要**: 
+**重要**:
+
 - ユーザーの回答を待ってから次に進む。勝手にコピーしない。
 - `← NEWER` マークで新しい方を明示。
 - `auto` 選択時は新しい方を自動判定して双方向に同期。
@@ -125,6 +128,7 @@ if ($num -eq 0) { Write-Host "`n差分なし - 全て同期済み" -ForegroundCo
 ユーザーが選択したファイルをコピーする。
 
 **同期方向**:
+
 - **Template → Global**: 通常の番号指定（例: `1,2,5`）
 - **Global → Template**: `r` 付き番号（例: `r3,r4`）で逆同期
 
@@ -181,6 +185,7 @@ $templateRoot = Get-Location
 コピー完了後、サマリーを表示して終了。
 
 **サマリー形式**:
+
 ```
 同期完了:
   → Template → Global: N 件
