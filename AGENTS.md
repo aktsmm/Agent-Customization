@@ -73,8 +73,8 @@
 
 ### Skills Index
 
-| Skill | Path | When to Use |
+| Skill | Path | Description |
 |-------|------|-------------|
-| [agentic-workflow-guide](.github/skills/agentic-workflow-guide/SKILL.md) | `agentic-workflow-guide` | Create: New .agent.md, workflow architecture, scaffolding; Review: Orchestrat... |
+| [agentic-workflow-guide](.github/skills/agentic-workflow-guide/SKILL.md) | `agentic-workflow-guide` | Create, review, and update Prompt and agents and workflows. \| Create: New .agent.md, workflow architecture, scaffolding; Review: Orchestrator not delegating, design principle check, context overflow |
 
 <!-- skill-ninja-END -->
