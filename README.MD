@@ -29,10 +29,13 @@ cp -r .github /path/to/your-project/
 | --------------------------------- | ------------------------------------------------------------------------------ |
 | `.github/copilot-instructions.md` | 共有ガードレール（回答トーン、レビュー方針）                                   |
 | `.github/agents/`                 | エージェント定義（`sample`, `orchestrator`, `sync-to-global`, `ghc-research`） |
-| `.github/instructions/`           | ドメイン別ガイド（サブフォルダを作成して整理）                                 |
+| `.github/agents_sync/`            | グローバル用エージェント（`workflow-designer`, `DeepResearch`）                |
+| `.github/instructions_sync/`      | グローバル用インストラクション（`core/`, `dev/`, `integrations/`）             |
 | `.github/prompts/`                | 再利用可能なプロンプト（`create-workflow`, `sample`）                          |
+| `.github/prompts_sync/`           | グローバル用プロンプト（`export-session-dialogue`, `git-commit` 等）           |
 | `.github/skills/`                 | Copilot Skills（`agentic-workflow-guide`）                                     |
-| `AGENTS.md`                       | 登録済みエージェント・関連アセットの一覧                                       |
+| `AGENTS.md`                       | 登録済みエージェント・関連アセットの一覧（SSOT）                               |
+| `output_sessions/`                | セッションログ・作業記録の出力先                                               |
 
 ## 使い方
 
@@ -51,8 +54,16 @@ Copilot Chat で `/agent` コマンドを使用：
 Copilot Chat で `/prompt` コマンドを使用：
 
 ```
-/prompt create-workflow    # ワークフロー作成
-/prompt sample             # プロンプト作成用テンプレート
+# ワークフローベース
+/prompt create-workflow              # ワークフロー作成
+/prompt sample                       # プロンプト作成用テンプレート
+
+# グローバルプロンプト（全ワークスペースで使用可能）
+/prompt export-session-dialogue      # セッション対話ログ・成果エクスポート
+/prompt git-commit                   # Git コミット（Push なし）
+/prompt git-commit-push              # Git コミット＆プッシュ
+/prompt review-retrospective-learnings  # 学びを設計資産へ反映
+/prompt write-tests                  # テストコード生成
 ```
 
 ### 3. 新しいエージェントを作成する
@@ -72,19 +83,31 @@ cp .github/agents/sample.agent.md .github/agents/my-agent.agent.md
 ├── agents/                    # エージェント定義
 │   ├── sample.agent.md        # テンプレート
 │   ├── orchestrator.agent.md  # オーケストレーター例
-│   └── sync-to-global.agent.md
-├── instructions/              # ドメイン別ルール
-│   └── (サブフォルダを作成して整理)
-├── prompts/                   # 再利用可能なプロンプト
+│   ├── sync-to-global.agent.md
+│   └── ghc-research.agent.md
+├── agents_sync/               # グローバル用エージェント
+│   ├── workflow-designer.agent.md
+│   └── DeepResearch.agent.md
+├── instructions_sync/         # グローバル用インストラクション
+│   ├── core/                  # セキュリティ、通信スタイル
+│   ├── dev/                   # Git、Python、Node.js 等
+│   └── integrations/          # Microsoft Docs MCP 等
+├── prompts/                   # ワークスペース用プロンプト
 │   ├── create-workflow.prompt.md
-│   └── sample.prompt.md       # テンプレート
+│   └── sample.prompt.md
+├── prompts_sync/              # グローバル用プロンプト
+│   ├── export-session-dialogue.prompt.md
+│   ├── git-commit.prompt.md
+│   ├── git-commit-push.prompt.md
+│   ├── review-retrospective-learnings.prompt.md
+│   └── write-tests.prompt.md
 └── skills/                    # Copilot Skills
     └── agentic-workflow-guide/
 ```
 
 ### `instructions/` の推奨構成
 
-プロジェクトに合わせてサブフォルダを作成してください：
+このテンプレートでは `instructions_sync/` にグローバル用インストラクションを配置していますが、プロジェクト固有のルールを追加する場合は `instructions/` サブフォルダを作成してください：
 
 ```
 instructions/
@@ -96,17 +119,21 @@ instructions/
 
 ### グローバル設定との使い分け
 
-VS Code では、ワークスペース用（`.github/`）とグローバル用（ユーザープロファイル）の 2 箇所にインストラクション/プロンプトを配置できます。
+VS Code では、ワークスペース用（`.github/`）とグローバル用（ユーザープロファイル）の 2 箇所にインストラクション/プロンプト/エージェントを配置できます。
 
-| 配置場所                 | パス                                            | 用途                       |
-| ------------------------ | ----------------------------------------------- | -------------------------- |
-| ワークスペース           | `.github/instructions/`, `.github/prompts/`     | プロジェクト固有のルール   |
-| グローバル (Windows)     | `%APPDATA%/Code/User/instructions/`, `prompts/` | 全プロジェクト共通のルール |
-| グローバル (macOS/Linux) | `~/.config/Code/User/instructions/`, `prompts/` | 全プロジェクト共通のルール |
+| 配置場所                 | パス                                                           | 用途                       |
+| ------------------------ | -------------------------------------------------------------- | -------------------------- |
+| ワークスペース           | `.github/instructions/`, `.github/prompts/`, `.github/agents/` | プロジェクト固有のルール   |
+| グローバル (Windows)     | `%APPDATA%/Code/User/instructions/`, `prompts/`, `agents/`     | 全プロジェクト共通のルール |
+| グローバル (macOS/Linux) | `~/.config/Code/User/instructions/`, `prompts/`, `agents/`     | 全プロジェクト共通のルール |
 
 **複数プロジェクトで共通して使いたいルール**（Git コミット規約、コーディングスタイル等）は、グローバル設定に配置することを推奨します。
 
-> **Note**: このテンプレートリポジトリでは `_sync` サフィックスのフォルダ（`instructions_sync/`, `prompts_sync/`）を使用していますが、これは作者の環境でグローバル設定と同期するためのものです。テンプレートを使う際は、通常の `instructions/` や `prompts/` フォルダに配置してください。
+> **Note**: このテンプレートリポジトリでは `_sync` サフィックスのフォルダ（`agents_sync/`, `instructions_sync/`, `prompts_sync/`）を使用していますが、これは作者の環境でグローバル設定と同期するためのものです。  
+> **テンプレートを使う際は**:
+>
+> - プロジェクト固有のルール → `instructions/`, `prompts/`, `agents/`
+> - 全プロジェクト共通のルール → グローバル設定にコピー（`@sync-to-global` エージェントを使用可能）
 
 ## `copilot-instructions.md` と `AGENTS.md` の違い
 
