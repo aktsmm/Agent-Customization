@@ -98,16 +98,18 @@ If a specific review target is specified, you may skip unrelated files:
 
 ### 🚀 Quick Check (Check These First)
 
-Check only 5 items first. If any ❌, proceed to detailed review:
+Check these 8 items first. If any ❌, proceed to detailed review:
 
-| #   | Check Item                                         | Detection Method                                        |
-| --- | -------------------------------------------------- | ------------------------------------------------------- |
-| 1   | **SRP**: 1 agent = 1 responsibility?               | ❌ if Role cannot be stated in 1 sentence               |
-| 2   | **Fail Fast**: Error detection in first 2 steps?   | ❌ if no validation in Workflow Step 1-2                |
-| 3   | **runSubagent delegation**: Orchestrator working?  | ❌ if Workflow contains direct file-read/edit tools     |
-| 4   | **SSOT**: Same definition in 2+ places?            | Use `grep_search` to detect duplicates                  |
-| 5   | **Done Criteria**: Verifiable completion?          | ❌ if just "complete" without specific checklist        |
-| 6   | **Architecture Balance**: Agent count appropriate? | ❌ if single-use agents in separate files, or God Agent |
+| #   | Check Item                                        | Detection Method                                          |
+| --- | ------------------------------------------------- | --------------------------------------------------------- |
+| 1   | **SRP**: 1 agent = 1 responsibility?              | ❌ if Role cannot be stated in 1 sentence                 |
+| 2   | **Fail Fast**: Error detection in first 2 steps?  | ❌ if no validation in Workflow Step 1-2                  |
+| 3   | **runSubagent delegation**: Orchestrator working? | ❌ if Workflow contains direct file-read/edit tools       |
+| 4   | **SSOT**: Same definition in 2+ places?           | Use `grep_search` to detect duplicates                    |
+| 5   | **Done Criteria**: Verifiable completion?         | ❌ if just "complete" without specific checklist          |
+| 6   | **Consolidation**: Single-use agents inlined?     | ❌ if `.agent.md` referenced by only 1 orchestrator       |
+| 7   | **Over-Engineering**: Too many small files?       | ❌ if > 10 agent files for simple workflow                |
+| 8   | **God Agent**: All responsibilities in one agent? | ❌ if single agent > 200 lines with multiple output types |
 
 ### Tier 1: Core Principles (Required)
 
@@ -195,7 +197,15 @@ runSubagent({
 
 ## Architecture Refactoring Review
 
+> **⚠️ MANDATORY**: This section MUST be evaluated for every review. Do NOT skip.
+
 Evaluate whether the current agent structure is appropriately sized—neither over-engineered nor under-engineered.
+
+**Always report at least one of:**
+
+- ✅ "Architecture is well-balanced" (with evidence)
+- ⚠️ "Consolidation opportunity found" (list candidates)
+- ⚠️ "Splitting recommended" (list God Agents)
 
 ### Consolidation Check (統合すべき兆候)
 
