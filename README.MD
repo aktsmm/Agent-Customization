@@ -25,14 +25,14 @@ cp -r .github /path/to/your-project/
 
 ## 収録内容
 
-| パス                              | 説明                                                           |
-| --------------------------------- | -------------------------------------------------------------- |
-| `.github/copilot-instructions.md` | 共有ガードレール（回答トーン、レビュー方針）                                  |
+| パス                              | 説明                                                                           |
+| --------------------------------- | ------------------------------------------------------------------------------ |
+| `.github/copilot-instructions.md` | 共有ガードレール（回答トーン、レビュー方針）                                   |
 | `.github/agents/`                 | エージェント定義（`sample`, `orchestrator`, `sync-to-global`, `ghc-research`） |
-| `.github/instructions/`           | ドメイン別ガイド（サブフォルダを作成して整理）                 |
-| `.github/prompts/`                | 再利用可能なプロンプト（`create-workflow`, `sample`）          |
-| `.github/skills/`                 | Copilot Skills（`agentic-workflow-guide`）                     |
-| `AGENTS.md`                       | 登録済みエージェント・関連アセットの一覧                       |
+| `.github/instructions/`           | ドメイン別ガイド（サブフォルダを作成して整理）                                 |
+| `.github/prompts/`                | 再利用可能なプロンプト（`create-workflow`, `sample`）                          |
+| `.github/skills/`                 | Copilot Skills（`agentic-workflow-guide`）                                     |
+| `AGENTS.md`                       | 登録済みエージェント・関連アセットの一覧                                       |
 
 ## 使い方
 
