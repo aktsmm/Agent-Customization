@@ -71,10 +71,10 @@ Automatically detect session type, extract metadata, and compress repetitive att
 **トリガーキーワード**: `ブログ`, `blog`, `記事`, `article`, `post`, `Zenn`, `Qiita`, `はてな`
 
 ```
-D:\11_My_Personal_Blog\drafts\YYYYMMDD--{topic}.md
+D:\11_My_Personal_Blog\drafts_topic\YYYYMMDD--{topic}.md
 ```
 
-**例**: `D:\11_My_Personal_Blog\drafts\20260127--copilot-agent-tips.md`
+**例**: `D:\11_My_Personal_Blog\drafts_topic\20260127--copilot-agent-tips.md`
 
 > **判定ロジック**: ユーザーのプロンプトまたはセッション内容をスキャンし、上記キーワードが1つでも含まれていればブログパスを使用。
 
