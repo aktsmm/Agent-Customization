@@ -14,7 +14,7 @@ description: "セッションから得られた知見を .ghc_template のスキ
 
 ## Phase 2: 反映先の特定
 
-**反映先リポジトリ:** `D:\03_github\00_VSC_tools\.ghc_template`
+**反映先リポジトリ:** `D:\03_github\00_VSC_tools\00_Ag-SkillBuilder`
 
 以下のディレクトリから知見を反映すべきファイルを特定：
 
