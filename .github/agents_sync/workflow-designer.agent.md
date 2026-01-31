@@ -38,8 +38,9 @@ tools:
 
 **MUST**: 以下を `readFile` で読み込む（コードブロックではなく実際にツール実行）:
 
-1. `.github/skills/agentic-workflow-guide/references/design-principles.md`
-2. `.github/skills/agentic-workflow-guide/references/agent-template.md`
+1. `.github/skills/agentic-workflow-guide/SKILL.md`
+2. `.github/skills/agentic-workflow-guide/references/design-principles.md`
+3. `.github/skills/agentic-workflow-guide/references/agent-template.md`
 
 ### Step 2: 目的確認
 
@@ -156,6 +157,7 @@ prompt: |
 
 ## References
 
+- [SKILL.md](../skills/agentic-workflow-guide/SKILL.md)
 - [design-principles.md](../skills/agentic-workflow-guide/references/design-principles.md)
 - [agent-template.md](../skills/agentic-workflow-guide/references/agent-template.md)
 - [review-checklist.md](../skills/agentic-workflow-guide/references/review-checklist.md)
