@@ -27,6 +27,19 @@ RECEIVE → RESEARCH → VERIFY → STRUCTURE → OUTPUT
 4. **STRUCTURE**: 結果を構造化
 5. **OUTPUT**: `research/` 配下に Markdown で出力
 
+### 出力ファイル命名規則
+
+`_output-knowledge/` 配下と統一した命名規則を使用：
+
+```
+YYYYMMDD-{slug}.md
+```
+
+**例**: `20260129-copilot-agent-mode-research.md`
+
+- **YYYYMMDD**: 調査日（例: 20260129）
+- **slug**: ケバブケースのトピック名（例: copilot-agent-mode-research）
+
 ### 再帰的収集のガイドライン
 
 | 深さ    | 対象         | 例                                   |

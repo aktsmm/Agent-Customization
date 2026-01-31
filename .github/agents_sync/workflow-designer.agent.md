@@ -2,13 +2,7 @@
 name: 😎workflow-designer
 description: エージェント/ワークフローの設計・レビュー・改善を統合支援（runSubagent評価分離版）
 tools:
-  - read/readFile
-  - edit/editFiles
-  - search/textSearch
-  - search/fileSearch
-  - execute/runInTerminal
-  - agent
-  - todo
+  ['execute/runInTerminal', 'read/readFile', 'agent', 'workiq/*', 'edit/editFiles', 'search/fileSearch', 'search/textSearch', 'todo']
 ---
 
 # Workflow Designer Agent
