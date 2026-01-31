@@ -76,12 +76,12 @@
 
 | Skill | Description |
 |-------|-------------|
-| [agentic-workflow-guide](.github/skills/agentic-workflow-guide/SKILL.md) | Create, review, and update Prompt and agents and workflows. \| Create: New .agent.md, workflow architecture, scaffolding; Review: Orchestrator not delegating, design principle check, context overflow |
+| [agentic-workflow-guide](.github/skills/agentic-workflow-guide/SKILL.md) | Guide for agentic workflows \| Create: New .agent.md, workflow architecture, scaffolding; Review: Orchestrator not delegating, design principle check, context overflow |
 
 ### Skills Index (Compressed)
 
 | Skill | Path | Description |
 |-------|------|-------------|
-| [agentic-workflow-guide](.github/skills/agentic-workflow-guide/SKILL.md) | `agentic-workflow-guide` | Create, review, and update Prompt and agents and workflows. \| Create: New .agent.md, workflow arc... |
+| [agentic-workflow-guide](.github/skills/agentic-workflow-guide/SKILL.md) | `agentic-workflow-guide` | Guide for agentic workflows \| Create: New .agent.md, workflow architecture, scaffolding; Review: ... |
 
 <!-- skill-ninja-END -->
