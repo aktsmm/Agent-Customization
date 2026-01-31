@@ -1,39 +1,74 @@
 ---
-description: ".ghc_template のスキル・プロンプト・エージェントを Public Skills と グローバル設定に同期"
+description: "セッションから得られた知見をワークスペースのスキル・エージェントに反映し、グローバル設定に同期"
 ---
 
-# 同期タスク
+# 知見反映 & 同期
 
-## 1. Public Skills への同期
+## Phase 1: 知見の抽出
 
-**ターゲット:** `D:\03_github\00_VSC_tools\00_Ag-SkillBuilder`
+このセッションで得られた知見・学びを特定してください：
 
-`.github/skills/` 配下のスキルを上記リポジトリに robocopy `/MIR` で同期。
-環境固有情報・顧客情報が入らないよう注意。
+- 新しいパターン・ベストプラクティス
+- 失敗から学んだアンチパターン
+- ツール使用のコツ・注意点
 
-## 2. グローバル設定への同期
+## Phase 2: 反映先の特定
 
-**ターゲット:** `%APPDATA%\Code\User\prompts\`
+**まず現在のワークスペースを探索**し、知見を反映すべきファイルを特定：
 
-以下のディレクトリを **すべて prompts フォルダに** 同期：
+| 種別               | 探索パス（優先順）                       | 反映対象                         |
+| ------------------ | ---------------------------------------- | -------------------------------- |
+| スキル             | `.github/skills/`, `skills/`             | 設計原則、チェックリスト、ガイド |
+| エージェント       | `.github/agents/`, `agents/`             | 行動指針、制約条件               |
+| インストラクション | `.github/instructions/`, `instructions/` | ドメイン別ルール                 |
+| プロンプト         | `.github/prompts/`, `prompts/`           | 再利用可能なワークフロー         |
 
-| ソース | 同期対象 |
-|--------|----------|
-| `.github/prompts_sync/*.prompt.md` | プロンプト |
-| `.github/agents_sync/*.agent.md` | エージェント |
+> 該当ディレクトリが存在しない場合はスキップ
 
-```powershell
-$globalPrompts = "$env:APPDATA\Code\User\prompts"
-Copy-Item ".github\prompts_sync\*" $globalPrompts -Force
-Copy-Item ".github\agents_sync\*.agent.md" $globalPrompts -Force
+## Phase 3: ユーザー確認
+
+反映予定の内容を提示し、**ユーザーの承認を得てから**次に進む：
+
+```
+📝 反映予定:
+- [ファイルパス]: [反映内容の要約]
+- [ファイルパス]: [反映内容の要約]
+
+この内容で反映してよいですか？ (y/n)
 ```
 
-## 3. Instructions への同期（任意）
+## Phase 4: 知見の反映
+
+特定したファイルに知見を追記・更新：
+
+- 環境固有情報・顧客情報は含めない
+- 汎用的な形で記述
+- 既存の構造・フォーマットに従う
+
+## Phase 5: コミット & プッシュ
+
+反映したファイルを Git にコミット＆プッシュ：
+
+1. 変更ファイルを確認（`git status`）
+2. ステージング（`git add`）
+3. 日本語でわかりやすいコミットメッセージを作成
+4. コミット＆プッシュ
+
+## Phase 6: 公開用リポジトリへの反映
+
+スキルを公開用リポジトリにコピー：
+
+**ターゲット:** `D:\03_github\00_VSC_tools\00_Ag-SkillBuilder\skills`
 
 ```powershell
-robocopy ".github\instructions_sync" "$env:APPDATA\Code\User\instructions" /MIR
+$source = ".github\skills"
+$target = "D:\03_github\00_VSC_tools\00_Ag-SkillBuilder\skills"
+if (Test-Path $source) { Copy-Item "$source\*" $target -Recurse -Force }
 ```
+
+公開用リポジトリでもコミット＆プッシュを実行。
 
 ## 完了確認
 
-両方の同期完了後、結果サマリーを表示。
+- 反映した知見のサマリーを表示
+- コミット＆プッシュ結果を確認
