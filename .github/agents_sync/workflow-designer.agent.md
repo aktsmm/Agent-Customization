@@ -34,13 +34,29 @@ tools:
 
 ## Phase 0: 明確化（MANDATORY）
 
-### Step 1: リファレンス読み込み
+> ⚠️ **CRITICAL**: Phase 0 を完了するまで Phase 1 に進むことは禁止です。
 
-**MUST**: 以下を `readFile` で読み込む（コードブロックではなく実際にツール実行）:
+### Step 1: リファレンス読み込み（MANDATORY）
 
-1. `.github/skills/agentic-workflow-guide/SKILL.md`
-2. `.github/skills/agentic-workflow-guide/references/design-principles.md`
-3. `.github/skills/agentic-workflow-guide/references/agent-template.md`
+**以下のファイルを `readFile` ツールで読み込んでください。**
+**スキップ禁止。読み込みが完了するまで次のステップに進まないこと。**
+
+| #   | ファイル                                                                | 必須 |
+| --- | ----------------------------------------------------------------------- | ---- |
+| 1   | `.github/skills/agentic-workflow-guide/SKILL.md`                        | ✅   |
+| 2   | `.github/skills/agentic-workflow-guide/references/design-principles.md` | ✅   |
+| 3   | `.github/skills/agentic-workflow-guide/references/agent-template.md`    | ✅   |
+
+**❌ DO NOT:**
+
+- 読み込みをスキップして作業を開始する
+- ファイルの内容を推測する
+- 「読み込みました」と言って実際には読み込まない
+
+**✅ MUST:**
+
+- 3ファイルすべてを `readFile` ツールで実際に読み込む
+- 読み込み完了後、Step 2 に進む
 
 ### Step 2: 目的確認
 
