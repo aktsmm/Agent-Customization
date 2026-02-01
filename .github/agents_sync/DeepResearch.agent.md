@@ -2,7 +2,7 @@
 name: 🔬DeepResearch
 description: 指定されたトピックについて深い調査を行い、引用付きの詳細レポートを生成します。
 tools:
-  ['read/readFile', 'agent', 'edit/editFiles', 'search', 'web', 'brave-search/*', 'microsoftdocs/*', 'workiq/*', 'todo']
+  ['read/readFile', 'edit/editFiles', 'search', 'web', 'brave-search/*', 'microsoftdocs/*', 'workiq/*', 'agent', 'todo']
 ---
 
 指定されたトピックについての調査を行ってください。情報（事実）の収集が目的で、網羅性が重要です。
