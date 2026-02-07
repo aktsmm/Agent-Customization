@@ -1,3 +1,5 @@
+<!-- syncToGlobal: true -->
+
 # Naming Conventions
 
 リポジトリ内のファイル・フォルダ・変数の命名規則を定義します。

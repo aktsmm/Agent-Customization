@@ -49,3 +49,57 @@ pip install -r requirements.txt
 2. **有効化を確認** — `python -c "import sys; print(sys.executable)"` でパスをチェック
 3. **依存関係を記録** — `requirements.txt` または `pyproject.toml` を更新
 4. **グローバル禁止** — `pip install --user` も NG
+
+---
+
+## よくあるエラーと対処
+
+### externally-managed-environment エラー
+
+uv 管理の Python に直接 `pip install` しようとすると発生。
+
+```
+error: externally-managed-environment
+× This environment is externally managed
+╰─> This Python installation is managed by uv and should not be modified.
+```
+
+**対処**: 仮想環境を作成してからインストール
+
+```powershell
+uv venv .venv --python 3.12
+.venv\Scripts\activate
+uv pip install pandas openpyxl
+```
+
+### Failed to inspect Python interpreter
+
+古い `.venv` が壊れている場合に発生。
+
+```
+error: Failed to inspect Python interpreter from virtual environment at `.venv\Scripts\python.exe`
+```
+
+**対処**: 仮想環境を再作成
+
+```powershell
+Remove-Item .venv -Recurse -Force
+uv venv .venv --python 3.12
+```
+
+### No Python at ...
+
+Python のパスが変わった場合に発生。
+
+**対処**: `uv venv` で再作成
+
+---
+
+## 仮想環境なしで直接実行
+
+有効化せずに Python スクリプトを実行:
+
+```powershell
+.venv\Scripts\python.exe -c "import pandas; print(pandas.__version__)"
+.venv\Scripts\python.exe script.py
+```

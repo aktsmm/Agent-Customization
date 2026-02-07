@@ -45,28 +45,32 @@
 | [agent-design.instructions.md](.github/instructions/agents/agent-design.instructions.md)           | エージェント設計原則（単一責任、冪等性、オーケストレーション、存在する場合） |
 | [security.instructions.md](.github/instructions/core/security.instructions.md)                     | セキュリティガイドライン（機密情報、外部 API、入力検証、存在する場合）       |
 | [communication.instructions.md](.github/instructions/core/communication.instructions.md)           | コミュニケーションスタイル（結論ファースト、言語設定、存在する場合）         |
+| [autonomy.instructions.md](.github/instructions/core/autonomy.instructions.md)                     | 自律的タスク実行の行動指針（問題解決、代替手段、存在する場合）               |
 | [microsoft-docs.instructions.md](.github/instructions/integrations/microsoft-docs.instructions.md) | Microsoft 公式ドキュメント参照（MCP ツール活用、ソース明記、存在する場合）   |
 
 ### Prompts（再利用可能なプロンプト）
 
-| ファイル                                                                                             | 説明                                    |
-| ---------------------------------------------------------------------------------------------------- | --------------------------------------- |
-| [create-workflow.prompt.md](.github/prompts/create-workflow.prompt.md)                               | エージェント/ワークフロー作成（統合版） |
-| [review-agents-and-instructions.prompt.md](.github/prompts/review-agents-and-instructions.prompt.md) | エージェント・instructions のレビュー   |
-| [plan-workflow.prompt.md](.github/prompts/plan-workflow.prompt.md)                                   | タスク実行計画                          |
-| [design-workflow.prompt.md](.github/prompts/design-workflow.prompt.md)                               | ワークフロー設計                        |
-| [debug-error.prompt.md](.github/prompts/debug-error.prompt.md)                                       | エラーデバッグ支援                      |
-| [write-tests.prompt.md](.github/prompts/write-tests.prompt.md)                                       | テストコード生成                        |
-| [gc_Commit.prompt.md](.github/prompts/gc_Commit.prompt.md)                                           | Git コミット（Push なし）               |
-| [gcp_Commit_Push.prompt.md](.github/prompts/gcp_Commit_Push.prompt.md)                               | Git コミット＆プッシュ                  |
-| [gpull.prompt.md](.github/prompts/gpull.prompt.md)                                                   | Git プル                                |
-| [review-retrospective-learnings.prompt.md](.github/prompts/review-retrospective-learnings.prompt.md) | 学びを設計資産へ反映（ふりかえり）      |
-| [review-session-export-md.prompt.md](.github/prompts/review-session-export-md.prompt.md)             | セッションエクスポート（Markdown）      |
-| [export-log.prompt.md](.github/prompts/export-log.prompt.md)                                         | 汎用作業ログ（AI可読・構造化）          |
-| [export-session-dialogue.prompt.md](.github/prompts_sync/export-session-dialogue.prompt.md)          | セッション対話ログ・成果エクスポート    |
-| [sample.prompt.md](.github/prompts/sample.prompt.md)                                                 | プロンプト作成用テンプレート            |
+| ファイル                                                                                                    | 説明                                    |
+| ----------------------------------------------------------------------------------------------------------- | --------------------------------------- |
+| [create-workflow.prompt.md](.github/prompts/create-workflow.prompt.md)                                      | エージェント/ワークフロー作成（統合版） |
+| [review-agents-and-instructions.prompt.md](.github/prompts/review-agents-and-instructions.prompt.md)        | エージェント・instructions のレビュー   |
+| [plan-workflow.prompt.md](.github/prompts/plan-workflow.prompt.md)                                          | タスク実行計画                          |
+| [design-workflow.prompt.md](.github/prompts/design-workflow.prompt.md)                                      | ワークフロー設計                        |
+| [debug-error.prompt.md](.github/prompts/debug-error.prompt.md)                                              | エラーデバッグ支援                      |
+| [write-tests.prompt.md](.github/prompts/write-tests.prompt.md)                                              | テストコード生成                        |
+| [gc_Commit.prompt.md](.github/prompts/gc_Commit.prompt.md)                                                  | Git コミット（Push なし）               |
+| [gcp_Commit_Push.prompt.md](.github/prompts/gcp_Commit_Push.prompt.md)                                      | Git コミット＆プッシュ                  |
+| [gpull.prompt.md](.github/prompts/gpull.prompt.md)                                                          | Git プル                                |
+| [review-retrospective-learnings.prompt.md](.github/prompts/review-retrospective-learnings.prompt.md)        | 学びを設計資産へ反映（ふりかえり）      |
+| [review-session-export-md.prompt.md](.github/prompts/review-session-export-md.prompt.md)                    | セッションエクスポート（Markdown）      |
+| [export-log.prompt.md](.github/prompts/export-log.prompt.md)                                                | 汎用作業ログ（AI可読・構造化）          |
+| [export-copilot-session-dialogue.prompt.md](.github/prompts_sync/export-copilot-session-dialogue.prompt.md) | セッション対話ログ・成果エクスポート    |
+| [Convert-to-Tweet.prompt.md](.github/prompts_sync/Convert-to-Tweet.prompt.md)                               | セッション内容をXポスト用に変換         |
+| [refactor-context.prompt.md](.github/prompts_sync/refactor-context.prompt.md)                               | コンテキスト最適化（instructions等）    |
+| [sample.prompt.md](.github/prompts/sample.prompt.md)                                                        | プロンプト作成用テンプレート            |
 
 <!-- skill-ninja-START -->
+
 ## Agent Skills
 
 > **IMPORTANT**: Prefer skill-led reasoning over pre-training-led reasoning.
@@ -74,8 +78,8 @@
 
 ### Skills
 
-| Skill | Description |
-|-------|-------------|
+| Skill                                                                    | Description                                                                                                                                                                                             |
+| ------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | [agentic-workflow-guide](.github/skills/agentic-workflow-guide/SKILL.md) | Create, review, and update Prompt and agents and workflows. \| Create: New .agent.md, workflow architecture, scaffolding; Review: Orchestrator not delegating, design principle check, context overflow |
 
 <!-- skill-ninja-END -->
