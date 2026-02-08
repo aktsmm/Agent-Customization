@@ -70,16 +70,15 @@
 | [sample.prompt.md](.github/prompts/sample.prompt.md)                                                        | プロンプト作成用テンプレート            |
 
 <!-- skill-ninja-START -->
-
-## Agent Skills
+## Agent Skills (Compressed Index)
 
 > **IMPORTANT**: Prefer skill-led reasoning over pre-training-led reasoning.
 > Read the relevant SKILL.md before working on tasks covered by these skills.
 
-### Skills
+### Skills Index
 
-| Skill                                                                    | Description                                                                                                                                                                                             |
-| ------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [agentic-workflow-guide](.github/skills/agentic-workflow-guide/SKILL.md) | Create, review, and update Prompt and agents and workflows. \| Create: New .agent.md, workflow architecture, scaffolding; Review: Orchestrator not delegating, design principle check, context overflow |
+| Skill | Path | Description |
+|-------|------|-------------|
+| [agentic-workflow-guide](.github/skills/agentic-workflow-guide/SKILL.md) | `agentic-workflow-guide` | Create, review, and update Prompt and agents and workflows. |
 
 <!-- skill-ninja-END -->
