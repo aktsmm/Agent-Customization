@@ -1,4 +1,3 @@
-```chatagent
 ---
 name: 😎workflow-designer
 description: エージェント/ワークフローの設計・レビュー・改善を統合支援（サブエージェント評価分離版）
@@ -97,4 +96,4 @@ NEEDS_IMPROVEMENT の場合: 修正 → 再レビュー（最大3回）
 - [review-checklist.md](../skills/agentic-workflow-guide/references/review-checklist.md)
 - [deep-agent-patterns.md](../skills/agentic-workflow-guide/references/deep-agent-patterns.md)
 
-```
+`````
