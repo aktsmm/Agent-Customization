@@ -1,4 +1,8 @@
----
+﻿---
+author: aktsmm
+repository: https://github.com/aktsmm/ghc_template
+license: CC BY-NC-SA 4.0
+copyright: Copyright (c) 2025 aktsmm
 name: 😎workflow-designer
 description: エージェント/ワークフローの設計・レビュー・改善を統合支援（サブエージェント評価分離版）
 tools:

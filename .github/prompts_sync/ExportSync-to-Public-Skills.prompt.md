@@ -1,8 +1,12 @@
----
+﻿---
 description: "セッションから得られた知見を 00_Ag-SkillBuilder のスキル・エージェントに反映し、公開リポジトリに同期"
 ---
 
 <!-- syncToGlobal: true -->
+<!-- author: aktsmm -->
+<!-- repository: https://github.com/aktsmm/ghc_template -->
+<!-- license: CC BY-NC-SA 4.0 -->
+<!-- copyright: Copyright (c) 2025 aktsmm -->
 
 # 知見反映 & 同期
 

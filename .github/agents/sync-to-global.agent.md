@@ -206,6 +206,31 @@ $templateRoot = Get-Location
 - ✅ ファイルの読み込み、双方向コピー
 - ❌ `git push`、ユーザーの許可なきファイル削除
 
+---
+
+## Design Note: sync 系フォルダの設計意図
+
+### なぜ `prompts_sync/` に `.instructions.md` があるのか
+
+- **`instructions_sync/`** → グローバルの `instructions/` に同期。VS Code が `applyTo` で**自動適用**する。
+- **`prompts_sync/`** → グローバルの `prompts/` に同期。ユーザーが**明示的に呼び出す**。
+- **`agents_sync/`** → グローバルの `prompts/` に同期。エージェント定義。
+
+`prompts_sync/` 内に `.instructions.md` ファイルがあるのは、グローバルの `prompts/` に同期してユーザー手動呼出し用に使うため。ワークスペースの `instructions/` にある詳細版とは**別系統**であり、SSOT 違反ではない。
+
+| 系統 | 用途 | 例 |
+|------|------|-----|
+| ワークスペース | 詳細ガイド（自動適用） | `instructions_sync/dev/git.instructions.md`（80行） |
+| グローバル | 簡潔ルール（手動呼出し） | `prompts_sync/git-rules.instructions.md`（3行） |
+
+### フロントマター整合性チェック
+
+外部リポジトリからファイルを同期する際は、以下を確認：
+
+- [ ] `repository:` が `https://github.com/aktsmm/ghc_template` であること
+- [ ] `license:` が `CC BY-NC-SA 4.0` であること
+- [ ] 元リポジトリ固有のコメント（`DO NOT REMOVE` 等）が削除されていること
+
 ## References
 
 - [Terminal Rules](../instructions_sync/dev/terminal.instructions.md)

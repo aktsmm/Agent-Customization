@@ -1,3 +1,11 @@
+﻿---
+---
+
+<!-- author: aktsmm -->
+<!-- repository: https://github.com/aktsmm/ghc_template -->
+<!-- license: CC BY-NC-SA 4.0 -->
+<!-- copyright: Copyright (c) 2025 aktsmm -->
+
 # Git 操作ルール
 
 - **明示的な指示がない限り `git push` は禁止**。コミットまでは可、プッシュはユーザーの明示的な許可を得てから行うこと。

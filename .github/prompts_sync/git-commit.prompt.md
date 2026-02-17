@@ -1,8 +1,12 @@
----
+﻿---
 description: 保存してコミット（Pushなし）
 ---
 
 <!-- syncToGlobal: true -->
+<!-- author: aktsmm -->
+<!-- repository: https://github.com/aktsmm/ghc_template -->
+<!-- license: CC BY-NC-SA 4.0 -->
+<!-- copyright: Copyright (c) 2025 aktsmm -->
 
 # Prompt: Commit
 

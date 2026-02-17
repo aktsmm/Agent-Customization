@@ -25,3 +25,6 @@ research/
 # Copilot Orchestrator temporary files
 .orchestrator/
 .worktrees/
+
+# Environment-specific credentials (contains tenant/subscription IDs)
+.github/prompts_sync/azure-environment.instructions.md

@@ -1,8 +1,12 @@
----
+﻿---
 applyTo: "**"
 ---
 
 <!-- syncToGlobal: true -->
+<!-- author: aktsmm -->
+<!-- repository: https://github.com/aktsmm/ghc_template -->
+<!-- license: CC BY-NC-SA 4.0 -->
+<!-- copyright: Copyright (c) 2025 aktsmm -->
 
 # Git Commit Instructions
 
@@ -69,3 +73,9 @@ applyTo: "**"
 - 複数の論理的な変更を含む場合は、可能な限りコミットを分割してください。
 - コミットメッセージは、変更内容を正確に反映させてください。「修正」のような曖昧な表現は避けてください。
 - **Push 禁止**: ユーザーからの明示的な指示（例: "PR を作って" "push して"）がない限り、`git push` は行わないでください。作業はローカルコミットまでとします。
+
+## 破壊的 Git 操作の注意
+
+- `git filter-repo`, `git rebase -i`, `git reset --hard` を実行する前に、**未コミットの変更を必ずコミット**してください。
+- これらの操作はワーキングツリーをリセットするため、未コミット変更は不可逆に消失します。
+- `git stash` では不十分です（`filter-repo` は stash も影響を受ける場合がある）。

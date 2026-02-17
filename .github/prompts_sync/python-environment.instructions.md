@@ -1,3 +1,11 @@
+﻿---
+---
+
+<!-- author: aktsmm -->
+<!-- repository: https://github.com/aktsmm/ghc_template -->
+<!-- license: CC BY-NC-SA 4.0 -->
+<!-- copyright: Copyright (c) 2025 aktsmm -->
+
 # Python 環境
 
 - パッケージ管理は `uv venv` + `uv pip` を使う（pip 直は NG）
