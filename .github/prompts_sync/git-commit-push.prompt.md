@@ -13,10 +13,10 @@ description: 保存してコミット＆プッシュ
 > ワークスペース確認の詳細は [terminal.instructions.md](../instructions/dev/terminal.instructions.md) を参照
 
 0. **ワークスペース確認**: `Get-Location; git remote -v` で現在地とリモートリポジトリを確認し、意図したリポジトリにいることを確認（違う場合は `Set-Location <正しいパス>` で移動）
-1. `git config user.name; git remote get-url origin; git pull; git branch --show-current; git log --oneline -5` でユーザー名 + Remote URL + pull + ブランチ名 + 直近 5 件のコミット（変更サマリ）を一括取得
+1. `git config user.name; git remote get-url origin; git pull; git log --oneline -5` でユーザー名 + Remote URL + pull + 直近 5 件のコミット（変更サマリ）を一括取得
 2. VS Code コマンド `workbench.action.files.saveAll` で未保存ファイルを保存
 3. `git status --short` で変更確認（変更なければ「Nothing to commit」で終了）
-4. `git add .; git commit -m "<コミットメッセージ>"; git push origin <ブランチ名>`（Step 1 で取得したブランチ名を使用）
+4. `git add .; git commit -m "<コミットメッセージ>"; git push`（Step 1 で取得したユーザー名をコミットメッセージに使用）
 5. 完了後、リモートリポジトリの URL をマークダウンリンク形式で表示（例: `[リポジトリ名](https://github.com/owner/repo)`）
 
 ## コミットメッセージのフォーマット

@@ -21,3 +21,7 @@ output_sessions/
 
 # Research notes (local only)
 research/
+
+# Copilot Orchestrator temporary files
+.orchestrator/
+.worktrees/

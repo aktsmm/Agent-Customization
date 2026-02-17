@@ -10,9 +10,10 @@ description: 作業セッションログ（AI可読・構造化）
 
 ## 出力パス
 
-- **通常**: `/output_sessions/YYYYMMDD--{topic}.md`
-- **ブログ**: `D:\11_My_Personal_Blog\drafts_topic\YYYYMMDD--{topic}.md`
+- **通常**: `/output_sessions/YYYYMMDD-NN--{topic}.md`
+- **ブログ**: `D:\11_My_Personal_Blog\drafts_topic\YYYYMMDD-NN--{topic}.md`
   - トリガー: `ブログ`, `blog`, `記事`, `article`, `post`, `Zenn`, `Qiita`, `はてな`
+- **NN**: 同日の連番（01, 02, 03...）。出力先に同日ファイルが既にあれば次の番号を採番する
 
 ## 出力フォーマット
 
