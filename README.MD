@@ -31,11 +31,11 @@ cp -r .github /path/to/your-project/
 | `.github/agents/`                 | エージェント定義（`sample`, `orchestrator`, `sync-to-global`, `ghc-research`） |
 | `.github/agents_sync/`            | グローバル用エージェント（`workflow-designer`, `DeepResearch`）                |
 | `.github/instructions_sync/`      | グローバル用インストラクション（`core/`, `dev/`, `integrations/`）             |
-| `.github/prompts/`                | 再利用可能なプロンプト（`create-workflow`, `sample`）                          |
-| `.github/prompts_sync/`           | グローバル用プロンプト（`export-session-dialogue`, `git-commit` 等）           |
+| `.github/prompts/`                | ワークスペース用プロンプト（`create-workflow`, `sample`）                      |
+| `.github/prompts_sync/`           | グローバル用プロンプト（git操作、エクスポート、ふりかえり 等 16件）            |
 | `.github/skills/`                 | Copilot Skills（`agentic-workflow-guide`）                                     |
 | `AGENTS.md`                       | 登録済みエージェント・関連アセットの一覧（SSOT）                               |
-| `output_sessions/`                | セッションログ・作業記録の出力先                                               |
+| `output_sessions/`                | セッションログ・作業記録の出力先（gitignore 対象）                             |
 
 ## 使い方
 
@@ -54,16 +54,25 @@ Copilot Chat で `/agent` コマンドを使用：
 Copilot Chat で `/prompt` コマンドを使用：
 
 ```
-# ワークフローベース
+# ワークスペース用
 /prompt create-workflow              # ワークフロー作成
 /prompt sample                       # プロンプト作成用テンプレート
 
 # グローバルプロンプト（全ワークスペースで使用可能）
-/prompt export-session-dialogue      # セッション対話ログ・成果エクスポート
 /prompt git-commit                   # Git コミット（Push なし）
 /prompt git-commit-push              # Git コミット＆プッシュ
-/prompt review-retrospective-learnings  # 学びを設計資産へ反映
+/prompt git-pull                     # Git プル
+/prompt debug-error                  # エラーデバッグ支援
 /prompt write-tests                  # テストコード生成
+/prompt review-agents-and-instructions  # エージェント・instructions レビュー
+/prompt review-retrospective-learnings  # 学びを設計資産へ反映
+/prompt export-session-log           # 汎用作業ログ（AI 可読・構造化）
+/prompt export-copilot-session-dialogue  # セッション対話ログ・成果エクスポート
+/prompt export-knowledge             # 知見エクスポート（ドメイン自動判定）
+/prompt ExportSync-to-Public-Skills  # 知見を公開スキルリポジトリに反映
+/prompt wrap-up-work                 # セッション終了時クリーンアップ
+/prompt Convert-to-Tweet             # セッション内容を X ポスト用に変換
+/prompt refactor-context             # コンテキスト最適化（instructions 等）
 ```
 
 ### 3. 新しいエージェントを作成する
@@ -96,11 +105,20 @@ cp .github/agents/sample.agent.md .github/agents/my-agent.agent.md
 │   ├── create-workflow.prompt.md
 │   └── sample.prompt.md
 ├── prompts_sync/              # グローバル用プロンプト
-│   ├── export-session-dialogue.prompt.md
 │   ├── git-commit.prompt.md
 │   ├── git-commit-push.prompt.md
+│   ├── git-pull.prompt.md
+│   ├── debug-error.prompt.md
+│   ├── write-tests.prompt.md
+│   ├── review-agents-and-instructions.prompt.md
 │   ├── review-retrospective-learnings.prompt.md
-│   └── write-tests.prompt.md
+│   ├── export-session-log.prompt.md
+│   ├── export-copilot-session-dialogue.prompt.md
+│   ├── export-knowledge.prompt.md
+│   ├── ExportSync-to-Public-Skills.prompt.md
+│   ├── wrap-up-work.prompt.md
+│   ├── Convert-to-Tweet.prompt.md
+│   └── refactor-context.prompt.md
 └── skills/                    # Copilot Skills
     └── agentic-workflow-guide/
 ```
