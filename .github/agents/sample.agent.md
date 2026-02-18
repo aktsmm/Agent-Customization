@@ -12,6 +12,11 @@ tools: ["read", "edit", "search", "execute"]
 #     send: false  # true にすると自動送信
 ---
 
+<!-- author: aktsmm
+     repository: https://github.com/aktsmm/ghc_template
+     license: CC BY-NC-SA 4.0
+     copyright: Copyright (c) 2025 aktsmm -->
+
 # Sample Agent
 
 ## Role

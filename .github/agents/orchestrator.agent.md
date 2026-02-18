@@ -4,6 +4,11 @@ description: サブエージェントを統括する司令塔
 model: claude-sonnet-4-20250514
 ---
 
+<!-- author: aktsmm
+     repository: https://github.com/aktsmm/ghc_template
+     license: CC BY-NC-SA 4.0
+     copyright: Copyright (c) 2025 aktsmm -->
+
 # Orchestrator Agent
 
 ## Role

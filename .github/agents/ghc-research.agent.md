@@ -3,6 +3,11 @@ name: 🔬ghc-research
 description: 指定されたトピックについて深い調査を行い、引用付きの詳細レポートを生成します。
 ---
 
+<!-- author: aktsmm
+     repository: https://github.com/aktsmm/ghc_template
+     license: CC BY-NC-SA 4.0
+     copyright: Copyright (c) 2025 aktsmm -->
+
 # 🔬 GHC Research Agent
 
 GitHub Copilot・VS Code関連技術の深い調査を行い、引用付きの詳細レポートを生成するエージェントです。

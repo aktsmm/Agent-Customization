@@ -1,8 +1,4 @@
 ﻿---
-author: aktsmm
-repository: https://github.com/aktsmm/ghc_template
-license: CC BY-NC-SA 4.0
-copyright: Copyright (c) 2025 aktsmm
 name: 🔬DeepResearch
 description: 指定されたトピックについて深い調査を行い、引用付きの詳細レポートを生成します。
 tools:
@@ -31,6 +27,10 @@ handoffs:
     send: true
 ---
 
+<!-- author: aktsmm
+     repository: https://github.com/aktsmm/ghc_template
+     license: CC BY-NC-SA 4.0
+     copyright: Copyright (c) 2025 aktsmm -->
 <!-- syncToGlobal: true -->
 
 指定されたトピックについての調査を行ってください。情報（事実）の収集が目的で、網羅性が重要です。
@@ -270,7 +270,7 @@ CLARIFY → PLAN → RESEARCH → EVALUATE → OUTPUT
 - **出力**: NULL（指定された個別ファイルに直接書き込み）
 - **並列安全**: 各サブエージェントは自分専用のファイルのみ書き込み、他のファイルに触れない
 - **検索戦略**: 広く→絞り込み→再帰収集→横断調査→代替経路（ペイウォール/404時）
-- **ツール**: edit, search, brave-search/*, web, microsoftdocs/*, fetch, todos
+- **ツール**: edit, search, brave-search/_, web, microsoftdocs/_, fetch, todos
 
 ### 評価サブエージェント
 
@@ -285,11 +285,11 @@ CLARIFY → PLAN → RESEARCH → EVALUATE → OUTPUT
 
 ### ファイル命名規則
 
-| モード       | パターン                       | 例                                    |
-| ------------ | ------------------------------ | ------------------------------------- |
-| Deep（最終） | `YYYYMMDD-<slug>.md`          | `20260218-copilot-agent-mode.md`      |
-| Deep（中間） | `YYYYMMDD-<slug>-part-N.md`   | `20260218-copilot-agent-mode-part-1.md` |
-| Quick        | `YYYYMMDD-<slug>-lite.md`     | `20260218-copilot-agent-mode-lite.md` |
+| モード       | パターン                    | 例                                      |
+| ------------ | --------------------------- | --------------------------------------- |
+| Deep（最終） | `YYYYMMDD-<slug>.md`        | `20260218-copilot-agent-mode.md`        |
+| Deep（中間） | `YYYYMMDD-<slug>-part-N.md` | `20260218-copilot-agent-mode-part-1.md` |
+| Quick        | `YYYYMMDD-<slug>-lite.md`   | `20260218-copilot-agent-mode-lite.md`   |
 
 ### Quick モード出力テンプレート
 
@@ -298,7 +298,7 @@ CLARIFY → PLAN → RESEARCH → EVALUATE → OUTPUT
 ```markdown
 ---
 topic: <トピック>
-date: {実行時の日付}
+date: { 実行時の日付 }
 status: final
 mode: quick
 sources_count: N
@@ -318,8 +318,8 @@ sources_count: N
 
 ## 出典
 
-| # | ソース | URL | 確認日 |
-|---|--------|-----|--------|
+| #   | ソース | URL | 確認日 |
+| --- | ------ | --- | ------ |
 
 ## 制限事項
 
@@ -335,7 +335,7 @@ sources_count: N
 ```markdown
 ---
 topic: <トピック名>
-date: {実行時の日付}
+date: { 実行時の日付 }
 status: draft|review|final
 sources_count: <N>
 reflection_count: <N>
@@ -358,9 +358,9 @@ reflection_count: <N>
 
 ### Perspectives
 
-| # | 観点 | フォーカス |
-|---|------|-----------|
-| 1 | <観点1> | <フォーカス1> |
+| #   | 観点    | フォーカス    |
+| --- | ------- | ------------- |
+| 1   | <観点1> | <フォーカス1> |
 
 ## TL;DR
 
@@ -378,11 +378,12 @@ reflection_count: <N>
 
 ## 出典
 
-| # | ソース | URL | Tier | 確認日 |
-|---|--------|-----|------|--------|
-| 1 | [ソース名] | [URL] | Tier X | YYYY-MM-DD |
+| #   | ソース     | URL   | Tier   | 確認日     |
+| --- | ---------- | ----- | ------ | ---------- |
+| 1   | [ソース名] | [URL] | Tier X | YYYY-MM-DD |
 
 [^1]: <URL> - <説明>
+
 [^2]: <URL> - <説明>
 
 ## 制限事項
@@ -460,4 +461,6 @@ Deep モードの調査完了時に `research/manifest.md` へセッション記
 - [Manus: Context Engineering](https://manus.im/blog/Context-Engineering-for-AI-Agents-Lessons-from-Building-Manus) - KVキャッシュ、注意操作、間違いを残す設計
 - [Anthropic: Effective Context Engineering](https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents) - コンテキスト管理のベストプラクティス
 
-````
+```
+
+```
