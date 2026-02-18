@@ -58,11 +58,11 @@
 | [design-workflow.prompt.md](.github/prompts/design-workflow.prompt.md)                                      | ワークフロー設計                        |
 | [debug-error.prompt.md](.github/prompts/debug-error.prompt.md)                                              | エラーデバッグ支援                      |
 | [write-tests.prompt.md](.github/prompts/write-tests.prompt.md)                                              | テストコード生成                        |
-| [git-commit.prompt.md](.github/prompts_sync/git-commit.prompt.md)                                            | Git コミット（Push なし）               |
-| [git-commit-push.prompt.md](.github/prompts_sync/git-commit-push.prompt.md)                                  | Git コミット＆プッシュ                  |
-| [git-pull.prompt.md](.github/prompts_sync/git-pull.prompt.md)                                                | Git プル                                |
+| [git-commit.prompt.md](.github/prompts_sync/git-commit.prompt.md)                                           | Git コミット（Push なし）               |
+| [git-commit-push.prompt.md](.github/prompts_sync/git-commit-push.prompt.md)                                 | Git コミット＆プッシュ                  |
+| [git-pull.prompt.md](.github/prompts_sync/git-pull.prompt.md)                                               | Git プル                                |
 | [review-retrospective-learnings.prompt.md](.github/prompts/review-retrospective-learnings.prompt.md)        | 学びを設計資産へ反映（ふりかえり）      |
-| [export-session-log.prompt.md](.github/prompts_sync/export-session-log.prompt.md)                            | 汎用作業ログ（AI可読・構造化）          |
+| [export-session-log.prompt.md](.github/prompts_sync/export-session-log.prompt.md)                           | 汎用作業ログ（AI可読・構造化）          |
 | [export-copilot-session-dialogue.prompt.md](.github/prompts_sync/export-copilot-session-dialogue.prompt.md) | セッション対話ログ・成果エクスポート    |
 | [export-knowledge.prompt.md](.github/prompts_sync/export-knowledge.prompt.md)                               | 知見エクスポート（ドメイン自動判定）    |
 | [ExportSync-to-Public-Skills.prompt.md](.github/prompts_sync/ExportSync-to-Public-Skills.prompt.md)         | 知見を公開スキルリポジトリに反映        |
@@ -72,6 +72,7 @@
 | [sample.prompt.md](.github/prompts/sample.prompt.md)                                                        | プロンプト作成用テンプレート            |
 
 <!-- skill-ninja-START -->
+
 ## Agent Skills (Compressed Index)
 
 > **IMPORTANT**: Prefer skill-led reasoning over pre-training-led reasoning.
@@ -79,8 +80,8 @@
 
 ### Skills Index
 
-| Skill | Path | Description |
-|-------|------|-------------|
+| Skill                                                                    | Path                     | Description                                                                                          |
+| ------------------------------------------------------------------------ | ------------------------ | ---------------------------------------------------------------------------------------------------- |
 | [agentic-workflow-guide](.github/skills/agentic-workflow-guide/SKILL.md) | `agentic-workflow-guide` | Create, review, and update Prompt and agents and workflows. Covers 5 workflow patterns, runSubage... |
 
 <!-- skill-ninja-END -->

@@ -218,10 +218,10 @@ $templateRoot = Get-Location
 
 `prompts_sync/` 内に `.instructions.md` ファイルがあるのは、グローバルの `prompts/` に同期してユーザー手動呼出し用に使うため。ワークスペースの `instructions/` にある詳細版とは**別系統**であり、SSOT 違反ではない。
 
-| 系統 | 用途 | 例 |
-|------|------|-----|
-| ワークスペース | 詳細ガイド（自動適用） | `instructions_sync/dev/git.instructions.md`（80行） |
-| グローバル | 簡潔ルール（手動呼出し） | `prompts_sync/git-rules.instructions.md`（3行） |
+| 系統           | 用途                     | 例                                                  |
+| -------------- | ------------------------ | --------------------------------------------------- |
+| ワークスペース | 詳細ガイド（自動適用）   | `instructions_sync/dev/git.instructions.md`（80行） |
+| グローバル     | 簡潔ルール（手動呼出し） | `prompts_sync/git-rules.instructions.md`（3行）     |
 
 ### フロントマター整合性チェック
 
