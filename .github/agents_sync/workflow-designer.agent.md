@@ -1,4 +1,4 @@
-﻿---
+---
 name: 😎workflow-designer
 description: エージェント/ワークフローの設計・レビュー・改善を統合支援（サブエージェント評価分離版）
 tools:

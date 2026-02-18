@@ -1,4 +1,4 @@
-﻿---
+---
 description: エージェント定義とinstructionファイルのレビュー
 ---
 

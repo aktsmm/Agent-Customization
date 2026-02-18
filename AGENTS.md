@@ -4,12 +4,11 @@
 
 > `sample.agent.md` が最小構成の例、`orchestrator.agent.md` がオーケストレーター構成の例です。テンプレ用途で増やすときはここに行を追加してください。
 
-| エージェント名     | マニフェスト                             | 主な役割                                        |
-| ------------------ | ---------------------------------------- | ----------------------------------------------- |
-| Sample Agent       | `.github/agents/sample.agent.md`         | エージェント定義のテンプレート                  |
-| Orchestrator Agent | `.github/agents/orchestrator.agent.md`   | サブエージェントを統括する司令塔の例            |
-| Sync to Global     | `.github/agents/sync-to-global.agent.md` | instructions/prompts をグローバル設定に同期     |
-| GHC Research       | `.github/agents/ghc-research.agent.md`   | GitHub Copilot/VS Code 関連の深い調査・レポート |
+| エージェント名     | マニフェスト                             | 主な役割                                    |
+| ------------------ | ---------------------------------------- | ------------------------------------------- |
+| Sample Agent       | `.github/agents/sample.agent.md`         | エージェント定義のテンプレート              |
+| Orchestrator Agent | `.github/agents/orchestrator.agent.md`   | サブエージェントを統括する司令塔の例        |
+| Sync to Global     | `.github/agents/sync-to-global.agent.md` | instructions/prompts をグローバル設定に同期 |
 
 ### グローバルエージェント（agents_sync/）
 
@@ -36,32 +35,30 @@
 
 ### Instructions（ドメイン別ルール）
 
-| ファイル                                                                                           | 説明                                                                         |
-| -------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------- |
-| [git.instructions.md](.github/instructions/dev/git.instructions.md)                                | Git コミット規約（Conventional Commits、Push 禁止、存在する場合）            |
-| [terminal.instructions.md](.github/instructions/dev/terminal.instructions.md)                      | ターミナル操作規約（PowerShell 互換、破壊的操作の注意、存在する場合）        |
-| [python.instructions.md](.github/instructions/dev/python.instructions.md)                          | Python 環境設定（仮想環境必須、uv 推奨、存在する場合）                       |
-| [nodejs.instructions.md](.github/instructions/dev/nodejs.instructions.md)                          | Node.js 環境設定（nvm 推奨、パッケージマネージャー、存在する場合）           |
-| [agent-design.instructions.md](.github/instructions/agents/agent-design.instructions.md)           | エージェント設計原則（単一責任、冪等性、オーケストレーション、存在する場合） |
-| [security.instructions.md](.github/instructions/core/security.instructions.md)                     | セキュリティガイドライン（機密情報、外部 API、入力検証、存在する場合）       |
-| [communication.instructions.md](.github/instructions/core/communication.instructions.md)           | コミュニケーションスタイル（結論ファースト、言語設定、存在する場合）         |
-| [autonomy.instructions.md](.github/instructions/core/autonomy.instructions.md)                     | 自律的タスク実行の行動指針（問題解決、代替手段、存在する場合）               |
-| [microsoft-docs.instructions.md](.github/instructions/integrations/microsoft-docs.instructions.md) | Microsoft 公式ドキュメント参照（MCP ツール活用、ソース明記、存在する場合）   |
+| ファイル                                                                                                | 説明                                                         |
+| ------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------ |
+| [git.instructions.md](.github/instructions_sync/dev/git.instructions.md)                                | Git コミット規約（Conventional Commits、Push 禁止）          |
+| [terminal.instructions.md](.github/instructions_sync/dev/terminal.instructions.md)                      | ターミナル操作規約（PowerShell 互換、破壊的操作の注意）      |
+| [python.instructions.md](.github/instructions_sync/dev/python.instructions.md)                          | Python 環境設定（仮想環境必須、uv 推奨）                     |
+| [nodejs.instructions.md](.github/instructions_sync/dev/nodejs.instructions.md)                          | Node.js 環境設定（nvm 推奨、パッケージマネージャー）         |
+| [security.instructions.md](.github/instructions_sync/core/security.instructions.md)                     | セキュリティガイドライン（機密情報、外部 API、入力検証）     |
+| [communication.instructions.md](.github/instructions_sync/core/communication.instructions.md)           | コミュニケーションスタイル（結論ファースト、言語設定）       |
+| [autonomy.instructions.md](.github/instructions_sync/core/autonomy.instructions.md)                     | 自律的タスク実行の行動指針（問題解決、代替手段）             |
+| [naming-conventions.instructions.md](.github/instructions_sync/core/naming-conventions.instructions.md) | 命名規約（ファイル名、エージェント名、変数名）               |
+| [microsoft-docs.instructions.md](.github/instructions_sync/integrations/microsoft-docs.instructions.md) | Microsoft 公式ドキュメント参照（MCP ツール活用、ソース明記） |
 
 ### Prompts（再利用可能なプロンプト）
 
 | ファイル                                                                                                    | 説明                                    |
 | ----------------------------------------------------------------------------------------------------------- | --------------------------------------- |
 | [create-workflow.prompt.md](.github/prompts/create-workflow.prompt.md)                                      | エージェント/ワークフロー作成（統合版） |
-| [review-agents-and-instructions.prompt.md](.github/prompts/review-agents-and-instructions.prompt.md)        | エージェント・instructions のレビュー   |
-| [plan-workflow.prompt.md](.github/prompts/plan-workflow.prompt.md)                                          | タスク実行計画                          |
-| [design-workflow.prompt.md](.github/prompts/design-workflow.prompt.md)                                      | ワークフロー設計                        |
-| [debug-error.prompt.md](.github/prompts/debug-error.prompt.md)                                              | エラーデバッグ支援                      |
-| [write-tests.prompt.md](.github/prompts/write-tests.prompt.md)                                              | テストコード生成                        |
+| [review-agents-and-instructions.prompt.md](.github/prompts_sync/review-agents-and-instructions.prompt.md)   | エージェント・instructions のレビュー   |
+| [debug-error.prompt.md](.github/prompts_sync/debug-error.prompt.md)                                         | エラーデバッグ支援                      |
+| [write-tests.prompt.md](.github/prompts_sync/write-tests.prompt.md)                                         | テストコード生成                        |
 | [git-commit.prompt.md](.github/prompts_sync/git-commit.prompt.md)                                           | Git コミット（Push なし）               |
 | [git-commit-push.prompt.md](.github/prompts_sync/git-commit-push.prompt.md)                                 | Git コミット＆プッシュ                  |
 | [git-pull.prompt.md](.github/prompts_sync/git-pull.prompt.md)                                               | Git プル                                |
-| [review-retrospective-learnings.prompt.md](.github/prompts/review-retrospective-learnings.prompt.md)        | 学びを設計資産へ反映（ふりかえり）      |
+| [review-retrospective-learnings.prompt.md](.github/prompts_sync/review-retrospective-learnings.prompt.md)   | 学びを設計資産へ反映（ふりかえり）      |
 | [export-session-log.prompt.md](.github/prompts_sync/export-session-log.prompt.md)                           | 汎用作業ログ（AI可読・構造化）          |
 | [export-copilot-session-dialogue.prompt.md](.github/prompts_sync/export-copilot-session-dialogue.prompt.md) | セッション対話ログ・成果エクスポート    |
 | [export-knowledge.prompt.md](.github/prompts_sync/export-knowledge.prompt.md)                               | 知見エクスポート（ドメイン自動判定）    |
@@ -72,6 +69,7 @@
 | [sample.prompt.md](.github/prompts/sample.prompt.md)                                                        | プロンプト作成用テンプレート            |
 
 <!-- skill-ninja-START -->
+
 ## Agent Skills (Compressed Index)
 
 > **IMPORTANT**: Prefer skill-led reasoning over pre-training-led reasoning.
@@ -79,8 +77,8 @@
 
 ### Skills Index
 
-| Skill | Path | Description |
-|-------|------|-------------|
+| Skill                                                                    | Path                     | Description                                                                                          |
+| ------------------------------------------------------------------------ | ------------------------ | ---------------------------------------------------------------------------------------------------- |
 | [agentic-workflow-guide](.github/skills/agentic-workflow-guide/SKILL.md) | `agentic-workflow-guide` | Create, review, and update Prompt and agents and workflows. Covers 5 workflow patterns, runSubage... |
 
 <!-- skill-ninja-END -->

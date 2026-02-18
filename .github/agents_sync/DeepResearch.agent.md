@@ -1,4 +1,4 @@
-﻿---
+---
 name: 🔬DeepResearch
 description: 指定されたトピックについて深い調査を行い、引用付きの詳細レポートを生成します。
 tools:

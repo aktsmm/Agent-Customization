@@ -47,9 +47,9 @@ tools: ["read", "edit", "search", "execute"]
 
 ## References
 
-- [Git Rules](../instructions/dev/git.instructions.md)（存在する場合）
-- [Terminal Rules](../instructions/dev/terminal.instructions.md)（存在する場合）
-- [Security Rules](../instructions/core/security.instructions.md)（存在する場合）
+- [Git Rules](../instructions_sync/dev/git.instructions.md)（存在する場合）
+- [Terminal Rules](../instructions_sync/dev/terminal.instructions.md)（存在する場合）
+- [Security Rules](../instructions_sync/core/security.instructions.md)（存在する場合）
 
 ## Workflow
 

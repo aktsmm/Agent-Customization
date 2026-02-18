@@ -2,22 +2,24 @@
 
 エージェントが読み込むドメイン別ガイドラインを置く場所。
 
-## ディレクトリ構成
+> **Note**: このリポジトリでは、実際の instruction ファイルは **`instructions_sync/`** に配置されています。
+> `instructions_sync/` は `@sync-to-global` エージェントでグローバル設定に同期するための専用フォルダです。
+> ワークスペース固有の instructions を追加する場合は、この `instructions/` ディレクトリに配置してください。
+
+## ディレクトリ構成（instructions_sync/ の実態）
 
 ```
-instructions/
-├── README.md                              # このファイル
+instructions_sync/
 ├── core/                                  # コア・共通ルール
+│   ├── autonomy.instructions.md           # 自律的タスク実行の行動指針
 │   ├── communication.instructions.md      # コミュニケーションスタイル
+│   ├── naming-conventions.instructions.md # 命名規約
 │   └── security.instructions.md           # セキュリティガイドライン
 ├── dev/                                   # 開発ツール系
 │   ├── git.instructions.md                # Git操作規約
 │   ├── terminal.instructions.md           # ターミナル操作規約
 │   ├── python.instructions.md             # Python環境設定
 │   └── nodejs.instructions.md             # Node.js環境設定
-├── agents/                                # エージェント設計系
-│   ├── agent-design.instructions.md       # 設計原則
-│   └── agents.instructions.md             # .github/agents 向けルール
 └── integrations/                          # 外部連携系
     └── microsoft-docs.instructions.md     # MS Docs MCP連携
 ```
@@ -28,7 +30,6 @@ instructions/
 | --------------- | -------------------------- | ----------------------------- |
 | `core/`         | 全エージェント共通のルール | レビュー規約、命名規則        |
 | `dev/`          | 開発ツール操作のルール     | Docker, npm, pytest           |
-| `agents/`       | エージェント設計・運用     | オーケストレーション、IR 設計 |
 | `integrations/` | 外部サービス連携           | Azure CLI, GitHub API, OpenAI |
 
 ## カスタマイズ
