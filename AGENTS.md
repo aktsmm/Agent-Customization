@@ -35,19 +35,19 @@
 
 ### Instructions（ドメイン別ルール）
 
-| ファイル                                                                                                | 説明                                                         |
-| ------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------ |
-| [git.instructions.md](.github/instructions_sync/dev/git.instructions.md)                                | Git コミット規約（Conventional Commits、Push 禁止）          |
-| [terminal.instructions.md](.github/instructions_sync/dev/terminal.instructions.md)                      | ターミナル操作規約（PowerShell 互換、破壊的操作の注意）      |
-| [python.instructions.md](.github/instructions_sync/dev/python.instructions.md)                          | Python 環境設定（仮想環境必須、uv 推奨）                     |
-| [nodejs.instructions.md](.github/instructions_sync/dev/nodejs.instructions.md)                          | Node.js 環境設定（nvm 推奨、パッケージマネージャー）         |
-| [security.instructions.md](.github/instructions_sync/core/security.instructions.md)                     | セキュリティガイドライン（機密情報、外部 API、入力検証）     |
-| [communication.instructions.md](.github/instructions_sync/core/communication.instructions.md)           | コミュニケーションスタイル（結論ファースト、言語設定）       |
-| [autonomy.instructions.md](.github/instructions_sync/core/autonomy.instructions.md)                     | 自律的タスク実行の行動指針（問題解決、代替手段）             |
-| [naming-conventions.instructions.md](.github/instructions_sync/core/naming-conventions.instructions.md) | 命名規約（ファイル名、エージェント名、変数名）               |
-| [prompts-metadata.instructions.md](.github/instructions_sync/core/prompts-metadata.instructions.md)     | プロンプトメタデータ運用（syncToGlobal 基準、テンプレ）      |
-| [learnings.instructions.md](.github/instructions_sync/core/learnings.instructions.md)                   | Learnings 蓄積ルール（出力先・フォーマット・読み書き共通）   |
-| [microsoft-docs.instructions.md](.github/instructions_sync/integrations/microsoft-docs.instructions.md) | Microsoft 公式ドキュメント参照（MCP ツール活用、ソース明記） |
+| ファイル                                                                                                | 説明                                                                    |
+| ------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------- |
+| [git.instructions.md](.github/instructions_sync/dev/git.instructions.md)                                | Git 操作ルール（Conventional Commits、Push 禁止、gh CLI、LICENSE 規約） |
+| [terminal.instructions.md](.github/instructions_sync/dev/terminal.instructions.md)                      | ターミナル操作規約（PowerShell 互換、破壊的操作の注意）                 |
+| [python.instructions.md](.github/instructions_sync/dev/python.instructions.md)                          | Python 環境設定（仮想環境必須、uv 推奨）                                |
+| [nodejs.instructions.md](.github/instructions_sync/dev/nodejs.instructions.md)                          | Node.js 環境設定（nvm 推奨、パッケージマネージャー）                    |
+| [security.instructions.md](.github/instructions_sync/core/security.instructions.md)                     | セキュリティガイドライン（機密情報、外部 API、入力検証）                |
+| [communication.instructions.md](.github/instructions_sync/core/communication.instructions.md)           | コミュニケーションスタイル（結論ファースト、言語設定）                  |
+| [autonomy.instructions.md](.github/instructions_sync/core/autonomy.instructions.md)                     | 自律的タスク実行の行動指針（問題解決、代替手段）                        |
+| [naming-conventions.instructions.md](.github/instructions_sync/core/naming-conventions.instructions.md) | 命名規約（ファイル名、エージェント名、変数名）                          |
+| [prompts-metadata.instructions.md](.github/instructions_sync/core/prompts-metadata.instructions.md)     | プロンプトメタデータ運用（syncToGlobal 基準、テンプレ）                 |
+| [learnings.instructions.md](.github/instructions_sync/core/learnings.instructions.md)                   | Learnings 蓄積ルール（出力先・フォーマット・読み書き共通）              |
+| [microsoft-docs.instructions.md](.github/instructions_sync/integrations/microsoft-docs.instructions.md) | Microsoft 公式ドキュメント参照（MCP ツール活用、ソース明記）            |
 
 ### Prompts（再利用可能なプロンプト）
 
@@ -73,6 +73,7 @@
 | [sample.prompt.md](.github/prompts/sample.prompt.md)                                                        | プロンプト作成用テンプレート            |
 
 <!-- skill-ninja-START -->
+
 ## Agent Skills (Compressed Index)
 
 > **IMPORTANT**: Prefer skill-led reasoning over pre-training-led reasoning.
@@ -80,8 +81,8 @@
 
 ### Skills Index
 
-| Skill | Path | Description |
-|-------|------|-------------|
+| Skill                                                                    | Path                     | Description                                                                                          |
+| ------------------------------------------------------------------------ | ------------------------ | ---------------------------------------------------------------------------------------------------- |
 | [agentic-workflow-guide](.github/skills/agentic-workflow-guide/SKILL.md) | `agentic-workflow-guide` | Create, review, and update Prompt and agents and workflows. Covers 5 workflow patterns, runSubage... |
 
 <!-- skill-ninja-END -->

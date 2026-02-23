@@ -275,18 +275,17 @@ $templateRoot = Get-Location
 
 ## Design Note: sync 系フォルダの設計意図
 
-### なぜ `prompts_sync/` に `.instructions.md` があるのか
+### フォルダと同期先の対応
 
 - **`instructions_sync/`** → グローバルの `instructions/` に同期。VS Code が `applyTo` で**自動適用**する。
 - **`prompts_sync/`** → グローバルの `prompts/` に同期。ユーザーが**明示的に呼び出す**。
 - **`agents_sync/`** → グローバルの `prompts/` に同期。エージェント定義。
 
-`prompts_sync/` 内に `.instructions.md` ファイルがあるのは、グローバルの `prompts/` に同期してユーザー手動呼出し用に使うため。ワークスペースの `instructions/` にある詳細版とは**別系統**であり、SSOT 違反ではない。
+### `prompts_sync/` に `.instructions.md` がある理由
 
-| 系統           | 用途                     | 例                                                  |
-| -------------- | ------------------------ | --------------------------------------------------- |
-| ワークスペース | 詳細ガイド（自動適用）   | `instructions_sync/dev/git.instructions.md`（80行） |
-| グローバル     | 簡潔ルール（手動呼出し） | `prompts_sync/git-rules.instructions.md`（3行）     |
+`prompts_sync/` 内の `.instructions.md` ファイル（例: `azure-environment.instructions.md`）は、環境固有の情報をユーザー手動呼出し用としてグローバル `prompts/` に同期するもの。自動適用すべきルール系は `instructions_sync/` に統合する。
+
+> **統合済み**: `git-rules.instructions.md` は `instructions_sync/dev/git.instructions.md` に統合し削除。
 
 ### フロントマター整合性チェック
 
