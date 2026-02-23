@@ -1,4 +1,5 @@
 ---
+description: "Python 環境情報（バージョン、パス等）"
 ---
 
 <!-- author: aktsmm -->

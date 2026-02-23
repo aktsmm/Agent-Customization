@@ -1,5 +1,5 @@
 ---
-description: 作業セッションログ（AI可読・構造化）
+description: セッションログ / ブログネタ（AI可読・構造化）
 ---
 
 <!-- syncToGlobal: true -->

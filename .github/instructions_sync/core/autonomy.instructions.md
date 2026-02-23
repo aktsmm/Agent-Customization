@@ -2,6 +2,8 @@
 applyTo: "**"
 ---
 
+<!-- description: 自律的タスク実行の行動指針（問題解決、代替手段） -->
+
 <!-- syncToGlobal: true -->
 <!-- author: aktsmm -->
 <!-- repository: https://github.com/aktsmm/ghc_template -->

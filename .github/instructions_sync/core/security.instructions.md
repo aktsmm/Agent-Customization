@@ -2,6 +2,8 @@
 applyTo: "**"
 ---
 
+<!-- description: セキュリティガイドライン（機密情報、外部API、入力検証） -->
+
 <!-- syncToGlobal: true -->
 <!-- author: aktsmm -->
 <!-- repository: https://github.com/aktsmm/ghc_template -->

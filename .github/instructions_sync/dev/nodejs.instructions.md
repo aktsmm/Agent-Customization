@@ -2,6 +2,8 @@
 applyTo: "**/*.{js,ts,mjs,cjs,jsx,tsx},**/package.json"
 ---
 
+<!-- description: Node.js 環境設定（nvm 推奨、パッケージマネージャー） -->
+
 <!-- syncToGlobal: true -->
 <!-- author: aktsmm -->
 <!-- repository: https://github.com/aktsmm/ghc_template -->

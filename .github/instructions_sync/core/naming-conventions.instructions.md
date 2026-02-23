@@ -2,6 +2,8 @@
 applyTo: "**"
 ---
 
+<!-- description: 命名規約（ファイル名、エージェント名、変数名） -->
+
 <!-- syncToGlobal: true -->
 <!-- author: aktsmm -->
 <!-- repository: https://github.com/aktsmm/ghc_template -->

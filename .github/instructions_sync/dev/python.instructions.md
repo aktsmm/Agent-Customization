@@ -2,6 +2,8 @@
 applyTo: "**/*.py,**/pyproject.toml,**/requirements*.txt"
 ---
 
+<!-- description: Python 環境設定（仮想環境必須、uv 推奨） -->
+
 <!-- syncToGlobal: true -->
 <!-- author: aktsmm -->
 <!-- repository: https://github.com/aktsmm/ghc_template -->

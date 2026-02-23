@@ -45,6 +45,8 @@
 | [communication.instructions.md](.github/instructions_sync/core/communication.instructions.md)           | コミュニケーションスタイル（結論ファースト、言語設定）       |
 | [autonomy.instructions.md](.github/instructions_sync/core/autonomy.instructions.md)                     | 自律的タスク実行の行動指針（問題解決、代替手段）             |
 | [naming-conventions.instructions.md](.github/instructions_sync/core/naming-conventions.instructions.md) | 命名規約（ファイル名、エージェント名、変数名）               |
+| [prompts-metadata.instructions.md](.github/instructions_sync/core/prompts-metadata.instructions.md)     | プロンプトメタデータ運用（syncToGlobal 基準、テンプレ）      |
+| [learnings.instructions.md](.github/instructions_sync/core/learnings.instructions.md)                   | Learnings 蓄積ルール（出力先・フォーマット・読み書き共通）   |
 | [microsoft-docs.instructions.md](.github/instructions_sync/integrations/microsoft-docs.instructions.md) | Microsoft 公式ドキュメント参照（MCP ツール活用、ソース明記） |
 
 ### Prompts（再利用可能なプロンプト）
@@ -53,6 +55,8 @@
 | ----------------------------------------------------------------------------------------------------------- | --------------------------------------- |
 | [create-workflow.prompt.md](.github/prompts/create-workflow.prompt.md)                                      | エージェント/ワークフロー作成（統合版） |
 | [review-agents-and-instructions.prompt.md](.github/prompts_sync/review-agents-and-instructions.prompt.md)   | エージェント・instructions のレビュー   |
+| [code-fix-error.prompt.md](.github/prompts_sync/code-fix-error.prompt.md)                                   | エラー修正（原因特定→最小修正→確認）    |
+| [code-review.prompt.md](.github/prompts_sync/code-review.prompt.md)                                         | コードレビュー＋自動修正                |
 | [debug-error.prompt.md](.github/prompts_sync/debug-error.prompt.md)                                         | エラーデバッグ支援                      |
 | [write-tests.prompt.md](.github/prompts_sync/write-tests.prompt.md)                                         | テストコード生成                        |
 | [git-commit.prompt.md](.github/prompts_sync/git-commit.prompt.md)                                           | Git コミット（Push なし）               |
@@ -69,7 +73,6 @@
 | [sample.prompt.md](.github/prompts/sample.prompt.md)                                                        | プロンプト作成用テンプレート            |
 
 <!-- skill-ninja-START -->
-
 ## Agent Skills (Compressed Index)
 
 > **IMPORTANT**: Prefer skill-led reasoning over pre-training-led reasoning.
@@ -77,8 +80,8 @@
 
 ### Skills Index
 
-| Skill                                                                    | Path                     | Description                                                                                          |
-| ------------------------------------------------------------------------ | ------------------------ | ---------------------------------------------------------------------------------------------------- |
+| Skill | Path | Description |
+|-------|------|-------------|
 | [agentic-workflow-guide](.github/skills/agentic-workflow-guide/SKILL.md) | `agentic-workflow-guide` | Create, review, and update Prompt and agents and workflows. Covers 5 workflow patterns, runSubage... |
 
 <!-- skill-ninja-END -->

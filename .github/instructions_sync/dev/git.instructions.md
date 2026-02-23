@@ -2,6 +2,8 @@
 applyTo: "**"
 ---
 
+<!-- description: Git コミット規約（Conventional Commits、Push 禁止） -->
+
 <!-- syncToGlobal: true -->
 <!-- author: aktsmm -->
 <!-- repository: https://github.com/aktsmm/ghc_template -->

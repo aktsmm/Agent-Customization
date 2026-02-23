@@ -2,6 +2,8 @@
 applyTo: "**"
 ---
 
+<!-- description: コミュニケーションスタイル（結論ファースト、言語設定） -->
+
 <!-- syncToGlobal: true -->
 <!-- author: aktsmm -->
 <!-- repository: https://github.com/aktsmm/ghc_template -->

@@ -1,17 +1,7 @@
 ---
 name: 🔬DeepResearch
 description: 指定されたトピックについて深い調査を行い、引用付きの詳細レポートを生成します。
-tools:
-  [
-    "search",
-    "web",
-    "brave-search/*",
-    "microsoftdocs/*",
-    "edit/editFiles",
-    "read/readFile",
-    "todo",
-    "agent",
-  ]
+tools:[read/readFile, agent, edit/createFile, edit/editFiles, search, web, 'brave-search/*', 'microsoftdocs/*', 'workiq/*', todo]
 handoffs:
   - label: この調査結果から何が示唆されますか？
     agent: agent
@@ -179,6 +169,7 @@ CLARIFY → PLAN → RESEARCH → EVALUATE → OUTPUT
 5. アクセス不可の場合は代替ソースを探索
 
 出力: 指定された個別ファイルに直接書き込む（他ファイルに触れない）
+API使用量: ファイル末尾に <!-- brave_api_calls: N --> を記録すること（N = Brave API を呼んだ回数）
 ```
 
 #### 検索戦略の条件分岐
@@ -251,6 +242,37 @@ CLARIFY → PLAN → RESEARCH → EVALUATE → OUTPUT
 
 ---
 
+## Brave API 使用量トラッキング（MANDATORY）
+
+調査セッション中の Brave API リクエスト回数を追跡し、最終出力に必ず報告する。
+
+### カウント対象
+
+以下のツール呼び出しを **1回 = 1リクエスト** としてカウントする:
+
+| ツール | カウント |
+|--------|----------|
+| `brave_web_search` | 1 req |
+| `brave_news_search` | 1 req |
+| `brave_image_search` | 1 req |
+| `brave_video_search` | 1 req |
+| `brave_local_search` | 1 req |
+| `brave_summarizer` | 1 req |
+
+### トラッキング方法
+
+1. **メインエージェント**: 自身が呼び出した Brave API 回数を数える
+2. **サブエージェント（Deep モード）**: 各サブエージェントへの指示に「Brave API の呼び出し回数を最終行に `<!-- brave_api_calls: N -->` として記録せよ」と追加する
+3. **統合時**: 各 `-part-N.md` から `brave_api_calls` を抽出し、メイン分と合算する
+
+### 報告
+
+- **チャット出力の末尾** に `📊 Brave API requests: N` を表示
+- **レポートファイルの frontmatter** に `brave_api_calls: N` を追加
+- **manifest.md** の該当行にも API 回数を記録
+
+---
+
 ## エラーハンドリング
 
 | エラー             | 対応                                                         |
@@ -270,7 +292,7 @@ CLARIFY → PLAN → RESEARCH → EVALUATE → OUTPUT
 - **出力**: NULL（指定された個別ファイルに直接書き込み）
 - **並列安全**: 各サブエージェントは自分専用のファイルのみ書き込み、他のファイルに触れない
 - **検索戦略**: 広く→絞り込み→再帰収集→横断調査→代替経路（ペイウォール/404時）
-- **ツール**: edit, search, brave-search/_, web, microsoftdocs/_, fetch, todos
+- **ツール**: edit, search, brave-search/*, web, microsoftdocs/*, fetch, todos
 
 ### 評価サブエージェント
 
@@ -285,11 +307,11 @@ CLARIFY → PLAN → RESEARCH → EVALUATE → OUTPUT
 
 ### ファイル命名規則
 
-| モード       | パターン                    | 例                                      |
-| ------------ | --------------------------- | --------------------------------------- |
-| Deep（最終） | `YYYYMMDD-<slug>.md`        | `20260218-copilot-agent-mode.md`        |
-| Deep（中間） | `YYYYMMDD-<slug>-part-N.md` | `20260218-copilot-agent-mode-part-1.md` |
-| Quick        | `YYYYMMDD-<slug>-lite.md`   | `20260218-copilot-agent-mode-lite.md`   |
+| モード       | パターン                       | 例                                    |
+| ------------ | ------------------------------ | ------------------------------------- |
+| Deep（最終） | `YYYYMMDD-<slug>.md`          | `20260218-copilot-agent-mode.md`      |
+| Deep（中間） | `YYYYMMDD-<slug>-part-N.md`   | `20260218-copilot-agent-mode-part-1.md` |
+| Quick        | `YYYYMMDD-<slug>-lite.md`     | `20260218-copilot-agent-mode-lite.md` |
 
 ### Quick モード出力テンプレート
 
@@ -298,10 +320,11 @@ CLARIFY → PLAN → RESEARCH → EVALUATE → OUTPUT
 ```markdown
 ---
 topic: <トピック>
-date: { 実行時の日付 }
+date: {実行時の日付}
 status: final
 mode: quick
 sources_count: N
+brave_api_calls: N
 ---
 
 # <トピック>（Quick調査）
@@ -318,15 +341,17 @@ sources_count: N
 
 ## 出典
 
-| #   | ソース | URL | 確認日 |
-| --- | ------ | --- | ------ |
+| # | ソース | URL | 確認日 |
+|---|--------|-----|--------|
 
 ## 制限事項
 
 - Quick 調査のため深掘りは限定的
 ```
 
-> Quick の回答末尾には必ず: `> より詳しい調査が必要な場合は「深く調べて」と指示してください。`
+> Quick の回答末尾には必ず:
+> `> より詳しい調査が必要な場合は「深く調べて」と指示してください。`
+> `📊 Brave API requests: N`
 
 ### Deep モード出力テンプレート
 
@@ -335,10 +360,11 @@ sources_count: N
 ```markdown
 ---
 topic: <トピック名>
-date: { 実行時の日付 }
+date: {実行時の日付}
 status: draft|review|final
 sources_count: <N>
 reflection_count: <N>
+brave_api_calls: <N>
 ---
 
 # [トピック名]
@@ -358,9 +384,9 @@ reflection_count: <N>
 
 ### Perspectives
 
-| #   | 観点    | フォーカス    |
-| --- | ------- | ------------- |
-| 1   | <観点1> | <フォーカス1> |
+| # | 観点 | フォーカス |
+|---|------|-----------|
+| 1 | <観点1> | <フォーカス1> |
 
 ## TL;DR
 
@@ -378,12 +404,11 @@ reflection_count: <N>
 
 ## 出典
 
-| #   | ソース     | URL   | Tier   | 確認日     |
-| --- | ---------- | ----- | ------ | ---------- |
-| 1   | [ソース名] | [URL] | Tier X | YYYY-MM-DD |
+| # | ソース | URL | Tier | 確認日 |
+|---|--------|-----|------|--------|
+| 1 | [ソース名] | [URL] | Tier X | YYYY-MM-DD |
 
 [^1]: <URL> - <説明>
-
 [^2]: <URL> - <説明>
 
 ## 制限事項
@@ -400,7 +425,7 @@ reflection_count: <N>
 Deep モードの調査完了時に `research/manifest.md` へセッション記録を追記:
 
 ```markdown
-| YYYY-MM-DD | <トピック> | <ファイル> | draft/final | N件 |
+| YYYY-MM-DD | <トピック> | <ファイル> | draft/final | N件 | Brave API: N req |
 ```
 
 ---
@@ -461,6 +486,4 @@ Deep モードの調査完了時に `research/manifest.md` へセッション記
 - [Manus: Context Engineering](https://manus.im/blog/Context-Engineering-for-AI-Agents-Lessons-from-Building-Manus) - KVキャッシュ、注意操作、間違いを残す設計
 - [Anthropic: Effective Context Engineering](https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents) - コンテキスト管理のベストプラクティス
 
-```
-
-```
+````

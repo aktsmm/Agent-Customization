@@ -2,6 +2,8 @@
 applyTo: "**"
 ---
 
+<!-- description: ターミナル操作規約（PowerShell 互換、破壊的操作の注意） -->
+
 <!-- syncToGlobal: true -->
 <!-- author: aktsmm -->
 <!-- repository: https://github.com/aktsmm/ghc_template -->

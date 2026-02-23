@@ -2,6 +2,8 @@
 applyTo: "**"
 ---
 
+<!-- description: Microsoft 公式ドキュメント参照（MCP ツール活用、ソース明記） -->
+
 <!-- syncToGlobal: true -->
 <!-- author: aktsmm -->
 <!-- repository: https://github.com/aktsmm/ghc_template -->

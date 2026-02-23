@@ -10,25 +10,19 @@ description: セッション終了時のクリーンアップ
 
 # Prompt: Cleanup Session
 
-セッション終了時のクリーンアップ。
+セッション終了時のクリーンアップ。以下を順番に実行：
 
-## セッション終了チェックリスト
+実行ルール:
 
-実行前に確認：
+- **この順番を維持**（途中で止まらず最後まで進める）
+- コマンドが実行できない/見つからない場合は **スキップして次へ**
+- 全体が終わったら **1行だけ**で結果を返す（例: `Cleanup 完了（skipped: 1）`）
 
-- [ ] 未保存ファイルがないか
-- [ ] エラーが残っていないか（`get_errors` で確認）
-- [ ] コミットすべき変更があるか（`git status`）
-- [ ] TODO リストが完了しているか
-- [ ] 重要な学びがあれば `export-log.prompt.md` でエクスポート済みか
-
-## コマンド実行
-
-以下を順番に実行：
-
-1. `inlineChat.acceptChanges`
-2. `workbench.action.files.saveAll`
-3. `workbench.action.closeUnmodifiedEditors`
-4. `workbench.action.chat.newChat`
-
-> 💡 チャット履歴のクリアが必要な場合は手動で `Ctrl+Shift+P` → "Chat: Clear All History" を実行してください。
+1. `workbench.action.files.saveAll` — 全ファイル保存
+2. `workbench.files.action.collapseExplorerFolders` — フォルダツリーを折りたたむ
+3. `workbench.action.terminal.killAll` — ターミナル全削除
+4. `workbench.action.closeAllEditors` — 全エディタを閉じる
+5. `workbench.action.closePanel` — 下部パネルを閉じる
+6. `workbench.action.closeSidebar` — サイドバーを閉じる
+7. `notifications.clearAll` — 通知を全クリア
+8. `workbench.action.chat.newChat` — 新しいチャットを開始（※これが最後のステップ）

@@ -93,6 +93,32 @@ Get-ChildItem -Path ".github\agents_sync" -Recurse -Filter "*.md" -ErrorAction S
 }
 
 if ($num -eq 0) { Write-Host "`n差分なし - 全て同期済み" -ForegroundColor Green } else { Write-Host "`n合計: $num ファイルに差分があります" -ForegroundColor Cyan }
+
+# --- 孤立ファイル検出（グローバルにのみ存在するファイル） ---
+$orphanNum = 0
+$templateInstructions = Get-ChildItem -Path ".github\instructions_sync" -Recurse -Filter "*.md" -EA SilentlyContinue | ForEach-Object { $_.Name }
+$templatePrompts = Get-ChildItem -Path ".github\prompts_sync" -Recurse -Filter "*.md" -EA SilentlyContinue | ForEach-Object { $_.Name }
+$templateAgents = Get-ChildItem -Path ".github\agents_sync" -Recurse -Filter "*.md" -EA SilentlyContinue | ForEach-Object { $_.Name }
+$managedPrompts = @($templatePrompts) + @($templateAgents)
+
+Write-Host "`n=== Orphans (Global only) ===" -ForegroundColor Magenta
+
+Get-ChildItem -Path (Join-Path $globalRoot "instructions") -Recurse -Filter "*.md" -EA SilentlyContinue | ForEach-Object {
+    if ($_.Name -notin $templateInstructions) {
+        $orphanNum++
+        $rel = $_.FullName -replace [regex]::Escape("$globalRoot\"), ""
+        Write-Host "[ORPHAN-$orphanNum] $rel" -ForegroundColor Magenta
+    }
+}
+Get-ChildItem -Path (Join-Path $globalRoot "prompts") -Recurse -Filter "*.md" -EA SilentlyContinue | ForEach-Object {
+    if ($_.Name -notin $managedPrompts) {
+        $orphanNum++
+        $rel = $_.FullName -replace [regex]::Escape("$globalRoot\"), ""
+        Write-Host "[ORPHAN-$orphanNum] $rel" -ForegroundColor Magenta
+    }
+}
+
+if ($orphanNum -eq 0) { Write-Host "孤立ファイルなし" -ForegroundColor Green } else { Write-Host "`n孤立ファイル: $orphanNum 件（グローバルにのみ存在）" -ForegroundColor Magenta }
 ```
 
 ### Step 3: ユーザーに選択肢を提示
@@ -127,6 +153,37 @@ if ($num -eq 0) { Write-Host "`n差分なし - 全て同期済み" -ForegroundCo
 - ユーザーの回答を待ってから次に進む。勝手にコピーしない。
 - `← NEWER` マークで新しい方を明示。
 - `auto` 選択時は新しい方を自動判定して双方向に同期。
+
+### Step 3.5: 孤立ファイルの対応確認
+
+Step 2 で `[ORPHAN]` が検出された場合、各ファイルの内容を確認し、ユーザーに対応を確認する。
+
+**確認フロー**:
+
+1. 孤立ファイルの内容を `readFile` で読み、概要を把握する
+2. 以下の判断基準で分類し、ユーザーに提示する：
+   - **個人情報・機密情報を含む** → 「ローカル専用として放置」を推奨
+   - **汎用的で他環境でも使える** → 「テンプレートに取り込む」を推奨
+   - **旧名・リネーム前の残骸** → 「削除」を推奨
+3. ファイルごとに選択肢を提示：
+   - `取り込む` : テンプレートの対応フォルダにコピー（`.instructions.md` → `instructions_sync/`、`.prompt.md` → `prompts_sync/`、`.agent.md` → `agents_sync/`）
+   - `放置` : グローバルにのみ残す（ローカル専用）
+   - `削除` : グローバルから削除
+
+**パス変換ルール（取り込み時）**:
+
+| グローバルのパス                         | テンプレートの配置先                          |
+| ---------------------------------------- | --------------------------------------------- |
+| `instructions/<sub>/xxx.instructions.md` | `instructions_sync/<sub>/xxx.instructions.md` |
+| `prompts/xxx.prompt.md`                  | `prompts_sync/xxx.prompt.md`                  |
+| `prompts/xxx.instructions.md`            | `prompts_sync/xxx.instructions.md`            |
+| `prompts/xxx.agent.md`                   | `agents_sync/xxx.agent.md`                    |
+
+**重要**:
+
+- 孤立ファイルがない場合はこのステップをスキップする。
+- 取り込んだ場合は AGENTS.md のテーブルにも追加する。
+- ユーザーの回答を待ってから実行する。
 
 ### Step 4: 選択されたファイルをコピー
 
@@ -196,6 +253,9 @@ $templateRoot = Get-Location
   → Template → Global: N 件
   ← Global → Template: M 件
   ⏭ スキップ: X 件
+  📥 孤立ファイル取り込み: Y 件
+  🗑️ 孤立ファイル削除: Z 件
+  ⏸️ 孤立ファイル放置: W 件
 ```
 
 ---
