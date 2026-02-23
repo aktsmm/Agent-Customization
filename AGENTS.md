@@ -39,7 +39,7 @@
 | ------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------- |
 | [git.instructions.md](.github/instructions_sync/dev/git.instructions.md)                                | Git 操作ルール（Conventional Commits、Push 禁止、gh CLI、LICENSE 規約） |
 | [terminal.instructions.md](.github/instructions_sync/dev/terminal.instructions.md)                      | ターミナル操作規約（PowerShell 互換、破壊的操作の注意）                 |
-| [python.instructions.md](.github/instructions_sync/dev/python.instructions.md)                          | Python 環境設定（仮想環境必須、uv 推奨）                                |
+| [python.instructions.md](.github/instructions_sync/dev/python.instructions.md)                          | Python 環境設定（仮想環境必須、uv 推奨、並列化パターン）                |
 | [nodejs.instructions.md](.github/instructions_sync/dev/nodejs.instructions.md)                          | Node.js 環境設定（nvm 推奨、パッケージマネージャー）                    |
 | [security.instructions.md](.github/instructions_sync/core/security.instructions.md)                     | セキュリティガイドライン（機密情報、外部 API、入力検証）                |
 | [communication.instructions.md](.github/instructions_sync/core/communication.instructions.md)           | コミュニケーションスタイル（結論ファースト、言語設定）                  |
