@@ -66,9 +66,9 @@
 | [export-session-log.prompt.md](.github/prompts_sync/export-session-log.prompt.md)                           | 汎用作業ログ（AI可読・構造化）          |
 | [export-copilot-session-dialogue.prompt.md](.github/prompts_sync/export-copilot-session-dialogue.prompt.md) | セッション対話ログ・成果エクスポート    |
 | [export-knowledge.prompt.md](.github/prompts_sync/export-knowledge.prompt.md)                               | 知見エクスポート（ドメイン自動判定）    |
-| [ExportSync-to-Public-Skills.prompt.md](.github/prompts_sync/ExportSync-to-Public-Skills.prompt.md)         | 知見を公開スキルリポジトリに反映        |
+| [export-sync-to-public-skills.prompt.md](.github/prompts_sync/export-sync-to-public-skills.prompt.md)       | 知見を公開スキルリポジトリに反映        |
 | [wrap-up-work.prompt.md](.github/prompts_sync/wrap-up-work.prompt.md)                                       | セッション終了時クリーンアップ          |
-| [Convert-to-Tweet.prompt.md](.github/prompts_sync/Convert-to-Tweet.prompt.md)                               | セッション内容をXポスト用に変換         |
+| [convert-to-tweet.prompt.md](.github/prompts_sync/convert-to-tweet.prompt.md)                               | セッション内容をXポスト用に変換         |
 | [refactor-context.prompt.md](.github/prompts_sync/refactor-context.prompt.md)                               | コンテキスト最適化（instructions等）    |
 | [sample.prompt.md](.github/prompts/sample.prompt.md)                                                        | プロンプト作成用テンプレート            |
 

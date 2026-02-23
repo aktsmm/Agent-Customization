@@ -69,9 +69,9 @@ Copilot Chat で `/prompt` コマンドを使用：
 /prompt export-session-log           # 汎用作業ログ（AI 可読・構造化）
 /prompt export-copilot-session-dialogue  # セッション対話ログ・成果エクスポート
 /prompt export-knowledge             # 知見エクスポート（ドメイン自動判定）
-/prompt ExportSync-to-Public-Skills  # 知見を公開スキルリポジトリに反映
+/prompt export-sync-to-public-skills # 知見を公開スキルリポジトリに反映
 /prompt wrap-up-work                 # セッション終了時クリーンアップ
-/prompt Convert-to-Tweet             # セッション内容を X ポスト用に変換
+/prompt convert-to-tweet              # セッション内容を X ポスト用に変換
 /prompt refactor-context             # コンテキスト最適化（instructions 等）
 ```
 
@@ -115,9 +115,9 @@ cp .github/agents/sample.agent.md .github/agents/my-agent.agent.md
 │   ├── export-session-log.prompt.md
 │   ├── export-copilot-session-dialogue.prompt.md
 │   ├── export-knowledge.prompt.md
-│   ├── ExportSync-to-Public-Skills.prompt.md
+│   ├── export-sync-to-public-skills.prompt.md
 │   ├── wrap-up-work.prompt.md
-│   ├── Convert-to-Tweet.prompt.md
+│   ├── convert-to-tweet.prompt.md
 │   └── refactor-context.prompt.md
 └── skills/                    # Copilot Skills
     └── agentic-workflow-guide/
