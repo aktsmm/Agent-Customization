@@ -26,5 +26,6 @@ research/
 .orchestrator/
 .worktrees/
 
-# Environment-specific credentials (contains tenant/subscription IDs)
+# Environment-specific credentials (contains tenant/subscription IDs, account info)
 .github/prompts_sync/azure-environment.instructions.md
+.github/prompts_sync/developer-accounts.instructions.md
