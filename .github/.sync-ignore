@@ -12,3 +12,4 @@ debug-error.prompt.md
 
 # --- Template に取り込まないファイル（個人情報・環境固有） ---
 developer-accounts.instructions.md
+azure-environment.instructions.md
