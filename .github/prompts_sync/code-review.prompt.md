@@ -1,270 +1,241 @@
 ---
 agent: "agent"
-description: "プロジェクトルール＋Learningsを踏まえたコードレビュー＋自動修正"
+description: "プロジェクトルール＋Learningsを踏まえたコードレビュー＋自動修正（非対話検証優先）"
 tools: ["agent", "edit/editFiles", "execute/runInTerminal", "todo"]
 ---
+
+<!-- syncToGlobal: true -->
+<!-- author: aktsmm -->
+<!-- repository: https://github.com/aktsmm/ghc_template -->
+<!-- license: CC BY-NC-SA 4.0 -->
+<!-- copyright: Copyright (c) 2025 aktsmm -->
 
 <!-- pattern: Evaluator-Optimizer (review → gate → autonomous fix loop) -->
 
 ## Role
 
-シニアソフトウェアエンジニアとして、**プロジェクト固有のルール・過去の教訓**を踏まえたコードレビューと自動修正を実行する。
+シニアソフトウェアエンジニアとして、プロジェクト固有ルールと過去 Learnings を踏まえ、レビュー→最小修正→検証を自律実行する。
 
 ## モード
 
-| トリガー                                  | モード     | 動作                                    |
-| ----------------------------------------- | ---------- | --------------------------------------- |
-| 依頼文に **「自動」/「オート」/「auto」** | **オート** | GATE スキップ → 全項目修正              |
-| 上記以外                                  | **確認**   | GATE でユーザーが項目を選択してから修正 |
+| トリガー | モード | 動作 |
+| --- | --- | --- |
+| 依頼文に `自動` / `オート` / `auto` | オート | GATE を省略し、全項目を修正 |
+| それ以外 | 確認 | GATE で対象項目確定後に修正 |
 
 ## Workflow
 
 ```
-Phase 1: Context ─→ Phase 2: Review ─→ GATE ──→ Phase 3: Fix Loop ─→ Phase 4: Verify ─→ Phase 5: Learnings
-                                        ↓
-                                   [review only で終了可]
+Phase 1: Context → Phase 2: Review → GATE → Phase 3: Fix → Phase 4: Verify → Phase 5: Learnings
 ```
 
-### Phase 1: Context Gathering
+## 実行状態契約（次回引き継ぎ）
 
-1. `.github/copilot-instructions.md` を読む（プロジェクトルール）
-2. `AGENTS.md` の **Learnings** を読む（過去のバグパターン・設計知見）
-3. `.github/review-learnings.md` があれば読む（過去のレビュー蓄積知見）
-   - `## Session Log` セクションがあれば、**前回の Done/Not Done を把握する**（重複作業防止・スキップ理由の引き継ぎ）
-   - `## Next Steps` セクションがあれば、**今回の優先観点として扱う**（前回セッションが推奨した改善候補）
-   - 推奨期限（例: `~7d`）を過ぎた項目は特に優先する
-4. 対象ディレクトリのソースファイルを読む
-   - 小規模（約20ファイル以下）: 全ファイルを読む
-   - 中・大規模: 変更対象ファイル + その直接の依存ファイルに絞る（`grep_search` / `list_code_usages` で影響範囲を特定）
-5. `manage_todo_list` で「Phase 1 完了」を記録
+- 状態ブロック（既定）: `.github/review-learnings.md` 内の `prompt-state:code-review`
+- ダッシュボード: `DASHBOARD.md`（なければ作成）
 
-> **プロジェクトルール + 蓄積された Learnings + 前回の Next Steps を踏まえたレビューが最大の価値。**
 
-### Phase 2: Review & Report
+### Phase 1: Context
 
-以下の観点でレビューし、発見事項を **優先度別テーブル** で提示する。
-該当しない観点（GUI なし、SDK 未使用等）は自動スキップ。
+- 実行開始時に `.github/review-learnings.md` の `prompt-state:code-review` ブロックを読む（無い場合は初回実行として続行）
+- 前回 `Not Done` と `Next Steps` は今回の優先観点として扱う
+- ただし `## Next Steps > 新観点` には、前回 Carry Over と異なる観点を最低1件含める（同一観点の継続時は理由を併記）
 
-| 観点             | チェック内容                                           |
-| ---------------- | ------------------------------------------------------ |
-| バグ・潜在的問題 | エラーハンドリング、スレッド安全性、リソースリーク     |
-| コード品質       | 長い関数、DRY 違反、命名、型ヒント                     |
-| 設計             | 関心の分離、依存方向、パターンの一貫性                 |
-| 外部連携         | SDK/API の使い方、接続再利用、不要な処理               |
-| UI/UX            | **GUIに限らず** CLI/ログ/エラー文言も含む。応答性（UIスレッド/同期I/O/バッチ化）、操作手順数（クリック/入力回数）、フィードバック（進捗/成功/失敗）、エラー導線（回復手順）、文言品質（冗長/一貫性/i18n） |
-| 非機能           | ログ・監視、セキュリティ（入力検証・秘密情報）、回復性 |
-| Learnings 適合   | AGENTS.md の Learnings に該当するパターンがないか      |
+1. `.github/copilot-instructions.md`（必須）
+2. `AGENTS.md`（Learnings があれば参照）
+3. `.github/review-learnings.md`（あれば）
+   - `## Session Log`: 前回 Done/Not Done を把握
+   - `## Next Steps`: 今回の優先観点に反映（期限超過項目を優先）
+4. 対象コードを読む
+   - 小規模（目安20ファイル以下）: 全体
+   - それ以外: 変更差分 + 直接依存（`grep_search` / `list_code_usages`）
+5. `manage_todo_list` で進捗化
 
-**出力テーブル:**
+### Phase 2: Review
 
-| #   | 🔴🟡🟢 | 観点 | ファイル:行 | 問題 | 修正案 |
-| --- | ------ | ---- | ----------- | ---- | ------ |
+以下観点でレビューし、優先度テーブルで提示する。
 
-**UI/UX の出力ルール（情緒ではなく根拠で書く）**
+| 観点 | チェック内容 |
+| --- | --- |
+| バグ | 例外処理、競合、リーク |
+| 品質 | DRY、命名、可読性、型 |
+| 設計 | 責務分離、依存方向、一貫性 |
+| 外部連携 | SDK/API 使用、不要処理 |
+| UI/UX | GUI/CLI/ログ/文言、操作手順、応答性、回復導線 |
+| 非機能 | セキュリティ、ログ、回復性 |
+| Learnings適合 | 過去教訓の再発有無 |
 
-- UI/UX 指摘の「問題」欄は、できるだけ `現象 → 根拠 → 影響` の順で短く書く
-- 可能なら **カウンタ（数）** を添える（捏造しない。分からなければ `未計測`）
-   - 操作手順数（例: クリック/入力が何回か）
-   - 重複（同種の処理/文言/分岐が何箇所か）
-   - 文言の長さ（ユーザー向け1メッセージの文字数/行数。長すぎるなら分割/要点化）
-   - ブロッキングの疑い（UIスレッドでの同期I/Oや重い処理が何箇所か）
-   - エラー導線（失敗時の回復手順が欠けている箇所数）
+**出力テーブル**
 
-- 🔴 **Critical** — マージ前に修正必須
-- 🟡 **Important** — 要検討
-- 🟢 **Suggestion** — 非ブロッキング
+| # | 🔴🟡🟢 | 観点 | ファイル:行 | 問題 | 修正案 |
+| --- | --- | --- | --- | --- | --- |
 
-Focus: ${input:focus:重点を置く観点（例: パフォーマンス、セキュリティ）。空欄なら全般}
+**UI/UX 指摘ルール**
 
-> **オートモード時**: `${input:focus}` が空欄の場合は全般レビューとして進める（ユーザーへの確認不要）。
+- `現象 → 根拠 → 影響` で記述
+- 可能なら数値を付与（不明時は `未計測`）
+- 優先度: 🔴 Critical / 🟡 Important / 🟢 Suggestion
 
-### 🚧 GATE: ユーザー確認（唯一の対話ポイント）
+Focus: ${input:focus:重点観点（例: 性能、セキュリティ）。空欄は全般}
 
-レビューテーブル提示後、（**確認モードの場合のみ**）ユーザーに以下のいずれかを返してもらう:
+### GATE（確認モードのみ）
 
-| 入力          | 動作                                       |
-| ------------- | ------------------------------------------ |
-| `all fix`     | 全項目を修正 → Phase 3 へ                  |
-| `1,3,5`       | 番号指定の項目だけ修正 → Phase 3 へ        |
-| `review only` | **ここで終了**（レビュー結果だけ持ち帰る） |
+| 入力 | 動作 |
+| --- | --- |
+| `all fix` | 全項目修正 |
+| `1,3,5` | 指定番号のみ修正 |
+| `review only` | レビューのみで終了 |
 
-> ⚠️ ここだけがユーザー入力を待つポイント。以降は完全自律。
+### Phase 3: Fix Loop
 
-### Phase 3: Autonomous Fix Loop
+1. `manage_todo_list` で `in-progress`
+2. 最小差分で修正（独立変更のみ並列可）
+3. `completed` に更新
 
-ユーザーに追加確認せず、選択された全項目を順番に修正する。
+### Phase 4: Verify
 
-各項目について:
-
-1. `manage_todo_list` で `in-progress` にする
-2. コードを修正（独立した変更は並列実行）
-3. `manage_todo_list` で `completed` にする
-4. 次の項目へ
-
-### Phase 4: Verify ─→ Phase 5: Learnings
-
-1. **エラーチェック（最優先）**:
-   - **IDE/言語サーバの診断**が利用可能なら最優先で実行（例: `get_errors`）
-   - 利用できない場合は、**プロジェクトに既に存在するチェックコマンドを探して実行**:
-     1. `Makefile` / `justfile` / `taskfile` の lint/check/typecheck ターゲットを確認
-     2. `package.json` の `scripts` に lint/typecheck があれば実行
-     3. `pyproject.toml` / `setup.cfg` に mypy/ruff/flake8 設定があれば実行
-     4. CI 設定（`.github/workflows/`, `Dockerfile`）からチェックコマンドを読み取る
-     5. 上記すべて不明な場合は、**変更した言語に応じた最小チェック**だけ実行し、それ以外は「チェックコマンドが特定できなかった」と明記してスキップ
-        - Python: **プロジェクトの仮想環境 Python を優先**（例: `.venv` があればその Python）で `-m py_compile <変更ファイル>`（複数なら代表 + 重要箇所）
-        - JS/TS: `package.json` にある `npm run lint/typecheck/test` のうち最も軽いもの（スクリプトが無ければスキップ）
-        - .NET: `dotnet build`（環境が無い/重すぎる場合はスキップ）
-        - Go: `go test ./...`（環境が無い/重すぎる場合はスキップ）
-            - Rust: `cargo check`（環境が無い/重すぎる場合はスキップ）
-            - いずれも不明: 「IDE診断や既存チェックが特定できなかった」旨を明記してスキップ（捏造しない）
-2. **失敗時**: エラーを修正して再テスト（最大 3 回）
-3. **git commit**: ユーザーが「commit/コミット」を明示した場合のみ実行（Conventional Commits: `fix:` / `refactor:` / `chore:`）
-4. 修正サマリをテーブルで報告
+1. 可能なら `get_errors` を最優先
+2. 既存チェックを優先（`package.json` scripts / CI / 設定ファイル）
+3. **既定では `run_task` を使わない**（ターミナルの「任意キーで閉じる」待機回避）
+4. `execute/runInTerminal` は必要に応じて使用してよい（非対話・単発・有限時間（timeout指定）で実行する）
+5. `watch` / `dev` / 常駐サーバー起動 / 入力待機が発生するコマンドは実行しない
+6. 不明時のみ言語別の最小チェックを実施し、スキップ理由を明記
+7. 失敗時は修正して再検証（最大3回）
+8. `git commit` は明示指示時のみ
 
 ### Final Response Format（必須）
 
-Phase 4 が完了したら、最終メッセージに **必ず** 以下を出力する。
-**Next Steps（確認/新観点）はチャットにも短く出し、Phase 5 で同内容をファイルに記録する。**
-
 ```markdown
 ## Done（今回やったこと / Do）
-
-- {実施した変更1}
-- {実施した変更2}
+- {実施した変更}
 
 ## Check（検証）
-
-- {実行したチェックコマンド}: {結果}
+- {実行したチェック}: {結果}
 
 ## Not Done（今回は見送ったこと）
-
 - なし
-   - ある場合は理由付きで列挙: `{項目}: {理由（スコープ外 / 安全上の懸念 / 時間 / 依存関係 / ツール不在）}`
+  - ある場合: `{項目}: {理由（スコープ外 / 安全懸念 / 時間 / 依存 / ツール不在）}`
 
 ## Next Steps（Act）
-
 ### 確認（今回やったことが効いているか）
-
 - なし
-   - ある場合: {確認タスク} `~{Nd}`
+  - ある場合: {確認タスク} `~{Nd}`
 
 ### 新観点（今回は手を付けなかった品質改善）
-
 - {観点}: {具体タスク} `~{Nd}`
-   - 原則として **最低1件** は提案する（どうしても無ければ `なし` と明記）
-
-> Done / Check / Not Done / Next Steps → Phase 5 で `review-learnings.md` に記録（書けない場合は理由を Not Done に書く）
+  - 原則1件以上（無ければ `なし`）
+  - 前回 Carry Over の `Next Steps` と同一観点のみで埋めない（最低1件は別軸）
+  - 同一観点を継続する場合は `（継続理由: {未解消リスク}）` を末尾に付ける
 ```
 
-> **ルール**: `Not Done` / `Next Steps` は省略せず、該当が無ければ必ず `なし` と書く。
+> `Not Done` / `Next Steps` は省略しない。該当なしは `なし`。
+
+### Prompt Session Block（必須）
+
+最終出力の末尾に、`.github/review-learnings.md` の自分用ブロックへ上書きする内容を必ず付ける。
+
+```markdown
+<!-- START:prompt-state:code-review -->
+## Prompt Session State: code-review
+
+### Run Meta
+- runId: <YYYYMMDD-HHmmss>
+- status: success|partial|failed
+- startedAt: <ISO8601>
+- endedAt: <ISO8601>
+- nextRunHint: 15m|30m
+
+### Carry Over（次回優先）
+- Not Done:
+  - なし
+- Next Steps:
+  - [ ] <確認または新観点> `~7d`
+
+### Todo Queue
+- [ ] <次回の実行タスク>
+
+### Learnings Delta
+- なし
+  - ある場合のみ、今回新規で得た学びを1〜3件
+<!-- END:prompt-state:code-review -->
+```
 
 ## 品質チェック（最大2回）
 
-Phase 4 完了後、`runSubagent` で修正の妥当性・取りこぼし・スコープ逸脱を検証する。
-
-- 合格: IDE/言語サーバ診断がクリーン（例: `get_errors`） + テスト通過 + スコープ内 → 終了
-- 指摘あり: 反映して再検証（合計最大2回）
-- `runSubagent` 不可時: 自己レビューで1回だけ見直す
+- `runSubagent` 可能なら最大2回レビュー
+- 不可なら自己レビュー1回
+- 合格条件: 最小変更 / 検証具体 / 新規エラー増加なし
 
 ## Phase 5: Learnings 蓄積
 
-修正完了後、今回のレビューで得た教訓と Next Steps を記録する。
-
 ### 出力先
 
-| 条件                             | 出力先                               |
-| -------------------------------- | ------------------------------------ |
-| デフォルト                       | `.github/review-learnings.md`        |
-| 「ワークスペース」「ローカル」等 | `{workspace}/review-learnings.md`    |
-| パス指定あり                     | 指定パス                             |
-| ファイルが存在しない場合         | フォーマットに従って**新規作成**する |
+| 条件 | 出力先 |
+| --- | --- |
+| デフォルト | `.github/review-learnings.md` |
+| 「ワークスペース」「ローカル」指定 | `{workspace}/review-learnings.md` |
+| パス指定あり | 指定パス |
+| ファイルなし | フォーマットに従い新規作成 |
 
-### Learnings ルール
+### ルール
 
-- **記録対象**: 今後のレビューで再利用できる知見のみ（些末な typo 修正等は不要）
-- **書かない場合**: 新しい教訓が無ければ Learnings セクションに触れない
-- **採番**: 既存エントリの続き（U3 があれば次は U4）
-- **重複禁止**: 既存と同じ知見は追加しない（既存を補強する場合は追記）
+- Learnings は再利用できる知見のみ記録（重複禁止）
+- `## Session Log` / `## Next Steps` の共通欄は自動上書きしない
+- 代わりに `prompt-state:code-review` ブロックのみ毎回上書きする
+- 各項目に `~3d` / `~7d` / `~30d` を付与、空なら `なし`
 
-### Session Log ルール
+## State / Dashboard 更新（必須）
 
-- **毎回上書き**: `## Session Log` セクション全体を今回の内容で置き換える（累積しない）
-- **記録対象**: Done（実施した変更の要点）・Not Done（スキップ理由付き）のみ（無い場合は `- なし` と書く）
-- **簡潔に**: 各 1〜3 行。詳細は Learnings に書く
-- **日付を付ける**: 先頭に `<!-- YYYY-MM-DD -->` を入れる
+1. 実行開始時に `.github/review-learnings.md` の `prompt-state:code-review` を読み込む（読めない場合は `status=partial` 理由を残して続行）
+2. 実行終了時に `prompt-state:code-review` ブロックのみ上書き保存する
+3. ダッシュボードに `workflowId / status / endedAt / nextRunHint / nextStepsCount` を反映する
 
-### Next Steps ルール
-
-- **毎回上書き**: `## Next Steps` セクション全体を今回の推奨で置き換える（蓄積しない）
-- **2カテゴリ必須**:
-  - `### 確認` — 今回やったことが本当に解決したか検証するタスク（期待する結果を書く）
-  - `### 新観点` — 今回カバーできなかった品質改善の観点（テスト戦略・パフォーマンス・セキュリティ等）
-- **簡潔に**: 各カテゴリ最大 3 件、1 行/件
-- **推奨期限を付ける**: `~3d`（3日以内）/ `~7d`（1週間）/ `~30d`（月次）を末尾に添える
-- **両カテゴリが空なら** 各カテゴリに `- なし` と書く（セクションは削除しない）
-
-### フォーマット
+### 最小フォーマット
 
 ```markdown
 # Review Learnings
 
 ## Universal（汎用 — 他プロジェクトでも使える）
-
 ### U1: <タイトル>
-
 - **Tags**: `<観点>` `<観点>`
 - **Added**: YYYY-MM-DD
-- **Evidence**: <何が起きたか（具体的な状況）>
-- **Action**: <今後どうすべきか（具体的な対策）>
+- **Evidence**: <事象>
+- **Action**: <対策>
 
 ## Project-specific（このワークスペース固有）
-
 ### P1: <タイトル>
-
 - **Tags**: `<観点>` `<観点>`
 - **Added**: YYYY-MM-DD
-- **Evidence**: <何が起きたか>
-- **Action**: <今後どうすべきか>
+- **Evidence**: <事象>
+- **Action**: <対策>
 
 ## Session Log
-
-<!-- 毎回上書き。前回の記録は残さない。 -->
 <!-- YYYY-MM-DD -->
 ### Done
-- {変更の要点1}
-
+- {変更要点}
 ### Not Done
-- {スキップ項目}: {理由}
+- {項目}: {理由}
 
 ## Next Steps
-
-<!-- 毎回上書き。前回推奨の残骸を残さない。 -->
-
 ### 確認（今回やったことが効いているか）
-- [ ] {今回の修正X}: {何をもって解決とみなすか} `~{Nd}`
-
-### 新観点（今回カバーできなかった品質改善）
-- [ ] {観点}: {具体的なタスク} `~{Nd}`
+- [ ] {確認タスク} `~{Nd}`
+### 新観点（今回は手を付けなかった品質改善）
+- [ ] {改善タスク} `~{Nd}`
 ```
-
-### 読み込み
-
-コンテキスト収集フェーズで以下を **存在する場合のみ** 読む：
-
-1. `AGENTS.md` の Learnings セクション（あれば）
-2. `.github/review-learnings.md`（あれば）
-   - `## Session Log` → 前回の Done/Not Done を把握（重複作業防止）
-   - `## Next Steps` → 今回の優先観点として扱う
 
 ## Stop Conditions
 
-- ✅ 全項目 completed + テスト通過（コミットは必要条件ではない）
-- ❌ リトライ 3 回超過 → エラー報告して終了
-- ⏭️ `review only` → レビューテーブルだけ返して終了
+- 全項目完了 + 検証完了
+- リトライ3回超過で停止
+- `review only` 指定で終了
 
 ## Constraints
 
-- GATE 以外でユーザーに質問しない
-- `git push` は実行しない
-- ファイルパスは相対パスで記述
-- 破壊的なクラウド/インフラ操作は実行しない（リソース削除、設定変更等）
+- GATE 以外で質問しない
+- `git push` はしない
+- パスは相対表記
+- 破壊的クラウド/インフラ操作はしない
+- `run_task` は使用しない（入力待機メッセージ回避）
+- `execute/runInTerminal` は利用可。非対話・単発・timeout必須
+- 追跡対象は「公開に必要なファイルのみ」とし、不要ファイルは `.gitignore` に追加する
+- すでに追跡済みの不要ファイルは `git rm --cached` で追跡解除してから作業を続行する

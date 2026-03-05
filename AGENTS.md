@@ -4,20 +4,21 @@
 
 > `sample.agent.md` が最小構成の例、`orchestrator.agent.md` がオーケストレーター構成の例です。テンプレ用途で増やすときはここに行を追加してください。
 
-| エージェント名     | マニフェスト                             | 主な役割                                    |
-| ------------------ | ---------------------------------------- | ------------------------------------------- |
-| Sample Agent       | `.github/agents/sample.agent.md`         | エージェント定義のテンプレート              |
-| Orchestrator Agent | `.github/agents/orchestrator.agent.md`   | サブエージェントを統括する司令塔の例        |
-| Sync to Global     | `.github/agents/sync-to-global.agent.md` | instructions/prompts をグローバル設定に同期 |
+| エージェント名     | マニフェスト                             | 主な役割                                                           |
+| ------------------ | ---------------------------------------- | ------------------------------------------------------------------ |
+| Sample Agent       | `.github/agents/sample.agent.md`         | エージェント定義のテンプレート                                     |
+| Orchestrator Agent | `.github/agents/orchestrator.agent.md`   | サブエージェントを統括する司令塔の例                               |
+| Sync to Global     | `.github/agents/sync-to-global.agent.md` | instructions/prompts をグローバル設定に同期（`.sync-ignore` 対応） |
 
 ### グローバルエージェント（agents_sync/）
 
 以下のエージェントは `@sync-to-global` でグローバル設定に同期し、全ワークスペースで使用可能になります。
 
-| エージェント名    | ソース                                           | 主な役割                                   |
-| ----------------- | ------------------------------------------------ | ------------------------------------------ |
-| Workflow Designer | `.github/agents_sync/workflow-designer.agent.md` | エージェント設計・レビュー・改善を統合支援 |
-| Deep Research     | `.github/agents_sync/DeepResearch.agent.md`      | 深い調査・引用付きレポート生成             |
+| エージェント名    | ソース                                           | 主な役割                                       |
+| ----------------- | ------------------------------------------------ | ---------------------------------------------- |
+| Workflow Designer | `.github/agents_sync/workflow-designer.agent.md` | エージェント設計・レビュー・改善を統合支援     |
+| Deep Research     | `.github/agents_sync/DeepResearch.agent.md`      | 深い調査・引用付きレポート生成                 |
+| Report Writer     | `.github/agents_sync/ReportWriter.agent.md`      | 調査結果を対象読者向けの高品質レポートへ再構成 |
 
 **参照**: 詳細リファレンスは [agentic-workflow-guide](.github/skills/agentic-workflow-guide/SKILL.md) Skill を参照。
 
@@ -48,6 +49,7 @@
 | [prompts-metadata.instructions.md](.github/instructions_sync/core/prompts-metadata.instructions.md)     | プロンプトメタデータ運用（syncToGlobal 基準、テンプレ）                 |
 | [learnings.instructions.md](.github/instructions_sync/core/learnings.instructions.md)                   | Learnings 蓄積ルール（出力先・フォーマット・読み書き共通）              |
 | [microsoft-docs.instructions.md](.github/instructions_sync/integrations/microsoft-docs.instructions.md) | Microsoft 公式ドキュメント参照（MCP ツール活用、ソース明記）            |
+| [vscode-environment.instructions.md](.github/instructions_sync/dev/vscode-environment.instructions.md)  | VS Code 環境情報（ファイルパス、拡張機能ストレージ）                    |
 
 ### Prompts（再利用可能なプロンプト）
 

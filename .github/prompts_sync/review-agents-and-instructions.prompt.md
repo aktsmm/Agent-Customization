@@ -10,135 +10,65 @@ description: エージェント定義とinstructionファイルのレビュー
 
 # Review Agents & Instructions
 
-エージェント定義 (.agent.md) と instruction ファイル (.instructions.md) をレビューし、構造・SSOT・一貫性の問題を検出する。
-
-> **Related Skill**: `.github/skills/agentic-workflow-guide/SKILL.md`
-
-## Identity
-
-AI エージェントアーキテクチャとプロンプトエンジニアリング専門のテクニカルレビュアー。
+エージェント定義（`.agent.md`）と指示ファイル（`.instructions.md` / `.prompt.md`）をレビューし、構造・SSOT・整合性の問題を検出する。
 
 ## Step 0: Context Collection
 
-### 必須ファイル（存在する場合）
+- 対象（存在する場合）
+  - `AGENTS.md` / `CLAUDE.md` / `CODEX.md`（いずれか1つ必須）
+  - `.github/copilot-instructions.md`
+  - `.github/agents/*.agent.md`
+  - `.github/instructions/**/*.md`
+  - `.github/prompts/*.prompt.md`
+- Gate: `AGENTS.md` / `CLAUDE.md` / `CODEX.md` がすべて無い場合:
+  1. `.github/instructions/` 配下に `.instructions.md` ファイルが存在するか確認
+  2. 存在する場合: instructions ファイルのみでレビューを続行（Quick Check の該当項目をスキップ）
+  3. `.github/instructions/` も空 or 不在の場合:
+     - ワークスペースの目的・構造・使用言語・主要ツールを分析
+     - 以下の設計資産を生成して配置:
+       - `AGENTS.md`（ワークスペースの概要・目的・主要ワークフロー）
+       - `.github/copilot-instructions.md`（共通ルール）
+       - `.github/instructions/` 配下にドメイン固有の `.instructions.md`
+     - 生成後、Quick Check を実行してレビュー
 
-- `AGENTS.md` / `CLAUDE.md` / `CODEX.md` — 最低1つ必須
-- `.github/copilot-instructions.md`
-- `.github/agents/*.agent.md`
-- `.github/instructions/**/*.md`
-- `.github/prompts/*.prompt.md`
+## Quick Check（必須）
 
-**Gate**: AGENTS.md / CLAUDE.md / CODEX.md のいずれも存在しない場合 → 報告して **STOP**
+1. SRP: 1 agent = 1責務
+2. Fail Fast: 初期ステップで検証
+3. 委譲: Orchestrator が実装作業を抱え込まない
+4. SSOT: 重複定義がない
+5. Done Criteria: 完了条件が検証可能
+6. 統合候補: 単独参照 sub-agent がないか
+7. 過剰分割: 小さすぎる agent の乱立
+8. God Agent: 1ファイル過大化 + 複数責務
 
-## Quick Check（8項目）
+## 追加チェック
 
-| #   | チェック項目         | ❌ 判定基準                                 |
-| --- | -------------------- | ------------------------------------------- |
-| 1   | SRP: 1 agent = 1責務 | Role を1文で述べられない                    |
-| 2   | Fail Fast            | Workflow Step 1-2 に検証がない              |
-| 3   | runSubagent 委譲     | Orchestrator が直接 read_file/edit を使用   |
-| 4   | SSOT                 | 同じ定義が2箇所以上                         |
-| 5   | Done Criteria        | 具体的チェックリストがない                  |
-| 6   | 統合候補             | 1つの orchestrator からのみ参照される agent |
-| 7   | Over-Engineering     | 単純なワークフローに 10+ agent ファイル     |
-| 8   | God Agent            | 200行超で複数の出力タイプ                   |
+- Cross-reference: AGENTS と各 agent/instructions の記述整合
+- Prompt 重複: 役割が重複する prompt/instructions の統合余地
+- Architecture: 統合すべきもの / 分割すべきものの判定
 
-## Design Principles
+## 優先度
 
-### Tier 1: 必須
-
-- **SRP**: 1つの主要出力タイプに集中
-- **SSOT**: 各概念は1箇所のみで定義
-- **Fail Fast**: 最初の2ステップでエラー検出
-
-### Tier 2: 推奨
-
-- **I/O Contract**: 入出力のフォーマット明示
-- **Done Criteria**: 検証可能な完了条件
-- **Idempotency**: 再実行で同じ結果
-- **Error Handling**: エラー時の復旧手順
-
-## Workflow Pattern Check
-
-### Anthropic パターン
-
-| パターン             | 使用場面                 |
-| -------------------- | ------------------------ |
-| Prompt Chaining      | 依存関係のある連続タスク |
-| Routing              | 入力タイプ別の分岐       |
-| Parallelization      | 独立タスクの並列実行     |
-| Orchestrator-Workers | 動的サブタスク分解       |
-| Evaluator-Optimizer  | 反復改善                 |
-
-### SRP 違反検出
-
-- Orchestrator が `read_file` / `replace_string_in_file` を直接使用 → Worker に委譲
-- Orchestrator がデータ分析 → Worker に委譲
-- 禁止アクション一覧がない → 追加
-
-## Architecture Check
-
-### 統合すべき兆候
-
-- 1つの orchestrator からのみ参照される sub-agent → インライン化
-- 2+ ファイルで同じプロンプト → 共有 instructions に抽出
-- 30行未満の micro-agent → マージ
-
-### 分割すべき兆候
-
-- 50行超の instruction → 分割
-- 5-7ステップ超のワークフロー → フェーズ分割
-- 3+ の無関係な出力タイプ → 出力タイプ別に分割
-
-## Cross-Reference Validation
-
-- AGENTS.md の役割説明 ↔ .agent.md の Role が一致
-- instructions の禁止事項 ↔ Permissions が矛盾しない
-- AGENTS.md と .agent.md で情報重複なし（SSOT）
-
-## Instructions / Prompts Review
-
-### SSOT
-
-- ファイル間で定義の重複なし
-- ファイル内で同じ概念の重複なし
-
-### Prompts
-
-- 使われていないプロンプトファイルの検出
-- prompts と instructions の内容重複なし
-
-## Priority
-
-| 優先度      | カテゴリ                                 |
-| ----------- | ---------------------------------------- |
-| 🔴 Critical | Cross-reference 失敗、依存関係破損       |
-| 🟠 High     | SSOT 違反、God Agent、I/O 未定義         |
-| 🟡 Medium   | 冗長性、統合機会、エラーハンドリング不足 |
-| 🟢 Low      | スタイル、フォーマット                   |
+- 🔴 Critical: 依存破損、Cross-reference 破綻
+- 🟠 High: SSOT違反、God Agent、I/O 不明瞭
+- 🟡 Medium: 冗長・統合余地・回復性不足
+- 🟢 Low: 文体・軽微な整形
 
 ## Completion Criteria
 
-- [ ] Step 0 の全ファイル読み込み完了
-- [ ] Quick Check 8項目評価完了
-- [ ] Cross-reference 検証完了
-- [ ] 出力フォーマットに従って報告
+- Context 読み込み完了
+- Quick Check 8項目評価完了
+- Cross-reference 検証完了
+- 出力フォーマット準拠
 
 ## Output Format
 
-```markdown
-## Review Result
-
 ### ✅ Good Points
-
 - {良い点}
 
 ### ⚠️ Improvements Needed
-
-- 🔴 **{問題カテゴリ}**: `{file}` L{line}
-  → {解決策}
+- {優先度} {カテゴリ}: {file}:{line} → {解決策}
 
 ### Recommendation
-
-{総合評価と推奨アクション}
-```
+- {総合評価と次アクション}

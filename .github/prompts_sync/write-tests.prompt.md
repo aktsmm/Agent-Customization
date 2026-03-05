@@ -44,6 +44,8 @@ description: コードを分析し、テストを段階的に生成・実行
 ### Step 4: 検証（Feedback Loop）
 
 - テストを実行して全て PASS するか確認
+- `run_task` は使わない（確認ターミナル待機回避）
+- テスト実行は `execute/runInTerminal` を利用可（非対話・単発・timeout 指定を推奨）
 - 失敗したらその場で修正
 - カバレッジを確認（可能なら）
 

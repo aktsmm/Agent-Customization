@@ -3,6 +3,20 @@ name: 🔬DeepResearch
 description: 指定されたトピックについて深い調査を行い、引用付きの詳細レポートを生成します。
 tools:[read/readFile, agent, edit/createFile, edit/editFiles, search, web, 'brave-search/*', 'microsoftdocs/*', 'workiq/*', todo]
 handoffs:
+  - label: 📝 調査結果をレポート化
+    agent: agent
+    prompt: |
+      上記の調査結果を、読み手に伝わる構造化レポートに再構成してください。
+      必須要件:
+      - 最終回答の前に、必ず `reports/YYYYMMDD-<slug>-report.md` を作成/更新して保存する
+      - 回答の1行目に保存先パスを明記する
+      実施内容:
+      1. 1分要約を先頭に作成
+      2. 主要ファクトと根拠を対応付け
+      3. 示唆と未確定事項を分離
+      4. 追加調査が必要なギャップを明示
+      対象読者と出力形式（technical / executive / briefing）を先に確認してください。
+    send: true
   - label: この調査結果から何が示唆されますか？
     agent: agent
     prompt: "調査レポートを読み、3-5つの示唆・インサイトをリストアップしてください。"
@@ -34,6 +48,7 @@ handoffs:
 
 - **出力**: 出典付きの構造化されたリサーチレポート
 - **品質基準**: 全ての主張に出典を付与、複数独立ソースによる裏付け
+- **レポート化連携**: 調査完了後、必要に応じて `📝ReportWriter` へhandoffして読者向けレポートへ再構成
 
 ## 調査モード
 

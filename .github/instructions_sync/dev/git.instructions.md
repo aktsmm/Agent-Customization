@@ -12,102 +12,64 @@ applyTo: "**"
 
 # Git Instructions
 
-このプロジェクトでは **Conventional Commits** に従ったコミットメッセージを必須とします。
-エージェントがコミットを作成する際は、以下のルールを厳守してください。
+エージェントが Git 操作を安全・一貫して行うための最小ルールです。
 
-## 基本ルール
+## 1. 公開同期の最優先判断
 
-- **明示的な指示がない限り `git push` は禁止**。コミットまでは可、プッシュはユーザーの明示的な許可を得てから行うこと。
-- **ローカルでリポジトリを開いていない場合は `gh api` を使う**。ファイルの作成・更新・削除などの軽い操作でわざわざクローンしない。`gh api repos/{owner}/{repo}/contents/{path}` で直接操作すること。
-- **ワークスペース内のファイルパスは相対パスで記述する**。`agent.md` や設定ファイルなどに絶対パス（`C:\Users\...` 等）を埋め込まない。別PC・別環境での再利用性を保つため、ワークスペースルートからの相対パスを使うこと。
-- **`gh issue comment` 等の `gh` CLI で `--body` に変数を渡す場合、変数定義と実行を同一の `run_in_terminal` 呼び出しにまとめること**。分割すると変数が引き継がれず、空文字や前回の値で重複投稿される。ヒアストリング（`@"..."@`）を使う場合は特に注意。
+- 最初に「この repo は `.github` を公開運用する目的か」を判定する。
+- 判定できなければ必ずユーザーに質問する。
+- 既定は非公開: `.github` / `.vscode` は通常追跡しない。
 
-## フォーマット
+## 2. 1回確認したら再確認しない
 
-```text
-<type>(<scope>): <subject>
+- 初回確認結果は repo ローカルの `.hiker/repo-visibility-policy.json` に保存する。
+- 参照キーは `origin URL` 推奨。
+- 方針変更の明示指示がない限り、同じ質問を繰り返さない。
+- `.hiker/` は `.gitignore` 対象にする。
 
-<body>
+## 3. 公開しない方針の運用
 
-<footer>
-```
+- 追跡を止めるときは `git rm --cached` でインデックスから外し、`.gitignore` に `/.github/` `/.vscode/` `/.hiker/` を追加する。
+- ローカル実ファイルは削除しない。
 
-## 1. Type (必須)
+## 3.1 追跡対象の最小化（公開前）
 
-変更の種類を表す以下のいずれかのプレフィックスを使用してください。
+- 追跡するのは「リポジトリ公開に必要なファイル」だけにする。
+- `.github` は workflow / automation / 運用上必要なメタデータのみ追跡し、不要な補助資料は追跡しない。
+- 不要ファイルは `.gitignore` に追加し、すでに追跡済みなら `git rm --cached` で追跡解除する。
 
-- **feat**: 新機能 (A new feature)
-- **fix**: バグ修正 (A bug fix)
-- **docs**: ドキュメントのみの変更 (Documentation only changes)
-- **style**: コードの動作に影響しない変更 (空白、フォーマット、セミコロン欠落など)
-- **refactor**: バグ修正も機能追加も行わないコード変更 (A code change that neither fixes a bug nor adds a feature)
-- **perf**: パフォーマンスを向上させるコード変更 (A code change that improves performance)
-- **test**: テストの追加や既存テストの修正 (Adding missing tests or correcting existing tests)
-- **chore**: ビルドプロセスやドキュメント生成などの補助ツールやライブラリの変更 (Changes to the build process or auxiliary tools)
+## 4. 既に公開してしまった場合
 
-## 2. Scope (任意)
+- 通常は「今後同期しない」対応で十分（履歴は残す）。
+- 履歴から削除するのは**ユーザーの明示指示があるときだけ**。
+- 履歴改変時はバックアップを取ってから `git filter-repo` + `force push` を実施し、共同開発者へ再同期手順を案内する。
+- 必要ならシークレットを失効・再発行する。
 
-変更の影響範囲を示す名詞を括弧内に記述します。
-例: `feat(auth): add login logic`, `fix(api): handle timeout error`
+## 5. 基本 Git ルール
 
-## 3. Subject (必須)
+- 明示指示なしの `git push` は禁止（コミットまで可）。
+- ローカル未展開での軽微操作は `gh api` を優先する。
+- 成果物に絶対パスを埋め込まない（相対パスで扱う）。
+- `gh issue comment --body` などへ変数を渡すときは、変数定義と実行を同一ターミナル実行で行う。
 
-変更内容の簡潔な説明。
+## 6. Conventional Commits（要点）
 
-- **命令形**を使用する (例: "add" ではなく "added" や "adds" は避ける。日本語の場合は「〜を追加」「〜を修正」と言い切る)
-- 文末にピリオド `.` を付けない
-- 英字の場合は先頭を小文字にする (固有名詞を除く)
+- 形式: `<type>(<scope>): <subject>`
+- 主な type: `feat` `fix` `docs` `refactor` `test` `chore`
+- subject は命令形・簡潔・文末ピリオドなし。
+- 必要なら ` - <user.name>` を末尾に付与してよい。
 
-### ユーザー名の付与（任意）
+## 7. 破壊的操作の注意
 
-チーム開発やログ追跡のため、コミット者名を付与する場合：
+- `git filter-repo` / `git rebase -i` / `git reset --hard` 前に未コミット変更を必ず確定する。
+- `git stash` だけに依存しない。
 
-```text
-<type>(<scope>): <subject> - <user.name>
-```
+## 8. aktsmm 公開リポ既定
 
-例: `feat(auth): ログイン機能を追加 - <user.name>`（`git config user.name` の値を使用）
+- 新規公開 repo は原則 CC BY-NC-SA 4.0 LICENSE を採用する。
+- 例外: `Agent-Skills` と `ghc_template`。
 
-## 4. Body (任意)
+## 9. 文字エンコーディング
 
-変更の動機や、以前の挙動との違いなどを詳細に記述します。
-
-## 5. Footer (任意)
-
-- **Breaking Changes**: 互換性のない変更がある場合は `BREAKING CHANGE:` で始める。
-- **Issue References**: 関連する Issue 番号を記述する (例: `Closes #123`)
-
-## エージェントへの指示
-
-- 複数の論理的な変更を含む場合は、可能な限りコミットを分割してください。
-- コミットメッセージは、変更内容を正確に反映させてください。「修正」のような曖昧な表現は避けてください。
-
-## 破壊的 Git 操作の注意
-
-- `git filter-repo`, `git rebase -i`, `git reset --hard` を実行する前に、**未コミットの変更を必ずコミット**してください。
-- これらの操作はワーキングツリーをリセットするため、未コミット変更は不可逆に消失します。
-- `git stash` では不十分です（`filter-repo` は stash も影響を受ける場合がある）。
-
-## 公開リポジトリのデフォルト（aktsmm）
-
-- **公開 GitHub リポジトリを新規作成する場合、基本は CC BY-NC-SA 4.0 の LICENSE を入れる**（英語＋日本語併記＋補足条項5項）。既存の標準テキストは下記を正としてコピーする。
-  - 標準 LICENSE（適用済みの実体）:
-    - https://github.com/aktsmm/gh-copilot-multi-agent-mission-board/blob/master/LICENSE
-  - テンプレ（新規リポジトリ作成時にコピー用）:
-    - https://github.com/aktsmm/ghc_template/blob/master/LICENSE
-  - 補足条項の構成（5項）:
-    1. Microsoft 社員例外（業務範囲内で商用利用OK）
-    2. AI/ML 学習用途の禁止
-    3. コレクション/集約リポへの再配布禁止
-    4. クレジット表記フォーマット
-    5. 商用ライセンス（商用利用は要連絡、個人学習は歓迎）
-  - 例外: `Agent-Skills`（スキル単位のライセンス運用）と `ghc_template`（テンプレ用途）は別扱い
-
-- **文字化け防止**: PowerShell で LICENSE 等の日本語を含むテキストを扱う場合は、読み込みを `Get-Content -Raw -Encoding UTF8` とし、GitHub API に投げる JSON も BOM なし UTF-8 で書き出す。
-
-- **公開リポジトリの `.gitignore` には、原則として以下を追加してコミット対象から除外**（`ghc_template` と `Agent-Skills` を除く）。
-  - `/research/`
-  - `/.github/skills/`
-  - `/output_sessions/`
-  - テンプレ（コピー用）:
-    - https://github.com/aktsmm/ghc_template/blob/master/templates/gitignore-public.txt
+- 日本語を含むファイルは `UTF-8`（PowerShell では `Get-Content -Raw -Encoding UTF8`）で扱う。
+- GitHub API 向け JSON は BOM なし UTF-8 を使う。
