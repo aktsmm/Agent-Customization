@@ -61,12 +61,9 @@ outcome_status: success|partial|failed
 
 - [ ] {次のタスク}
 
-```
-
 ## ルール
 
 - エクスポート前に `Get-Date -Format "yyyy-MM-ddTHH:mm:ss"` を実行し、その結果を `exported_at` に使用する
 - Timeline のヘッダーは時刻ではなく `Phase N - {フェーズ名}` の形式にする（正確な時刻が不明なため）
 - 同日同トピックのファイルが存在 → 追記
 - 試行錯誤は圧縮（3+回 → "N attempts" + 最終解決）
-```

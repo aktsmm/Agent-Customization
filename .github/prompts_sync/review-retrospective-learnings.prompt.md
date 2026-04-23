@@ -12,7 +12,7 @@ description: インシデントや会話から設計知見を抽出・反映
 
 インシデント・会話から再利用可能な知見を抽出し、適切な設計資産へ反映する。
 
-## 使用タイミング
+## When to Use
 
 - 使う: バグ解決後 / 再発発生時 / レビューで設計ギャップが見つかったとき
 - 使わない: typo など軽微修正のみ / 環境固有問題のみ
@@ -27,6 +27,12 @@ description: インシデントや会話から設計知見を抽出・反映
    - 同コマンド反復
    - 長時間実行
 - Gate: 入力なしなら追加要求して停止
+
+## Workflow
+
+```text
+Context -> Extract -> Decide Action & Target -> Validate & Output
+```
 
 ## Phase 2: Extract Learnings
 
@@ -47,10 +53,22 @@ description: インシデントや会話から設計知見を抽出・反映
    - agent 固有 → `.github/agents/*.agent.md`
    - workflow ルール → `.github/instructions/**/*.md`
    - prompt パターン → `.github/prompts/*.prompt.md`
+- `AGENTS.md` が最適な反映先で、まだ存在しない場合:
+   - **停止しない。`AGENTS.md` を新規作成してから反映する**
+   - 既存の `.github/copilot-instructions.md` や `.github/instructions/**/*.md` と役割が競合しないよう、共通原則と導線だけを最小差分で置く
+- **反映禁止**
+   - `.github/skills/**/*.md`（SKILL.md 等のスキルファイルは編集しない）
 - 反映先ファイルが存在しない場合:
    - **停止しない。ファイルを新規作成して反映する**
    - ディレクトリも不在なら作成する
    - 作成後、Phase 4 の重複/矛盾チェックに進む
+
+### Decision Rules
+
+- まず既存資産へ統合できないかを見る
+- 新規作成は既存の役割に収まらない場合だけ
+- 反映禁止先には入れない
+- 最小差分で反映する
 
 ## Phase 4: Validate & Output
 

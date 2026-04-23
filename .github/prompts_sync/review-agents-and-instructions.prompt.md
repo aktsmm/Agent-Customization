@@ -12,24 +12,21 @@ description: エージェント定義とinstructionファイルのレビュー
 
 エージェント定義（`.agent.md`）と指示ファイル（`.instructions.md` / `.prompt.md`）をレビューし、構造・SSOT・整合性の問題を検出する。
 
-## Step 0: Context Collection
+## Context Gate
 
-- 対象（存在する場合）
-  - `AGENTS.md` / `CLAUDE.md` / `CODEX.md`（いずれか1つ必須）
-  - `.github/copilot-instructions.md`
-  - `.github/agents/*.agent.md`
-  - `.github/instructions/**/*.md`
-  - `.github/prompts/*.prompt.md`
-- Gate: `AGENTS.md` / `CLAUDE.md` / `CODEX.md` がすべて無い場合:
-  1. `.github/instructions/` 配下に `.instructions.md` ファイルが存在するか確認
-  2. 存在する場合: instructions ファイルのみでレビューを続行（Quick Check の該当項目をスキップ）
-  3. `.github/instructions/` も空 or 不在の場合:
-     - ワークスペースの目的・構造・使用言語・主要ツールを分析
-     - 以下の設計資産を生成して配置:
-       - `AGENTS.md`（ワークスペースの概要・目的・主要ワークフロー）
-       - `.github/copilot-instructions.md`（共通ルール）
-       - `.github/instructions/` 配下にドメイン固有の `.instructions.md`
-     - 生成後、Quick Check を実行してレビュー
+対象（存在する場合）:
+
+- `AGENTS.md` / `CLAUDE.md` / `CODEX.md`（いずれか1つ優先）
+- `.github/copilot-instructions.md`
+- `.github/agents/*.agent.md`
+- `.github/instructions/**/*.md`
+- `.github/prompts/*.prompt.md`
+
+Gate:
+
+1. `AGENTS.md` / `CLAUDE.md` / `CODEX.md` があれば通常レビュー
+2. それらが無くても `.github/instructions/` に `.instructions.md` があれば instructions 中心で続行
+3. `.github/instructions/` も空なら、ワークスペースの目的・構造・言語・主要ツールを見て最小限の設計資産を提案または生成してからレビュー
 
 ## Quick Check（必須）
 
@@ -41,6 +38,14 @@ description: エージェント定義とinstructionファイルのレビュー
 6. 統合候補: 単独参照 sub-agent がないか
 7. 過剰分割: 小さすぎる agent の乱立
 8. God Agent: 1ファイル過大化 + 複数責務
+
+## Review Flow
+
+1. Context Gate を通す
+2. Quick Check 8項目を評価する
+3. Cross-reference と prompt 重複を確認する
+4. 統合すべきもの / 分割すべきものを判定する
+5. 優先度順に返す
 
 ## 追加チェック
 

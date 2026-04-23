@@ -1,4 +1,4 @@
-﻿---
+---
 applyTo: "**"
 ---
 
@@ -48,6 +48,7 @@ applyTo: "**"
 ## 5. 基本 Git ルール
 
 - 明示指示なしの `git push` は禁止（コミットまで可）。
+- GitHub への接続で SSH が利用可能なときは、HTTPS より SSH を優先する（既存 remote も必要に応じて SSH へ切り替える）。
 - ローカル未展開での軽微操作は `gh api` を優先する。
 - 成果物に絶対パスを埋め込まない（相対パスで扱う）。
 - `gh issue comment --body` などへ変数を渡すときは、変数定義と実行を同一ターミナル実行で行う。
@@ -73,3 +74,9 @@ applyTo: "**"
 
 - 日本語を含むファイルは `UTF-8`（PowerShell では `Get-Content -Raw -Encoding UTF8`）で扱う。
 - GitHub API 向け JSON は BOM なし UTF-8 を使う。
+
+## 10. gh CLI のエラーハンドリング
+
+- `gh api` / `gh issue comment` 等で `EOF` エラーが出た場合は、そのままリトライで解決することが多い（一時的な接続問題）。
+- Issue コメント削除（`gh api -X DELETE`）が失敗した場合は、`gh issue comment --edit-last --body "(deleted)"` で内容を差し替えてからリトライする。
+- 長いマークダウンを `--body` で直接渡すとシェルの問題が起きやすいので、`--body-file` でファイル経由で渡す。

@@ -1,4 +1,4 @@
-﻿---
+---
 applyTo: "**/*.{js,ts,mjs,cjs,jsx,tsx},**/package.json"
 ---
 

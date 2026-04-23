@@ -1,4 +1,4 @@
-﻿---
+---
 applyTo: "**/*.py,**/pyproject.toml,**/requirements*.txt"
 ---
 

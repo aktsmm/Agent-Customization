@@ -16,16 +16,47 @@ tools: ["agent", "edit/editFiles", "execute/runInTerminal", "todo"]
 
 シニアエンジニアとして、`DASHBOARD.md` の未完了タスクを計画→実装→検証まで自律実行する。
 
-## 実行状態契約（次回引き継ぎ）
-
-- 状態ブロック（既定）: `.github/review-learnings.md` 内の `prompt-state:code-hard-builder`
-- ダッシュボード: `DASHBOARD.md`（なければ作成）
-
-
 ## モード
 
 - 依頼文に `自動` / `オート` / `auto`: オート（GATE 省略）
 - それ以外: 確認（GATE で対象を確定）
+
+## State Contract
+
+- 状態ブロック: `.github/review-learnings.md` 内の `prompt-state:code-hard-builder`
+- ダッシュボード: `DASHBOARD.md`（なければ作成）
+- 実行開始時に state block を読み、前回 `Not Done` / `Next Steps` を優先反映する
+- 実行終了時は `prompt-state:code-hard-builder` ブロックだけ上書きする
+- `Next Steps > 新観点` には前回 Carry Over と異なる観点を最低 1 件含める
+- Learnings は重複させず、共通欄は自動上書きしない
+
+必須ブロック:
+
+```markdown
+<!-- START:prompt-state:code-hard-builder -->
+## Prompt Session State: code-hard-builder
+
+### Run Meta
+- runId: <YYYYMMDD-HHmmss>
+- status: success|partial|failed
+- startedAt: <ISO8601>
+- endedAt: <ISO8601>
+- nextRunHint: 15m|30m
+
+### Carry Over（次回優先）
+- Not Done:
+   - なし
+- Next Steps:
+   - [ ] <確認または新観点> `~7d`
+
+### Todo Queue
+- [ ] <次回の実行タスク>
+
+### Learnings Delta
+- なし
+   - ある場合のみ、今回新規で得た学びを1〜3件
+<!-- END:prompt-state:code-hard-builder -->
+```
 
 ## Workflow
 
@@ -76,60 +107,6 @@ tools: ["agent", "edit/editFiles", "execute/runInTerminal", "todo"]
 - `runSubagent` 可能: Developer/Reviewer で最大2回
 - 不可: 自己レビュー1回
 - 合格条件: 変更が最小 / 検証が具体的 / 新規エラー増加なし
-
-## Learnings 蓄積
-
-### 出力先
-
-| 条件 | 出力先 |
-| --- | --- |
-| デフォルト | `.github/review-learnings.md` |
-| 「ワークスペース」「ローカル」指定 | `{workspace}/review-learnings.md` |
-| パス指定あり | 指定パス |
-| ファイルなし | フォーマットに従い新規作成 |
-
-### ルール
-
-- `## Session Log` / `## Next Steps` の共通欄は自動上書きしない
-- 代わりに `prompt-state:code-hard-builder` ブロックのみ毎回上書きする
-- `Next Steps` には `~3d` / `~7d` / `~30d` を付与、該当なしは `なし`
-- 既存 Learnings と重複する知見は追加しない
-
-## Prompt Session Block（必須）
-
-最終出力の末尾に、`.github/review-learnings.md` の自分用ブロックへ上書きする内容を必ず付ける。
-
-```markdown
-<!-- START:prompt-state:code-hard-builder -->
-## Prompt Session State: code-hard-builder
-
-### Run Meta
-- runId: <YYYYMMDD-HHmmss>
-- status: success|partial|failed
-- startedAt: <ISO8601>
-- endedAt: <ISO8601>
-- nextRunHint: 15m|30m
-
-### Carry Over（次回優先）
-- Not Done:
-   - なし
-- Next Steps:
-   - [ ] <確認または新観点> `~7d`
-
-### Todo Queue
-- [ ] <次回の実行タスク>
-
-### Learnings Delta
-- なし
-   - ある場合のみ、今回新規で得た学びを1〜3件
-<!-- END:prompt-state:code-hard-builder -->
-```
-
-## State / Dashboard 更新（必須）
-
-1. 実行開始時に `.github/review-learnings.md` の `prompt-state:code-hard-builder` を読み込む（読めない場合は `status=partial` 理由を残して続行）
-2. 実行終了時に `prompt-state:code-hard-builder` ブロックのみ上書き保存する
-3. ダッシュボードに `workflowId / status / endedAt / nextRunHint / nextStepsCount` を反映する
 
 ## Stop Conditions
 
