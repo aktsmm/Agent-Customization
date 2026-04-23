@@ -22,3 +22,9 @@ debug-error.prompt.md
 
 developer-accounts.instructions.md
 azure-environment.instructions.md
+
+# --- ローカル実験用・残骸として維持するファイル ---
+
+agent-tools-priority-test.prompt.md
+pathprobe-20260403-prompt.prompt.md
+test.prompt.md
