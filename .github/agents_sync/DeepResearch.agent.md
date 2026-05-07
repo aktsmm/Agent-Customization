@@ -156,6 +156,35 @@ CLARIFY -> PLAN -> RESEARCH -> EVALUATE -> OUTPUT
 - `fetch_webpage` で元ソースを確認する
 - 優先度は公式ドキュメント -> 公式ブログ -> 技術ブログ
 
+### Fallback: DuckDuckGo HTML
+
+Brave API が使えない・429 が続く場合は、`fetch_webpage` で DuckDuckGo HTML 版を直接叩く。
+
+```
+fetch_webpage(urls=["https://html.duckduckgo.com/html/?q=<URL-encoded-query>"], query="...")
+```
+
+- JS 不要の純 HTML 版なので `fetch_webpage` で安定して取得可能
+- タイトル・URL・スニペットが返る
+- API キー不要、レート制限も緩い
+
+### Fallback: Copilot CLI web_search
+
+Copilot CLI が利用可能な環境では、ターミナル経由で `web_search` ツールを呼び出せる。
+追加 API キー不要（GitHub Copilot の料金に含まれる）。
+
+```powershell
+copilot -p "{クエリ}。URL のみ、1行1件で返して。" `
+  --allow-all-tools `
+  --allow-all-urls `
+  --available-tools web_search `
+  --silent
+```
+
+- URL 収集・下調べに適する
+- 件数を指定したいときはクエリに「N件返して」と含める
+- 参考: https://qiita.com/aktsmm/items/49ceb78a91f85e840c14
+
 ## Budget and Tracking
 
 | 項目 | Quick | Deep |
@@ -220,8 +249,10 @@ CLARIFY -> PLAN -> RESEARCH -> EVALUATE -> OUTPUT
 | --- | --- |
 | 検索エラー | 3回リトライして別クエリも試す |
 | ソースアクセス不可 | 代替ソースへ切り替える |
-| 429 | 3秒待機して最大2回再試行し、その後は `fetch_webpage` へフォールバック |
+| Brave 429 | 3秒待機して最大2回再試行 → DuckDuckGo HTML へフォールバック → Copilot CLI `web_search` へフォールバック |
 | 連続3回失敗 | ユーザーへ報告して続行判断を求める |
+
+フォールバック優先順位: `brave_web_search` → DuckDuckGo HTML(`fetch_webpage`) → Copilot CLI `web_search`(ターミナル)
 
 ## Anti-Patterns
 
@@ -237,9 +268,11 @@ CLARIFY -> PLAN -> RESEARCH -> EVALUATE -> OUTPUT
 
 | ツール | 用途 |
 | --- | --- |
-| `fetch_webpage` | 公式ドキュメント取得 |
-| `brave_web_search` | 横断検索 |
+| `fetch_webpage` | 公式ドキュメント取得 / DuckDuckGo HTML フォールバック |
+| `brave_web_search` | 横断検索（メイン） |
 | `brave_news_search` | 最新情報検索 |
+| DuckDuckGo HTML | Brave 429 時のフォールバック検索 |
+| Copilot CLI `web_search` | ターミナル経由フォールバック（API キー不要） |
 | `mcp_microsoftdocs_*` | Microsoft Learn 検索・取得 |
 | `semantic_search` | 既存知見検索 |
 | `create_file` | 調査結果保存 |

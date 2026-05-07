@@ -14,7 +14,7 @@ description: 保存してコミット（Pushなし）
 
 ## 手順
 
-> ワークスペース確認の詳細は [terminal.instructions.md](../instructions/dev/terminal.instructions.md) を参照
+> ワークスペース確認の詳細は [terminal.instructions.md](./terminal.instructions.md) を参照
 
 0. **ワークスペース確認**: `Get-Location; git remote -v` で現在地とリモートリポジトリを確認し、意図したリポジトリにいることを確認（違う場合は `Set-Location <正しいパス>` で移動）
 1. `git config user.name; git status --short` でユーザー名 + 変更確認（変更なければ「Nothing to commit」で終了）
@@ -24,7 +24,7 @@ description: 保存してコミット（Pushなし）
 ## コミットメッセージのフォーマット
 
 **Conventional Commits** 形式でコミットメッセージを作成してください。
-詳細は [git.instructions.md](../instructions/dev/git.instructions.md) を参照（存在する場合）。
+詳細は [git.instructions.md](./git.instructions.md) を参照（存在する場合）。
 
 ```
 <type>(<scope>): <subject> - <user.name>
