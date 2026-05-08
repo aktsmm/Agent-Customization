@@ -16,6 +16,8 @@ applyTo: "**/*.prompt.md,**/*.instructions.md,**/*.agent.md,**/SKILL.md,**/copil
 
 ## VS Code GitHub Copilot Chat で自動ロードされるファイル
 
+> 補足: `.github/copilot-instructions.md` と `AGENTS.md` は読み込み対象だが、User Data 側の metadata/frontmatter ルールをそのまま要求する対象ではない。
+
 | ファイル | スコープ | 備考 |
 |---------|---------|------|
 | `$HOME/.copilot/instructions/**/*.instructions.md` | ユーザー（VS Code） | 公式 Docs 記載のユーザープロファイル instructions |

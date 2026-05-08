@@ -1,5 +1,5 @@
 ---
-description: "命名規約（ファイル名、エージェント名、変数名）"
+description: "命名規約（ファイル名、フォルダ名、生成物、カスタマイズ資産）"
 applyTo: "**"
 ---
 
@@ -12,118 +12,33 @@ applyTo: "**"
 
 # Naming Conventions
 
-リポジトリ内のファイル・フォルダ・変数の命名規則を定義します。
+ファイル、フォルダ、生成物、Copilot customization 資産の軽量な命名ルール。
 
-## ファイル命名規則
+## Default Rule
 
-### プロンプトファイル (`.prompt.md`)
+- 原則は lower-case の kebab-case: `monthly-report-summary.md`。
+- 名前は 3〜5語程度で、用途が分かるようにする。
+- スペース、意味の薄い略語、頭字語だけの名前、ローカル絶対パス由来の名前は避ける。
+- 日本語ファイル名は、ユーザー向け成果物や既存資料名に合わせる必要がある場合だけ使う。
 
-**形式**: `<動詞>-<対象>[-<補足>].prompt.md`
+## Folders and Artifacts
 
-**良い例:**
+- フォルダは複数ファイルを含むなら複数形、単一概念なら単数形にする。
+- 中間生成物は `output/`, `tmp/`, `work/`, `artifacts/` など用途別フォルダへ分ける。
+- 日付付き成果物は `YYYY-MM-DD-topic-purpose.ext` を優先する。
+- 同じ成果物の派生は suffix で揃える: `name.md`, `name-ja.md`, `name-final.pptx`。
 
-- `git-commit.prompt.md` - 動詞-対象で明確
-- `git-commit-push.prompt.md` - 動詞-対象-補足
-- `create-workflow.prompt.md` - 動詞-対象
-- `review-agents-and-instructions.prompt.md` - 動詞-複数対象
-- `export-session-log.prompt.md` - 動詞-対象-補足
+## Scripts and Code Files
 
-**避けるべき例:**
+- Python script: `snake_case.py` を許容する。
+- PowerShell script: `Verb-Noun.ps1` を許容する。
+- JavaScript / TypeScript / Markdown / JSON などの通常ファイルは kebab-case を優先する。
+- コード内の変数・関数・クラス名は各言語の instruction または既存スタイルに従う。
 
-- `gc_Commit.prompt.md` - アンダースコア混在、頭字語不明
-- `gpull.prompt.md` - 頭字語のみ
-- `doStuff.prompt.md` - camelCase不可
+## Copilot Customization
 
-### インストラクションファイル (`.instructions.md`)
-
-**形式**: `<対象>[-<補足>].instructions.md`
-
-**例:**
-
-- `git.instructions.md` - 対象のみ
-- `terminal.instructions.md` - 対象のみ
-- `microsoft-docs.instructions.md` - 対象-補足
-- `naming-conventions.instructions.md` - 対象-補足
-
-### エージェントファイル (`.agent.md`)
-
-**形式**: `<役割>[-<補足>].agent.md`
-
-**例:**
-
-- `orchestrator.agent.md` - 役割のみ
-- `sync-to-global.agent.md` - 役割-補足
-- `sample.agent.md` - テンプレート用
-
-## 一般原則
-
-### 推奨
-
-- **ケバブケース**: `my-file-name.md` （単語をハイフンで区切る）
-- **小文字**: すべて小文字を使用
-- **英語**: ファイル名は英語で記述
-- **簡潔さ**: 3-5単語以内に抑える
-- **説明的**: 内容が分かる名前にする
-
-### 禁止
-
-- `snake_case` - アンダースコアは使わない
-- `camelCase` - キャメルケースは使わない
-- `PascalCase` - パスカルケースは使わない
-- 日本語 - ファイル名に日本語を含めない
-- 頭字語のみ - `gc.md`, `gcp.md` など意味不明な短縮は避ける
-- スペース - `my file.md` はNG、`my-file.md` にする
-
-## フォルダ命名規則
-
-- **ケバブケース**: `prompts_sync`, `instructions_sync` など
-- **複数形**: 複数のファイルを含む場合は複数形 (`prompts`, `agents`)
-- **単数形**: 単一の概念を表す場合は単数形 (`core`, `dev`)
-
-## 変数・関数命名規則（コード内）
-
-### PowerShell
-
-```powershell
-# 推奨: PascalCase (関数)
-function Copy-PromptFiles { }
-
-# 推奨: camelCase (変数)
-$sourceDir = "..."
-$targetFiles = @()
-```
-
-### Python
-
-```python
-# 推奨: snake_case (関数・変数)
-def copy_prompt_files():
-    source_dir = "..."
-    target_files = []
-
-# 推奨: PascalCase (クラス)
-class PromptManager:
-    pass
-```
-
-### JavaScript/TypeScript
-
-```javascript
-// 推奨: camelCase (関数・変数)
-function copyPromptFiles() {
-  const sourceDir = "...";
-  const targetFiles = [];
-}
-
-// 推奨: PascalCase (クラス)
-class PromptManager {}
-```
-
-## 例外
-
-以下のファイルは慣例に従い命名規則の例外とします：
-
-- `README.md` - プロジェクトルートの説明ファイル
-- `LICENSE` - ライセンスファイル
-- `AGENTS.md` - エージェント一覧（全大文字OK）
-- `.gitignore`, `.editorconfig` - 設定ファイル
+- Prompt: `<verb>-<target>[-detail].prompt.md`
+- Instruction: `<subject>[-detail].instructions.md`
+- Agent: `<role>[-detail].agent.md`
+- Skill folder: lower-case kebab-case。
+- `README.md`, `LICENSE`, `AGENTS.md`, `.gitignore` など慣例名は例外。

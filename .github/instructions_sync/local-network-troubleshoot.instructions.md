@@ -1,10 +1,8 @@
 ---
 description: "ローカルネットワーク接続トラブルシュートの手順（RDP不通、IP変更、hosts管理）"
-applyTo: "**"
 ---
 
 
-<!-- syncToGlobal: true -->
 <!-- author: yamapan -->
 <!-- repository: n/a -->
 <!-- license: CC BY-NC-SA 4.0 -->

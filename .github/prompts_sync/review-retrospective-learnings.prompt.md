@@ -66,6 +66,9 @@ Context -> Extract -> Decide Action & Target -> Validate & Output
 ### Decision Rules
 
 - まず既存資産へ統合できないかを見る
+- `.github/copilot-instructions.md` は workspace 共通原則と導線を優先し、業務ドメイン固有の詳細ルールは `.github/instructions/**/*.instructions.md` を優先する
+- 追記候補が特定ドメインの運用ルールで、`copilot-instructions.md` が受け皿化している場合は、新規 instruction への分離を第一候補にする
+- catch-all な既存ファイルに追記する場合は、「なぜ専用 instruction ではなくそのファイルなのか」を説明できる場合に限る
 - 新規作成は既存の役割に収まらない場合だけ
 - 反映禁止先には入れない
 - 最小差分で反映する
@@ -80,6 +83,7 @@ Context -> Extract -> Decide Action & Target -> Validate & Output
    - `## Learnings`
    - `## Changes`
    - `## Review Checkpoint`
+   - `## Target Rationale`
 
 ## Completion Criteria
 
@@ -89,6 +93,36 @@ Context -> Extract -> Decide Action & Target -> Validate & Output
 - 設計資産へ実反映する場合のみユーザー承認済み
 
 Stop: 知見なし / ユーザー拒否 / Gate 失敗
+
+## Output Format
+
+⚠️ **Output once using this format only.**
+
+```markdown
+# Retro: [Title]
+
+## Learnings
+
+1. **Learning**: [What was learned]
+   - Evidence: [What happened]
+   - Impact: [Why it matters]
+
+## Changes
+
+- [What to change]
+
+## Target Rationale
+
+- [Why this target was chosen]
+- [Why `.github/copilot-instructions.md` was or was not selected]
+- [If a new instruction file is proposed, why existing files were insufficient]
+
+## Review Checkpoint
+
+- [ ] User approved proposed changes
+- [ ] No duplicate rules verified
+- [ ] Target files are writable
+```
 
 <!--
 References:
