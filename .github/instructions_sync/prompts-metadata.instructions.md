@@ -1,0 +1,115 @@
+---
+description: "VS Code User Data prompts/instructions/agents の YAML frontmatter と同期用 HTML メタデータの運用ルール"
+applyTo: "**/*.prompt.md,**/*.instructions.md,**/*.agent.md,**/SKILL.md"
+---
+
+<!-- syncToGlobal: true -->
+<!-- author: aktsmm -->
+<!-- repository: https://github.com/aktsmm/ghc_template -->
+<!-- license: CC BY-NC-SA 4.0 -->
+<!-- copyright: Copyright (c) 2025 aktsmm -->
+
+# グローバル（APPDATA）プロンプトのメタデータ運用
+
+%APPDATA%/Code/User/prompts/ 配下の `*.prompt.md` / `*.agent.md` / `*.instructions.md` を編集・新規作成するときのメタデータ規則。
+
+workspace 固有の `.github/instructions/**/*.instructions.md`、`.github/copilot-instructions.md`、`AGENTS.md` にはこの instruction を持ち込まない。
+
+保存先や personal scope の既定は `user-data-default.instructions.md` を参照する。
+
+## YAML Frontmatter
+
+VS Code が認識する `description` / `applyTo` / `name` は、HTML コメントではなく **YAML frontmatter** に書く。
+
+### `.instructions.md`
+
+- 常時またはファイル条件で自動適用したい場合は `applyTo` を必ず書く
+- UI 表示や semantic matching に使わせたい説明は `description` に書く
+- 手動添付・参照専用にしたい場合だけ `applyTo` を省略してよい
+
+### `.prompt.md` / `.agent.md`
+
+- slash command / agent picker の説明は YAML `description` に書く
+- 必要に応じて `name` / `argument-hint` / `tools` / `model` などを YAML に書く
+
+### `SKILL.md`
+
+- `name` と `description` は必須
+- `name` はフォルダ名と一致させる
+- `description` には「何をするか」と「いつ使うか」を両方書く
+- 手動でも使う skill では `argument-hint` を書く
+- `user-invocable` は原則として明示し、通常は `true` にする
+- `user-invocable: false` は `/` メニューに出したくない background skill のときだけ使う
+- `disable-model-invocation: true` は手動専用 skill のときだけ使う
+- `SKILL.md` の設計全体は `skill-creator-plus` を基準にする
+
+## HTML Metadata
+
+以下のメタ情報ブロックは YAML frontmatter の直後に置き、削除・改変しない（プレフィックス安定性・同期/運用のため）。
+HTML コメントは同期・運用向けであり、VS Code の `description` としては扱われない。
+
+- `syncToGlobal: true`（または省略）
+- `author: ...`
+- `repository: ...`
+- `license: ...`
+- `copyright: ...`
+
+## `syncToGlobal` Rules
+
+- 汎用的で、他環境に持っていっても安全に動く
+- 環境固有の値を含まない（例: Tenant/Subscription ID、Publisher、個人アカウント、ローカルの絶対パスなどに依存しない）
+- シークレット/認証情報を含まない（例: API Key、Token、Password、Connection String を書かない）
+
+次のいずれかに該当する場合は **`syncToGlobal: true` を書かない**。
+
+- 環境固有の値を含む
+- シークレット/認証情報を含む
+- 顧客情報・社内情報など外部共有禁止の情報を含む
+
+## Secret Handling
+
+直接書かずにプレースホルダ化する。
+
+- 例: `AZURE_TENANT_ID=<set-in-env>` / `GITHUB_TOKEN=<set-in-env>`
+- 参照が必要な場合は「環境変数/設定で渡す」旨を本文に書く（値は書かない）
+
+## Minimal Templates
+
+### 同期 OK
+
+```
+---
+description: "いつ・何に使う instruction か"
+applyTo: "**"
+---
+
+<!-- syncToGlobal: true -->
+<!-- author: ... -->
+<!-- repository: ... -->
+<!-- license: ... -->
+<!-- copyright: ... -->
+```
+
+### 同期 NG
+
+```
+---
+description: "ローカル専用の用途説明"
+---
+
+<!-- author: ... -->
+<!-- repository: ... -->
+<!-- license: ... -->
+<!-- copyright: ... -->
+```
+
+### `SKILL.md`
+
+```yaml
+---
+name: skill-name
+description: "What it does. Use when [trigger conditions]."
+argument-hint: "対象ファイル、URL、依頼内容など"
+user-invocable: true
+---
+```
