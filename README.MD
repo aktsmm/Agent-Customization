@@ -34,6 +34,7 @@ cp -r .github /path/to/your-project/
 | `.github/prompts/`                | ワークスペース用プロンプト（`create-workflow`, `sample`）                                       |
 | `.github/prompts_sync/`           | グローバル用プロンプト（git操作、レビュー、エクスポート、品質改善、Waza 評価支援 等 19 件）      |
 | `.github/skills/`                 | Copilot Skills（`agentic-workflow-guide`）                                                      |
+| `templates/`                      | companion project や補助テンプレート（`waza-copilot-customization-evals/`）                     |
 | `AGENTS.md`                       | 登録済みエージェント・関連アセットの一覧（SSOT）                                                |
 | `output_sessions/`                | セッションログ・作業記録の出力先（gitignore 対象）                                              |
 
@@ -81,6 +82,8 @@ Copilot Chat で `/prompt` コマンドを使用：
 ```
 
 > **Note**: `/prompt evaluate-waza-copilot-customizations` は `waza` CLI と companion eval project を前提にした上級者向け prompt です。単体では完結しません。セットアップは [docs/waza-copilot-customizations-setup.md](docs/waza-copilot-customizations-setup.md) を参照してください。
+
+> **Template available**: すぐ試したい場合は [templates/waza-copilot-customization-evals/README.md](templates/waza-copilot-customization-evals/README.md) の companion project scaffold を起点にできます。
 
 ### 3. 新しいエージェントを作成する
 
@@ -152,6 +155,8 @@ cp .github/agents/sample.agent.md .github/agents/my-agent.agent.md
 ├── docs/                      # 補足セットアップガイド
 │   ├── azure-updates-mcp-setup.md
 │   └── waza-copilot-customizations-setup.md
+├── templates/                 # companion project templates
+│   └── waza-copilot-customization-evals/
 └── skills/                    # Copilot Skills
     └── agentic-workflow-guide/
 ```

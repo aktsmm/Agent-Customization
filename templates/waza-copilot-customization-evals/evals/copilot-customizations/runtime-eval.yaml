@@ -1,0 +1,28 @@
+name: copilot-customizations-runtime-eval
+description: Runtime evaluation scaffold for Copilot customization prompts and agents using copilot-sdk.
+skill: copilot-customizations
+version: "1.0"
+config:
+  trials_per_task: 1
+  timeout_seconds: 300
+  parallel: false
+  executor: copilot-sdk
+  model: gpt-4.1
+metrics:
+  - name: runtime_quality
+    weight: 1.0
+    threshold: 0.8
+    description: Runtime smoke evaluation for customization prompts and agents.
+graders:
+  - type: code
+    name: has_output
+    config:
+      assertions:
+        - "len(output) > 0"
+  - type: text
+    name: no_fatal_errors
+    config:
+      regex_not_match:
+        - "(?i)traceback|exception occurred|fatal error|panic:"
+tasks:
+  - "runtime-tasks/*.yaml"

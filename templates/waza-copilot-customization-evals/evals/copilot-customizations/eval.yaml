@@ -1,0 +1,61 @@
+name: copilot-customizations-eval
+description: Static evaluation suite for Copilot customization files in User Data, workspace, or a custom target path.
+skill: copilot-customizations
+version: "1.0"
+config:
+  trials_per_task: 1
+  timeout_seconds: 300
+  parallel: false
+  executor: mock
+  model: gpt-4.1
+metrics:
+  - name: customization_quality
+    weight: 1.0
+    threshold: 1.0
+    description: Customization files pass metadata, agent structure, and token budget gates.
+graders:
+  - type: program
+    name: metadata_gate
+    config:
+      command: pwsh
+      args:
+        - "-NoProfile"
+        - "-ExecutionPolicy"
+        - "Bypass"
+        - "-File"
+        - "evals/copilot-customizations/scripts/grade-copilot-customizations.ps1"
+        - "-Mode"
+        - "metadata"
+      timeout: 60
+  - type: program
+    name: agent_structure_gate
+    config:
+      command: pwsh
+      args:
+        - "-NoProfile"
+        - "-ExecutionPolicy"
+        - "Bypass"
+        - "-File"
+        - "evals/copilot-customizations/scripts/grade-copilot-customizations.ps1"
+        - "-Mode"
+        - "agent-structure"
+      timeout: 60
+  - type: program
+    name: token_budget_gate
+    config:
+      command: pwsh
+      args:
+        - "-NoProfile"
+        - "-ExecutionPolicy"
+        - "Bypass"
+        - "-File"
+        - "evals/copilot-customizations/scripts/grade-copilot-customizations.ps1"
+        - "-Mode"
+        - "token-budget"
+        - "-MaxFileTokens"
+        - "5000"
+        - "-MaxTotalTokens"
+        - "60000"
+      timeout: 120
+tasks:
+  - "tasks/*.yaml"

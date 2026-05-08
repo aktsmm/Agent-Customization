@@ -66,13 +66,20 @@ waza --version
 
 この prompt は stock の `waza init` だけでは足りません。`copilot customization` 用の eval assets を含む companion project を別途用意してください。
 
+最短経路は、この repo に含めた companion template をコピーして使う方法です。
+
 ```powershell
 $project = Join-Path $HOME 'waza-copilot-customization-evals'
 New-Item -ItemType Directory -Force -Path $project | Out-Null
 Set-Location $project
 
-# 例: 既存テンプレートや自分の repo から eval assets を配置
+# 例: template をコピーして起点にする
+# templates/waza-copilot-customization-evals/ の内容を配置
 ```
+
+Template scaffold:
+
+- [templates/waza-copilot-customization-evals/README.md](../templates/waza-copilot-customization-evals/README.md)
 
 ### 3. runtime を使うなら Copilot 側も確認
 
@@ -119,6 +126,8 @@ waza run evals\copilot-customizations\runtime-eval.yaml --output results\runtime
 
 1. companion eval project を同じ repo で配布する
 2. prompt を bootstrap 対応にして、初回の eval assets 生成まで自動化する
+
+この repo では、まず 1 のための最小 scaffold として `templates/waza-copilot-customization-evals/` を同梱しています。
 
 現状は **prompt 単体配布ではなく、companion project 前提の advanced workflow template** と考えるのが正確です。
 

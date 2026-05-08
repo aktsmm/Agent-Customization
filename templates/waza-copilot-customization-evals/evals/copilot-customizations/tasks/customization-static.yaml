@@ -1,0 +1,12 @@
+id: customization-static-001
+name: Copilot Customization Static Gates
+description: |
+  Evaluate Copilot customization files for metadata, agent structure, and token budget.
+tags:
+  - static
+  - copilot-customizations
+inputs:
+  prompt: "Evaluate Copilot customization files."
+expected:
+  outcomes:
+    - type: task_completed
