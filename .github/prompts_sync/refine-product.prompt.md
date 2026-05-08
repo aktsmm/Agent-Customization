@@ -1,9 +1,8 @@
 ---
-name: "Product Quality Hardening"
-description: "Use when: Webサイト、Chrome拡張、VS Code拡張、Azureスクリプト、デスクトップアプリ、CLIなどの製品品質を仕様起点で徹底改善し、UI/UX・機能・テストまで強化する"
+name: "Refine Product"
+description: "Use when: Webサイト、Chrome拡張、VS Code拡張、Azureスクリプト、デスクトップアプリ、CLIなどの製品品質を仕様起点で徹底改善し、UI/UX・機能・テストまで強化する。繰り返し実行するほど品質が積み上がる"
 argument-hint: "対象、重点観点、モード（例: current workspace / Web / UIUX重視 / plan only / auto）"
 agent: "agent"
-tools: ["agent", "edit/editFiles", "execute/runInTerminal", "todo"]
 ---
 
 <!-- syncToGlobal: true -->
@@ -16,7 +15,7 @@ tools: ["agent", "edit/editFiles", "execute/runInTerminal", "todo"]
 
 <!-- pattern: Specification-Anchored Product Quality Hardening (spec -> properties -> proof attempt -> fix -> tests) -->
 
-# Product Quality Hardening
+# Refine Product
 
 対象プロダクトの品質を、仕様・ユーザージャーニー・実装・テストの証拠に基づいて徹底的に改善する。  
 SPECA の「仕様から検証可能な性質を抽出し、実装に対して proof-attempt を行う」考え方を、製品品質向上に転用する。
@@ -172,8 +171,8 @@ UI/UX の proof-attempt では、以下を問いとして使う。
 
 実行開始時に、存在するものだけを読む。存在しない場合は作成を必須にしないが、最終報告に次回へ引き継げる状態を必ず残す。
 
-1. `.github/product-quality-hardening.md`（推奨。プロダクト品質専用の台帳）
-2. `.github/review-learnings.md` の `prompt-state:product-quality-hardening`
+1. `.github/refine-product.md`（推奨。プロダクト品質専用の台帳）
+2. `.github/review-learnings.md` の `prompt-state:refine-product`
 3. `DASHBOARD.md`、既存 issue / TODO / test failure memo
 4. 前回チャットの Not Done / Next Steps が分かる場合はそれも参照
 
@@ -391,14 +390,14 @@ GATE（confirm モードのみ）:
 
 ### 8. Learnings and State
 
-`.github/product-quality-hardening.md` または `.github/review-learnings.md` が存在する場合だけ、今回の再利用可能な学びを短く記録してよい。  
+`.github/refine-product.md` または `.github/review-learnings.md` が存在する場合だけ、今回の再利用可能な学びを短く記録してよい。  
 存在しない場合、`auto` では作成してよいが、`confirm` では作成前に GATE に含める。既存の共通欄を大きく書き換えない。
 
 推奨 state block:
 
 ```markdown
-<!-- START:prompt-state:product-quality-hardening -->
-## Prompt Session State: product-quality-hardening
+<!-- START:prompt-state:refine-product -->
+## Prompt Session State: refine-product
 
 ### Run Meta
 - runId: <YYYYMMDD-HHmmss>
@@ -426,7 +425,7 @@ GATE（confirm モードのみ）:
 
 ### Learnings Delta
 - なし
-<!-- END:prompt-state:product-quality-hardening -->
+<!-- END:prompt-state:refine-product -->
 ```
 
 ## Final Response Format

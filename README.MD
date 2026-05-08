@@ -29,10 +29,10 @@ cp -r .github /path/to/your-project/
 | --------------------------------- | ----------------------------------------------------------------------------------------------- |
 | `.github/copilot-instructions.md` | 共有ガードレール（回答トーン、レビュー方針）                                                    |
 | `.github/agents/`                 | エージェント定義（`sample`, `orchestrator`, `sync-to-global`, `ghc-research`）                  |
-| `.github/agents_sync/`            | グローバル用エージェント（`DeepResearch`, `fact-checker`, `ReportWriter`, `workflow-designer`） |
+| `.github/agents_sync/`            | グローバル用エージェント（`DeepResearch`, `enhanced-plan`, `fact-checker`, `ReportWriter`, `workflow-designer`） |
 | `.github/instructions_sync/`      | グローバル用インストラクション（top-level の共通設定 + `core/`, `dev/`, `integrations/`）       |
 | `.github/prompts/`                | ワークスペース用プロンプト（`create-workflow`, `sample`）                                       |
-| `.github/prompts_sync/`           | グローバル用プロンプト（git操作、レビュー、エクスポート、品質改善 等 19件）                     |
+| `.github/prompts_sync/`           | グローバル用プロンプト（git操作、レビュー、エクスポート、品質改善 等 18 件）                     |
 | `.github/skills/`                 | Copilot Skills（`agentic-workflow-guide`）                                                      |
 | `AGENTS.md`                       | 登録済みエージェント・関連アセットの一覧（SSOT）                                                |
 | `output_sessions/`                | セッションログ・作業記録の出力先（gitignore 対象）                                              |
@@ -59,7 +59,6 @@ Copilot Chat で `/prompt` コマンドを使用：
 /prompt sample                       # プロンプト作成用テンプレート
 
 # グローバルプロンプト（全ワークスペースで使用可能）
-/prompt agent-tools-priority-test    # ツール選択の優先度テスト
 /prompt code-fix-error               # エラー修正支援
 /prompt code-hard-builder            # 実装を強めに進めるビルド系支援
 /prompt code-review                  # コードレビュー
@@ -67,7 +66,7 @@ Copilot Chat で `/prompt` コマンドを使用：
 /prompt git-commit-push              # Git コミット＆プッシュ
 /prompt git-pull                     # Git プル
 /prompt write-tests                  # テストコード生成
-/prompt product-quality-hardening    # 品質強化レビュー
+/prompt refine-product               # プロダクト説明・訴求の改善
 /prompt review-agents-and-instructions  # エージェント・instructions レビュー
 /prompt review-retrospective-learnings  # 学びを設計資産へ反映
 /prompt security-structure-map-review   # セキュリティ構造マップレビュー
@@ -101,12 +100,12 @@ cp .github/agents/sample.agent.md .github/agents/my-agent.agent.md
 │   └── ghc-research.agent.md
 ├── agents_sync/               # グローバル用エージェント
 │   ├── DeepResearch.agent.md
+│   ├── enhanced-plan.agent.md
 │   ├── fact-checker.agent.md
 │   ├── ReportWriter.agent.md
 │   └── workflow-designer.agent.md
 ├── instructions_sync/         # グローバル用インストラクション
 │   ├── autonomy.instructions.md
-│   ├── azure-environment.instructions.md
 │   ├── communication.instructions.md
 │   ├── copilot-loading.instructions.md
 │   ├── git-publish-policy.instructions.md
@@ -128,7 +127,6 @@ cp .github/agents/sample.agent.md .github/agents/my-agent.agent.md
 │   ├── create-workflow.prompt.md
 │   └── sample.prompt.md
 ├── prompts_sync/              # グローバル用プロンプト
-│   ├── agent-tools-priority-test.prompt.md
 │   ├── code-fix-error.prompt.md
 │   ├── code-hard-builder.prompt.md
 │   ├── code-review.prompt.md
@@ -136,7 +134,7 @@ cp .github/agents/sample.agent.md .github/agents/my-agent.agent.md
 │   ├── git-commit-push.prompt.md
 │   ├── git-pull.prompt.md
 │   ├── write-tests.prompt.md
-│   ├── product-quality-hardening.prompt.md
+│   ├── refine-product.prompt.md
 │   ├── review-agents-and-instructions.prompt.md
 │   ├── review-retrospective-learnings.prompt.md
 │   ├── security-structure-map-review.prompt.md
