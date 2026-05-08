@@ -32,7 +32,7 @@ cp -r .github /path/to/your-project/
 | `.github/agents_sync/`            | グローバル用エージェント（`DeepResearch`, `enhanced-plan`, `fact-checker`, `ReportWriter`, `workflow-designer`） |
 | `.github/instructions_sync/`      | グローバル用インストラクション（top-level の共通設定 + `core/`, `dev/`, `integrations/`）       |
 | `.github/prompts/`                | ワークスペース用プロンプト（`create-workflow`, `sample`）                                       |
-| `.github/prompts_sync/`           | グローバル用プロンプト（git操作、レビュー、エクスポート、品質改善 等 18 件）                     |
+| `.github/prompts_sync/`           | グローバル用プロンプト（git操作、レビュー、エクスポート、品質改善、Waza 評価支援 等 19 件）      |
 | `.github/skills/`                 | Copilot Skills（`agentic-workflow-guide`）                                                      |
 | `AGENTS.md`                       | 登録済みエージェント・関連アセットの一覧（SSOT）                                                |
 | `output_sessions/`                | セッションログ・作業記録の出力先（gitignore 対象）                                              |
@@ -74,6 +74,7 @@ Copilot Chat で `/prompt` コマンドを使用：
 /prompt export-copilot-session-dialogue  # セッション対話ログ・成果エクスポート
 /prompt export-knowledge             # 知見エクスポート（ドメイン自動判定）
 /prompt export-sync-to-public-skills # 知見を公開スキルリポジトリに反映
+/prompt evaluate-waza-copilot-customizations # Waza で customization を static/runtime 評価
 /prompt wrap-up-work                 # セッション終了時クリーンアップ
 /prompt convert-to-tweet              # セッション内容を X ポスト用に変換
 /prompt refactor-context             # コンテキスト最適化（instructions 等）
@@ -142,6 +143,7 @@ cp .github/agents/sample.agent.md .github/agents/my-agent.agent.md
 │   ├── export-copilot-session-dialogue.prompt.md
 │   ├── export-knowledge.prompt.md
 │   ├── export-sync-to-public-skills.prompt.md
+│   ├── evaluate-waza-copilot-customizations.prompt.md
 │   ├── wrap-up-work.prompt.md
 │   ├── convert-to-tweet.prompt.md
 │   └── refactor-context.prompt.md

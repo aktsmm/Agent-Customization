@@ -3,6 +3,7 @@ name: "Refine Product"
 description: "Use when: Webサイト、Chrome拡張、VS Code拡張、Azureスクリプト、デスクトップアプリ、CLIなどの製品品質を仕様起点で徹底改善し、UI/UX・機能・テストまで強化する。繰り返し実行するほど品質が積み上がる"
 argument-hint: "対象、重点観点、モード（例: current workspace / Web / UIUX重視 / plan only / auto）"
 agent: "agent"
+model: "GPT-5 (copilot)"
 ---
 
 <!-- syncToGlobal: true -->
@@ -11,14 +12,17 @@ agent: "agent"
 <!-- license: CC BY-NC-SA 4.0 -->
 <!-- copyright: Copyright (c) 2025 aktsmm -->
 <!-- created: 2026-05-08 -->
-<!-- model: GPT-5.5 -->
+<!-- updated: 2026-05-08 -->
+<!-- model: GitHub Copilot -->
 
 <!-- pattern: Specification-Anchored Product Quality Hardening (spec -> properties -> proof attempt -> fix -> tests) -->
 
 # Refine Product
 
-対象プロダクトの品質を、仕様・ユーザージャーニー・実装・テストの証拠に基づいて徹底的に改善する。  
+対象プロダクトの品質を、仕様・ユーザージャーニー・実装・テストの証拠に基づいて 1 サイクルずつ徹底改善する。  
 SPECA の「仕様から検証可能な性質を抽出し、実装に対して proof-attempt を行う」考え方を、製品品質向上に転用する。
+
+このプロンプトは「製品を一度に全部作り替える」ためではなく、毎回 1 つ以上の検証可能な品質ギャップを `発見 -> 修正/補強 -> 検証 -> 台帳更新` まで閉じるために使う。
 
 参考思想: https://github.com/NyxFoundation/speca/
 
@@ -51,6 +55,8 @@ Product intent / spec / README / observed behavior
 ```
 
 連続実行では、同じレビューを繰り返すのではなく、品質台帳を読み直して次の未検証プロパティ、弱い証拠、未実行テスト、別観点を優先する。実行回数を重ねるほど、`未知 -> 指摘済み -> 修正済み -> テスト済み -> 回帰防止済み` の順に品質を引き上げる。
+
+1回の実行で扱う範囲は狭くてよい。重要なのは、今回選んだ品質ギャップについて証拠が最後までつながること。
 
 ## Safety Constraints
 
@@ -102,6 +108,59 @@ auto モードでは、以下をすべて完了するまで終了しない。
 - 破壊的操作、外部公開、本番/クラウド変更、認証/secret、設計トレードオフなど、ユーザー確認が必須の判断に到達した
 - 必要な外部環境、実機、ユーザー値、権限、手動確認がないと進められない
 - 同一原因の修正再試行が 3 回を超えた
+
+## Repeated Execution Rules
+
+このプロンプトを auto / 自動モードで使うときは、プロダクト種別に関係なく以下の運用を優先する。
+
+### Dirty Worktree Guard
+
+- 最初に作業ディレクトリと `git status --short` 相当の状態を確認する
+- 既存の未コミット変更はユーザーの作業として扱い、対象外ファイルを巻き戻さない
+- 最終報告では、自分が触ったファイルと、既存の unrelated changes を混同しない
+
+### Ledger First
+
+- `.github/refine-product.md` がある場合は、実装探索より先に読む
+- 前回の `Known Gaps` / `Regression Risks` / `Next Focus` から今回の品質ギャップを選ぶ
+- 外部実値や人間確認が必要な Not Done は、実装ブロッカーとして固定し、代わりにローカルで閉じられる隣接品質を探す
+
+### One Gap To Proof
+
+- 1回の auto 実行では、P0/P1 がなければ P2 を 1 件でもよいので確実に閉じる
+- 修正は小さく、品質プロパティ・実装面・検証・台帳更新が対応する単位に絞る
+- 大規模な好みのリデザインや無関係リファクタより、回帰防止テスト、状態表示、エラー復旧、静的ガードを優先する
+
+### External-Dependency Substitute
+
+実 credentials、外部サービス状態、公開 URL、手動確認、実機、顧客データ、クラウド権限などが無い場合は、そこで止まらない。安全な範囲で次を行う。
+
+- 未設定状態やサンプル設定で危険な操作・誤遷移・誤保存が起きないことを確認する
+- 実値なしでも検証できる timeout、disabled、aria、storage、secret 非保存、権限説明、設定検証、dry-run の静的チェックを追加する
+- 実値が必要な検証は `Not Done` と `Next Steps` に具体的な入力名つきで残す
+
+### Runtime / UI Verification Hygiene
+
+Web / 拡張機能 / デスクトップ / CLI / API / UI 検証では、既存 runner や README 上の標準手順がある場合はそれを優先する。
+
+- E2E / browser / simulator / emulator / integration 回帰は、必要ならサンプル起動や共有状態との競合を避けるオプションを使う
+- 複数ケースは共有状態でまとめず、安定しない場合はケース別プロセスへ分ける
+- 画面確認、操作確認、状態遷移、プラン/権限/設定分岐、失敗経路など、責務が分かれた runner を混ぜすぎない
+- 検証後は dev server、watch、ブラウザ、エミュレータ、ローカル API、ポート待受などの常駐プロセスを停止確認する
+- 出力 JSON、ログ、スクリーンショット、レポートがある場合は、最終報告では重要な結果だけを要約する
+
+### Static Guard Ratchet
+
+実機環境や外部 API が不安定・未設定でも、静的ガードで回帰防止できるものは台帳に積む。
+
+- privacy / secret 非保存
+- 未設定状態やダミー値での危険操作防止
+- timeout / AbortError / retry 表示
+- keyboard / focus / aria 属性
+- リリース文言、README、設定説明と実装仕様の同期
+- deprecated permission、legacy provider、古い設定名、不要依存の残存
+
+静的ガードを追加した場合は、`Quality Ledger` の `Regression Risks` に再実行すべき理由を残す。
 
 ## 100% Pass Completion Definition
 
@@ -435,6 +494,7 @@ GATE（confirm モードのみ）:
 - `Product Quality Findings` は重要順に最大 10 件。残りは `Next Steps` または Quality Ledger へ送る
 - `Check` は実行コマンド/チェック名と結果だけを簡潔に書く
 - `Not Done` は理由付きで残すが、言い訳ではなく次回の入力にする
+- 反復実行では、前回から変わっていない計画・既知ブロッカー・検証済み項目を長く再掲せず、今回の delta と次回に必要な入力だけを強調する
 - auto モードでは必ず `100% pass complete` か、止まった明確な理由を出す
 
 ```markdown
