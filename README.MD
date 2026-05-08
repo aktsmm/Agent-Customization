@@ -74,11 +74,13 @@ Copilot Chat で `/prompt` コマンドを使用：
 /prompt export-copilot-session-dialogue  # セッション対話ログ・成果エクスポート
 /prompt export-knowledge             # 知見エクスポート（ドメイン自動判定）
 /prompt export-sync-to-public-skills # 知見を公開スキルリポジトリに反映
-/prompt evaluate-waza-copilot-customizations # Waza で customization を static/runtime 評価
+/prompt evaluate-waza-copilot-customizations # Waza で customization を static/runtime 評価（要セットアップ）
 /prompt wrap-up-work                 # セッション終了時クリーンアップ
 /prompt convert-to-tweet              # セッション内容を X ポスト用に変換
 /prompt refactor-context             # コンテキスト最適化（instructions 等）
 ```
+
+> **Note**: `/prompt evaluate-waza-copilot-customizations` は `waza` CLI と companion eval project を前提にした上級者向け prompt です。単体では完結しません。セットアップは [docs/waza-copilot-customizations-setup.md](docs/waza-copilot-customizations-setup.md) を参照してください。
 
 ### 3. 新しいエージェントを作成する
 
@@ -147,6 +149,9 @@ cp .github/agents/sample.agent.md .github/agents/my-agent.agent.md
 │   ├── wrap-up-work.prompt.md
 │   ├── convert-to-tweet.prompt.md
 │   └── refactor-context.prompt.md
+├── docs/                      # 補足セットアップガイド
+│   ├── azure-updates-mcp-setup.md
+│   └── waza-copilot-customizations-setup.md
 └── skills/                    # Copilot Skills
     └── agentic-workflow-guide/
 ```
