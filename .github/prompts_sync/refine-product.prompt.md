@@ -390,7 +390,7 @@ GATE（confirm モードのみ）:
 
 ### 8. Learnings and State
 
-`.github/refine-product.md` または `.github/review-learnings.md` が存在する場合だけ、今回の再利用可能な学びを短く記録してよい。  
+`.github/refine-product.md` または `.github/review-learnings.md` が存在する場合だけ、今回の再利用可能な学びを短く記録してよい。
 存在しない場合、`auto` では作成してよいが、`confirm` では作成前に GATE に含める。既存の共通欄を大きく書き換えない。
 
 推奨 state block:
