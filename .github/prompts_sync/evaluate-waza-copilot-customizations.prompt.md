@@ -28,11 +28,10 @@ User Data、現在のワークスペース、または任意パスの Copilot cu
 
 ## Setup Links
 
-- 公開 repo: https://github.com/aktsmm/ghc_template
-- セットアップガイド: https://github.com/aktsmm/ghc_template/blob/master/docs/waza-copilot-customizations-setup.md
-- companion template: https://github.com/aktsmm/ghc_template/tree/master/templates/waza-copilot-customization-evals
+- Setup guide: https://github.com/aktsmm/ghc_template/blob/master/docs/waza-copilot-customizations-setup.md
+- Template: https://github.com/aktsmm/ghc_template/tree/master/templates/waza-copilot-customization-evals
 
-この prompt ファイルだけを別環境へコピーした場合、上記のセットアップガイドか companion template に辿れないと runtime / report までは再現しにくい。`evalProject` が存在しない場合は、まず上記 template の取得を候補として案内してよい。
+この prompt だけをコピーした場合は、まず setup guide を開く。`evalProject` が無い場合は template から始める。
 
 Input target scope: `${input:targetScope:user-data / workspace / custom。空欄なら user-data}`
 

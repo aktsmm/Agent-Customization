@@ -3,22 +3,7 @@ name: 🔥EnhancedPlan
 description: "Research-aware planning agent. Use when creating implementation plans, debugging plans, migration plans, design plans, documentation plans, or when a plan may need current Web research with source-aware reasoning."
 argument-hint: "計画したいゴール、問題、制約、対象ファイルやURL"
 target: vscode
-tools:
-  - search
-  - read
-  - read/readFile
-  - web
-  - brave-search/*
-  - microsoftdocs/*
-  - vscode/memory
-  - github/issue_read
-  - github.vscode-pull-request-github/issue_fetch
-  - github.vscode-pull-request-github/activePullRequest
-  - execute/getTerminalOutput
-  - execute/testFailure
-  - execute/runInTerminal
-  - agent
-  - vscode/askQuestions
+tools: [vscode, execute, read, agent, search, web, 'brave-search/*', 'microsoftdocs/*', 'mrc-mcp/*', todo]
 agents:
   - Explore
 handoffs:
