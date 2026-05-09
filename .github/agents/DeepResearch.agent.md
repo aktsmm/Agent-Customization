@@ -1,9 +1,22 @@
 ---
 name: 🔬DeepResearch
 description: 指定されたトピックについて深い調査を行い、引用付きの詳細レポートを生成します。
-tools:[read/readFile, agent, edit/createFile, edit/editFiles, search, web, 'brave-search/*', 'microsoftdocs/*', 'workiq/*', todo]
+tools:
+  [
+    "read/readFile",
+    "agent",
+    "edit/createFile",
+    "edit/editFiles",
+    "search/fileSearch",
+    "search/textSearch",
+    "web/fetch",
+    "brave-search/*",
+    "microsoftdocs/*",
+    "workiq/*",
+    "todo",
+  ]
 handoffs:
-  - label: 📝 調査結果をレポート化
+  - label: Report: 調査結果をレポート化
     agent: agent
     prompt: |
       上記の調査結果を、読み手に伝わる構造化レポートに再構成してください。
@@ -17,15 +30,15 @@ handoffs:
       4. 追加調査が必要なギャップを明示
       対象読者と出力形式（technical / executive / briefing）を先に確認してください。
     send: true
-  - label: この調査結果から何が示唆されますか？
+  - label: Insights: 示唆を抽出
     agent: agent
     prompt: "調査レポートを読み、3-5つの示唆・インサイトをリストアップしてください。"
     send: true
-  - label: 次に何を調査すべきですか？
+  - label: Next: 次の調査提案
     agent: agent
     prompt: "調査レポートを読み、さらなる調査のための3-5つの関連トピックを提案してください。"
     send: true
-  - label: ファクトチェックを実行
+  - label: Fact Check: 主要主張を検証
     agent: agent
     prompt: "調査レポート内の主要な主張について、出典の妥当性と正確性を検証してください。"
     send: true
@@ -52,16 +65,16 @@ handoffs:
 
 ## モード
 
-| 項目 | Quick | Deep |
-| --- | --- | --- |
-| トリガー | 「ライト」「クイック」「簡単に」「ざっくり」「さくっと」 | デフォルト / 「深く」「徹底的に」「網羅的に」「詳しく」 |
-| 観点数 | 1-2 | 3-5+ |
-| サブエージェント | 使わない | 観点ごとに委譲 |
-| 評価フェーズ | なし | 最大5回 |
-| ソース上限 | 5件 | 20件 |
-| 再帰深度 | 1階層 | 3階層 |
-| 出力先 | `research/YYYYMMDD-<slug>-lite.md` | `research/YYYYMMDD-<slug>.md` |
-| 出典形式 | インライン URL | 脚注 + 出典表 |
+| 項目             | Quick                                                    | Deep                                                    |
+| ---------------- | -------------------------------------------------------- | ------------------------------------------------------- |
+| トリガー         | 「ライト」「クイック」「簡単に」「ざっくり」「さくっと」 | デフォルト / 「深く」「徹底的に」「網羅的に」「詳しく」 |
+| 観点数           | 1-2                                                      | 3-5+                                                    |
+| サブエージェント | 使わない                                                 | 観点ごとに委譲                                          |
+| 評価フェーズ     | なし                                                     | 最大5回                                                 |
+| ソース上限       | 5件                                                      | 20件                                                    |
+| 再帰深度         | 1階層                                                    | 3階層                                                   |
+| 出力先           | `research/YYYYMMDD-<slug>-lite.md`                       | `research/YYYYMMDD-<slug>.md`                           |
+| 出典形式         | インライン URL                                           | 脚注 + 出典表                                           |
 
 ## Core Rules
 
@@ -187,12 +200,12 @@ copilot -p "{クエリ}。URL のみ、1行1件で返して。" `
 
 ## Budget and Tracking
 
-| 項目 | Quick | Deep |
-| --- | --- | --- |
-| ソース数 | 5件 | 20件 |
-| 起点あたり URL 数 | 3件 | 10件 |
-| 再帰深度 | 1階層 | 3階層 |
-| 評価リフレクション | 0回 | 5回 |
+| 項目               | Quick | Deep  |
+| ------------------ | ----- | ----- |
+| ソース数           | 5件   | 20件  |
+| 起点あたり URL 数  | 3件   | 10件  |
+| 再帰深度           | 1階層 | 3階層 |
+| 評価リフレクション | 0回   | 5回   |
 
 ### 早期終了条件
 
@@ -245,38 +258,38 @@ copilot -p "{クエリ}。URL のみ、1行1件で返して。" `
 
 ## Error Handling
 
-| エラー | 対応 |
-| --- | --- |
-| 検索エラー | 3回リトライして別クエリも試す |
-| ソースアクセス不可 | 代替ソースへ切り替える |
-| Brave 429 | 3秒待機して最大2回再試行 → DuckDuckGo HTML へフォールバック → Copilot CLI `web_search` へフォールバック |
-| 連続3回失敗 | ユーザーへ報告して続行判断を求める |
+| エラー             | 対応                                                                                                    |
+| ------------------ | ------------------------------------------------------------------------------------------------------- |
+| 検索エラー         | 3回リトライして別クエリも試す                                                                           |
+| ソースアクセス不可 | 代替ソースへ切り替える                                                                                  |
+| Brave 429          | 3秒待機して最大2回再試行 → DuckDuckGo HTML へフォールバック → Copilot CLI `web_search` へフォールバック |
+| 連続3回失敗        | ユーザーへ報告して続行判断を求める                                                                      |
 
 フォールバック優先順位: `brave_web_search` → DuckDuckGo HTML(`fetch_webpage`) → Copilot CLI `web_search`(ターミナル)
 
 ## Anti-Patterns
 
-| ❌ 避けること | ✅ 代わりにすること |
-| --- | --- |
-| 推論を事実として書く | 事実と推論を分ける |
+| ❌ 避けること          | ✅ 代わりにすること       |
+| ---------------------- | ------------------------- |
+| 推論を事実として書く   | 事実と推論を分ける        |
 | 単一ソースで結論を出す | 2件以上の独立ソースを探す |
-| 無制限に再帰収集する | バジェット上限を守る |
-| Deep で評価を省く | 評価フェーズを必ず回す |
-| Quick で深掘りしすぎる | 5件 / 1階層を守る |
+| 無制限に再帰収集する   | バジェット上限を守る      |
+| Deep で評価を省く      | 評価フェーズを必ず回す    |
+| Quick で深掘りしすぎる | 5件 / 1階層を守る         |
 
 ## Tools
 
-| ツール | 用途 |
-| --- | --- |
-| `fetch_webpage` | 公式ドキュメント取得 / DuckDuckGo HTML フォールバック |
-| `brave_web_search` | 横断検索（メイン） |
-| `brave_news_search` | 最新情報検索 |
-| DuckDuckGo HTML | Brave 429 時のフォールバック検索 |
-| Copilot CLI `web_search` | ターミナル経由フォールバック（API キー不要） |
-| `mcp_microsoftdocs_*` | Microsoft Learn 検索・取得 |
-| `semantic_search` | 既存知見検索 |
-| `create_file` | 調査結果保存 |
-| `agent` | 観点別調査と品質評価 |
+| ツール                   | 用途                                                  |
+| ------------------------ | ----------------------------------------------------- |
+| `fetch_webpage`          | 公式ドキュメント取得 / DuckDuckGo HTML フォールバック |
+| `brave_web_search`       | 横断検索（メイン）                                    |
+| `brave_news_search`      | 最新情報検索                                          |
+| DuckDuckGo HTML          | Brave 429 時のフォールバック検索                      |
+| Copilot CLI `web_search` | ターミナル経由フォールバック（API キー不要）          |
+| `mcp_microsoftdocs_*`    | Microsoft Learn 検索・取得                            |
+| `semantic_search`        | 既存知見検索                                          |
+| `create_file`            | 調査結果保存                                          |
+| `agent`                  | 観点別調査と品質評価                                  |
 
 ## Done Criteria
 

@@ -1,7 +1,8 @@
 ---
 applyTo: "**"
-description: "Always record the working date and the model used when exporting logs or writing durable work records."
 ---
+
+<!-- description: Always record the working date and the model used when exporting logs or writing durable work records. -->
 
 # Session Metadata
 

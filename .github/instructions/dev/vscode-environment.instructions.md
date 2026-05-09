@@ -1,8 +1,8 @@
 ---
-description: "VS Code 環境の保存先、User Data、workspaceStorage などの実用メモ"
 applyTo: "**"
 ---
 
+<!-- description: VS Code 環境の保存先、User Data、workspaceStorage などの実用メモ -->
 <!-- syncToGlobal: true -->
 <!-- author: aktsmm -->
 <!-- repository: https://github.com/aktsmm/ghc_template -->

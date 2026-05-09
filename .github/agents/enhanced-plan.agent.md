@@ -2,10 +2,19 @@
 name: 🔥EnhancedPlan
 description: "Research-aware planning agent. Use when creating implementation plans, debugging plans, migration plans, design plans, documentation plans, or when a plan may need current Web research with source-aware reasoning."
 argument-hint: "計画したいゴール、問題、制約、対象ファイルやURL"
-target: vscode
-tools: [vscode, execute, read, agent, search, web, 'brave-search/*', 'microsoftdocs/*', 'mrc-mcp/*', todo]
-agents:
-  - Explore
+tools:
+  [
+    "execute/runInTerminal",
+    "read/readFile",
+    "agent",
+    "search/fileSearch",
+    "search/textSearch",
+    "web/fetch",
+    "brave-search/*",
+    "microsoftdocs/*",
+    "mrc-mcp/*",
+    "todo",
+  ]
 handoffs:
   - label: Start Implementation
     agent: agent
@@ -14,7 +23,7 @@ handoffs:
     send: true
   - label: Open Plan in Editor
     agent: agent
-    prompt: '#createFile the current plan from `/memories/session/plan.md` into an untitled file (`untitled:plan-${camelCaseName}.prompt.md` without frontmatter) for further refinement.'
+    prompt: "#createFile the current plan from `/memories/session/plan.md` into an untitled file (`untitled:plan-${camelCaseName}.prompt.md` without frontmatter) for further refinement."
     send: true
     showContinueOn: false
   - label: Refine Plan
@@ -223,22 +232,28 @@ Use Markdown. Do not use code blocks in the plan unless the user explicitly requ
 {TL;DR}
 
 **Task Type**
+
 - {type}
 
 **Goal**
+
 - {success condition}
 
 **External Research**
+
 - {yes/no and reason}
 
 **Steps**
+
 1. {step}
 2. {step}
 
 **Verification**
+
 1. {specific command, test, check, or reason verification is not possible}
 
 **Implementation Handoff**
+
 - Start here: {first action}
 - Constraints: {important boundaries}
 
@@ -249,19 +264,24 @@ Use Markdown. Do not use code blocks in the plan unless the user explicitly requ
 {TL;DR}
 
 **Task Type**
+
 - {classification}
 
 **Goal**
+
 - {what success means}
 
 **Scope**
+
 - In: {included work}
 - Out: {explicit non-goals}
 
 **Assumptions**
+
 - {reasonable assumptions and impact if wrong}
 
 **Research Summary**
+
 - External research: {yes/no}
 - Research depth: {none/quick/standard/deep}
 - Search/fetch used: {providers used, fallback used, or unavailable}
@@ -271,28 +291,36 @@ Use Markdown. Do not use code blocks in the plan unless the user explicitly requ
 - Limitations: {unverified or unavailable info}
 
 **Approach**
+
 - {recommended approach and rationale}
 
 **Steps**
+
 1. {implementation step; include dependency or parallelism when useful}
 2. {implementation step}
 
 **Relevant files / areas**
+
 - {path or area} — {what to inspect, modify, or reuse}
 
 **Verification**
+
 1. {specific automated check, manual check, source check, or reason not possible}
 
 **Risks**
+
 - {risk and mitigation}
 
 **Rollback**
+
 - {how to revert safely if implementation fails}
 
 **Open Questions**
+
 - {only non-blocking or explicitly unresolved questions}
 
 **Implementation Handoff**
+
 - Start here: {first implementation action}
 - Reuse: {specific patterns, functions, modules, docs}
 - Do not change: {scope boundaries}
