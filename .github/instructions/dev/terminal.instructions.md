@@ -47,5 +47,6 @@ applyTo: "**"
 - `rg` 未導入なら `winget install --id BurntSushi.ripgrep.MSVC --scope user --accept-source-agreements --accept-package-agreements` で導入してよい。
 - 導入直後のシェルで `rg` が見つからない場合は、ターミナル再起動か、`$env:Path = [System.Environment]::GetEnvironmentVariable('Path','Machine') + ';' + [System.Environment]::GetEnvironmentVariable('Path','User')` で PATH を再読込してよい。
 - PowerShell で `rg` の日本語出力が文字化けする場合は、`[Console]::OutputEncoding = [System.Text.UTF8Encoding]::new($false)` と `$OutputEncoding = [Console]::OutputEncoding` を先に設定してよい。
+- 共有 `pwsh` が未終了 here-string、`>>`、prompt-only、継続入力待ちに落ちた場合、その terminal は**汚染済み**として扱う。終端文字や追加コマンドで復旧を試み続けず、以後の検証・生成・永続化は VS Code task、clean shell、または事前作成済みスクリプトの単発実行へ切り替える。
 - Brave などの Web 検索が同一タスク内で 3 回以上連続して失敗した場合は、Web 検索不能と決めつけず、`copilot -p "{クエリ}" --allow-all-tools --allow-all-urls --available-tools web_search --silent` をフォールバックとして使ってよい。
 - URL 列挙が目的のときは、URL のみを 1 行 1 件で返すよう指示し、CLI 出力の前置き文は除去して扱う。
