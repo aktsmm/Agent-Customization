@@ -81,10 +81,10 @@ GitHub Copilot / VS Code 用の prompts、agents、instructions、skills を管�
 - [export-copilot-session-dialogue](.github/prompts/export-copilot-session-dialogue.prompt.md)
 - [export-knowledge](.github/prompts/export-knowledge.prompt.md)
 - [export-sync-to-public-skills](.github/prompts/export-sync-to-public-skills.prompt.md)
+- [generate-x-tweet-growth-post](.github/prompts/generate-x-tweet-growth-post.prompt.md)
 - [evaluate-waza-copilot-customizations](.github/prompts/evaluate-waza-copilot-customizations.prompt.md)
   - セットアップ: [docs/waza-copilot-customizations-setup.md](docs/waza-copilot-customizations-setup.md)
   - companion template: [templates/waza-copilot-customization-evals/README.md](templates/waza-copilot-customization-evals/README.md)
-- [git-publish-policy](.github/prompts/git-publish-policy.instructions.md)
 - [review-agents-and-instructions](.github/prompts/review-agents-and-instructions.prompt.md)
 - [review-retrospective-learnings](.github/prompts/review-retrospective-learnings.prompt.md)
 - [refine-product](.github/prompts/refine-product.prompt.md)
@@ -98,6 +98,10 @@ GitHub Copilot / VS Code 用の prompts、agents、instructions、skills を管�
 - [core](.github/instructions/core/)
 - [dev](.github/instructions/dev/)
 - [integrations](.github/instructions/integrations/)
+- [git-publish-policy](.github/instructions/dev/git-publish-policy.instructions.md) - GitHub 公開同期と visibility 判断
+- [terminal](.github/instructions/core/terminal.instructions.md) - PowerShell / Windows terminal 操作
+- [vscode-environment](.github/instructions/core/vscode-environment.instructions.md) - VS Code User Data / workspaceStorage 実用メモ
+- [web-search](.github/instructions/integrations/web-search.instructions.md) - Brave / DuckDuckGo HTML / Copilot CLI web_search の使い分け
 
 ### Skills
 

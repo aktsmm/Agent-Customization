@@ -3,10 +3,12 @@ name: 🔬DeepResearch
 description: 指定されたトピックについて深い調査を行い、引用付きの詳細レポートを生成します。
 tools:
   [
+    "execute/runInTerminal",
     "read/readFile",
     "agent",
     "edit/createFile",
     "edit/editFiles",
+    "search/codebase",
     "search/fileSearch",
     "search/textSearch",
     "web/fetch",
@@ -65,16 +67,16 @@ handoffs:
 
 ## モード
 
-| 項目             | Quick                                                    | Deep                                                    |
-| ---------------- | -------------------------------------------------------- | ------------------------------------------------------- |
-| トリガー         | 「ライト」「クイック」「簡単に」「ざっくり」「さくっと」 | デフォルト / 「深く」「徹底的に」「網羅的に」「詳しく」 |
-| 観点数           | 1-2                                                      | 3-5+                                                    |
-| サブエージェント | 使わない                                                 | 観点ごとに委譲                                          |
-| 評価フェーズ     | なし                                                     | 最大5回                                                 |
-| ソース上限       | 5件                                                      | 20件                                                    |
-| 再帰深度         | 1階層                                                    | 3階層                                                   |
-| 出力先           | `research/YYYYMMDD-<slug>-lite.md`                       | `research/YYYYMMDD-<slug>.md`                           |
-| 出典形式         | インライン URL                                           | 脚注 + 出典表                                           |
+| 項目 | Quick | Deep |
+| --- | --- | --- |
+| トリガー | 「ライト」「クイック」「簡単に」「ざっくり」「さくっと」 | デフォルト / 「深く」「徹底的に」「網羅的に」「詳しく」 |
+| 観点数 | 1-2 | 3-5+ |
+| サブエージェント | 使わない | 観点ごとに委譲 |
+| 評価フェーズ | なし | 最大5回 |
+| ソース上限 | 5件 | 20件 |
+| 再帰深度 | 1階層 | 3階層 |
+| 出力先 | `research/YYYYMMDD-<slug>-lite.md` | `research/YYYYMMDD-<slug>.md` |
+| 出典形式 | インライン URL | 脚注 + 出典表 |
 
 ## Core Rules
 
@@ -119,7 +121,7 @@ CLARIFY -> PLAN -> RESEARCH -> EVALUATE -> OUTPUT
 
 #### PLAN
 
-- `semantic_search` で既存知見を確認する
+- `search/codebase` で既存知見を確認する
 - `research/manifest.md` を確認する
 - 観点ごとの調査戦略を決める
 
@@ -185,6 +187,7 @@ fetch_webpage(urls=["https://html.duckduckgo.com/html/?q=<URL-encoded-query>"], 
 
 Copilot CLI が利用可能な環境では、ターミナル経由で `web_search` ツールを呼び出せる。
 追加 API キー不要（GitHub Copilot の料金に含まれる）。
+ターミナル利用はこの read-only な URL 収集・下調べ用途に限定し、build / test / install / deploy / format などの変更系コマンドには使わない。
 
 ```powershell
 copilot -p "{クエリ}。URL のみ、1行1件で返して。" `
@@ -200,12 +203,12 @@ copilot -p "{クエリ}。URL のみ、1行1件で返して。" `
 
 ## Budget and Tracking
 
-| 項目               | Quick | Deep  |
-| ------------------ | ----- | ----- |
-| ソース数           | 5件   | 20件  |
-| 起点あたり URL 数  | 3件   | 10件  |
-| 再帰深度           | 1階層 | 3階層 |
-| 評価リフレクション | 0回   | 5回   |
+| 項目 | Quick | Deep |
+| --- | --- | --- |
+| ソース数 | 5件 | 20件 |
+| 起点あたり URL 数 | 3件 | 10件 |
+| 再帰深度 | 1階層 | 3階層 |
+| 評価リフレクション | 0回 | 5回 |
 
 ### 早期終了条件
 
@@ -258,38 +261,38 @@ copilot -p "{クエリ}。URL のみ、1行1件で返して。" `
 
 ## Error Handling
 
-| エラー             | 対応                                                                                                    |
-| ------------------ | ------------------------------------------------------------------------------------------------------- |
-| 検索エラー         | 3回リトライして別クエリも試す                                                                           |
-| ソースアクセス不可 | 代替ソースへ切り替える                                                                                  |
-| Brave 429          | 3秒待機して最大2回再試行 → DuckDuckGo HTML へフォールバック → Copilot CLI `web_search` へフォールバック |
-| 連続3回失敗        | ユーザーへ報告して続行判断を求める                                                                      |
+| エラー | 対応 |
+| --- | --- |
+| 検索エラー | 3回リトライして別クエリも試す |
+| ソースアクセス不可 | 代替ソースへ切り替える |
+| Brave 429 | 3秒待機して最大2回再試行 → DuckDuckGo HTML へフォールバック → Copilot CLI `web_search` へフォールバック |
+| 連続3回失敗 | ユーザーへ報告して続行判断を求める |
 
 フォールバック優先順位: `brave_web_search` → DuckDuckGo HTML(`fetch_webpage`) → Copilot CLI `web_search`(ターミナル)
 
 ## Anti-Patterns
 
-| ❌ 避けること          | ✅ 代わりにすること       |
-| ---------------------- | ------------------------- |
-| 推論を事実として書く   | 事実と推論を分ける        |
+| ❌ 避けること | ✅ 代わりにすること |
+| --- | --- |
+| 推論を事実として書く | 事実と推論を分ける |
 | 単一ソースで結論を出す | 2件以上の独立ソースを探す |
-| 無制限に再帰収集する   | バジェット上限を守る      |
-| Deep で評価を省く      | 評価フェーズを必ず回す    |
-| Quick で深掘りしすぎる | 5件 / 1階層を守る         |
+| 無制限に再帰収集する | バジェット上限を守る |
+| Deep で評価を省く | 評価フェーズを必ず回す |
+| Quick で深掘りしすぎる | 5件 / 1階層を守る |
 
 ## Tools
 
-| ツール                   | 用途                                                  |
-| ------------------------ | ----------------------------------------------------- |
-| `fetch_webpage`          | 公式ドキュメント取得 / DuckDuckGo HTML フォールバック |
-| `brave_web_search`       | 横断検索（メイン）                                    |
-| `brave_news_search`      | 最新情報検索                                          |
-| DuckDuckGo HTML          | Brave 429 時のフォールバック検索                      |
-| Copilot CLI `web_search` | ターミナル経由フォールバック（API キー不要）          |
-| `mcp_microsoftdocs_*`    | Microsoft Learn 検索・取得                            |
-| `semantic_search`        | 既存知見検索                                          |
-| `create_file`            | 調査結果保存                                          |
-| `agent`                  | 観点別調査と品質評価                                  |
+| ツール | 用途 |
+| --- | --- |
+| `fetch_webpage` | 公式ドキュメント取得 / DuckDuckGo HTML フォールバック |
+| `brave_web_search` | 横断検索（メイン） |
+| `brave_news_search` | 最新情報検索 |
+| DuckDuckGo HTML | Brave 429 時のフォールバック検索 |
+| Copilot CLI `web_search` | ターミナル経由フォールバック（API キー不要） |
+| `mcp_microsoftdocs_*` | Microsoft Learn 検索・取得 |
+| `semantic_search` | 既存知見検索 |
+| `create_file` | 調査結果保存 |
+| `agent` | 観点別調査と品質評価 |
 
 ## Done Criteria
 
