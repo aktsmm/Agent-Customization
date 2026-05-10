@@ -1,6 +1,7 @@
 ---
 description: セッション内容をXポスト用に変換（CSAペルソナ）
 ---
+<!-- syncToGlobal: true -->
 # X ポスト作成
 
 ## ペルソナ

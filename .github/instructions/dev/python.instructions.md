@@ -66,6 +66,20 @@ pip install -r requirements.txt
 
 ## よくあるエラーと対処
 
+### Windows PowerShell で `UnicodeEncodeError: 'cp932' codec can't encode character '\xa5'`
+
+Python CLI が `¥` などの非ASCII文字を `print` するとき、PowerShell の標準出力エンコーディングが cp932 だと落ちる。
+
+**対処**: スクリプト冒頭で stdout を UTF-8 ラッパに差し替える。
+
+```python
+import io, sys
+if hasattr(sys.stdout, "buffer"):
+    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8", line_buffering=True)
+```
+
+コンソール表示が `ﾂ･` 等に化けても**ファイル本体は正常**なケースが多い。デバッグ時は出力ファイルを別エディタで開いて確認する。
+
 ### externally-managed-environment エラー
 
 uv 管理の Python に直接 `pip install` しようとすると発生。

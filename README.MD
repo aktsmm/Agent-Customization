@@ -10,7 +10,7 @@ GitHub Copilot / VS Code 用の prompts、agents、instructions、skills を管�
 
 | パス                              | 目的                                                                 |
 | --------------------------------- | -------------------------------------------------------------------- |
-| `.github/prompts/`                | VS Code User Data に同期する slash prompts と手動参照用 instructions |
+| `.github/prompts/`                | VS Code User Data に同期する slash prompts                           |
 | `.github/agents/`                 | VS Code User Data に同期する custom agents                           |
 | `.github/instructions/`           | VS Code / CLI に同期する自動適用 instructions                        |
 | `.github/skills/`                 | Copilot Skills                                                       |
@@ -25,13 +25,12 @@ GitHub Copilot / VS Code 用の prompts、agents、instructions、skills を管�
 
 ## 同期先
 
-| 種別                       | Repo 側                                     | VS Code User Data                               | Copilot CLI                  |
-| -------------------------- | ------------------------------------------- | ----------------------------------------------- | ---------------------------- |
-| Prompts                    | `.github/prompts/*.prompt.md`               | `%APPDATA%/Code/User/prompts/*.prompt.md`       | 対象外                       |
-| Agents                     | `.github/agents/*.agent.md`                 | `%APPDATA%/Code/User/prompts/*.agent.md`        | 対象外                       |
-| Manual helper instructions | `.github/prompts/*.instructions.md`         | `%APPDATA%/Code/User/prompts/*.instructions.md` | 対象外                       |
-| Auto instructions          | `.github/instructions/**/*.instructions.md` | `%APPDATA%/Code/User/prompts/*.instructions.md` | `~/.copilot/instructions/**` |
-| Skills                     | `.github/skills/`                           | 対象外                                          | 必要に応じて別フロー         |
+| 種別              | Repo 側                                     | VS Code User Data                               | Copilot CLI                  |
+| ----------------- | ------------------------------------------- | ----------------------------------------------- | ---------------------------- |
+| Prompts           | `.github/prompts/*.prompt.md`               | `%APPDATA%/Code/User/prompts/*.prompt.md`       | 対象外                       |
+| Agents            | `.github/agents/*.agent.md`                 | `%APPDATA%/Code/User/prompts/*.agent.md`        | 対象外                       |
+| Instructions      | `.github/instructions/**/*.instructions.md` | `%APPDATA%/Code/User/prompts/*.instructions.md` | `~/.copilot/instructions/**` |
+| Skills            | `.github/skills/`                           | 対象外                                          | 必要に応じて別フロー         |
 
 > Note: この repo を VS Code で開くと、`.github/instructions/` や `.github/prompts/` の assets が workspace customization として認識される可能性があります。この repo は主に保守・同期用として扱い、通常の開発作業 workspace とは分ける前提です。
 
@@ -73,24 +72,22 @@ GitHub Copilot / VS Code 用の prompts、agents、instructions、skills を管�
 - [git-commit](.github/prompts/git-commit.prompt.md)
 - [git-commit-push](.github/prompts/git-commit-push.prompt.md)
 - [git-pull](.github/prompts/git-pull.prompt.md)
-- [code-review](.github/prompts/code-review.prompt.md)
-- [code-fix-error](.github/prompts/code-fix-error.prompt.md)
-- [debug-error](.github/prompts/debug-error.prompt.md)
 - [write-tests](.github/prompts/write-tests.prompt.md)
 - [export-session-log](.github/prompts/export-session-log.prompt.md)
 - [export-copilot-session-dialogue](.github/prompts/export-copilot-session-dialogue.prompt.md)
 - [export-knowledge](.github/prompts/export-knowledge.prompt.md)
 - [export-sync-to-public-skills](.github/prompts/export-sync-to-public-skills.prompt.md)
 - [generate-x-tweet-growth-post](.github/prompts/generate-x-tweet-growth-post.prompt.md)
+- [convert-to-tweet](.github/prompts/convert-to-tweet.prompt.md)
 - [evaluate-waza-copilot-customizations](.github/prompts/evaluate-waza-copilot-customizations.prompt.md)
   - セットアップ: [docs/waza-copilot-customizations-setup.md](docs/waza-copilot-customizations-setup.md)
   - companion template: [templates/waza-copilot-customization-evals/README.md](templates/waza-copilot-customization-evals/README.md)
 - [review-agents-and-instructions](.github/prompts/review-agents-and-instructions.prompt.md)
-- [review-retrospective-learnings](.github/prompts/review-retrospective-learnings.prompt.md)
-- [refine-product](.github/prompts/refine-product.prompt.md)
+- [refine-product-100](.github/prompts/refine-product-100.prompt.md)
+- [retro-workspace](.github/prompts/retro-workspace.prompt.md)
+- [retro-user](.github/prompts/retro-user.prompt.md)
 - [security-structure-map-review](.github/prompts/security-structure-map-review.prompt.md)
 - [wrap-up-work](.github/prompts/wrap-up-work.prompt.md)
-- [convert-to-tweet](.github/prompts/convert-to-tweet.prompt.md)
 - [refactor-context](.github/prompts/refactor-context.prompt.md)
 
 ### Instructions
@@ -99,8 +96,13 @@ GitHub Copilot / VS Code 用の prompts、agents、instructions、skills を管�
 - [dev](.github/instructions/dev/)
 - [integrations](.github/instructions/integrations/)
 - [git-publish-policy](.github/instructions/dev/git-publish-policy.instructions.md) - GitHub 公開同期と visibility 判断
+- [copilot-loading](.github/instructions/core/copilot-loading.instructions.md) - Copilot CLI / VS Code Chat の読み込み場所と運用ルール
+- [naming-conventions](.github/instructions/core/naming-conventions.instructions.md) - 命名規約（ファイル名、生成物、カスタマイズ資産）
+- [prompts-metadata](.github/instructions/core/prompts-metadata.instructions.md) - prompt / instruction / agent の metadata 運用
 - [terminal](.github/instructions/core/terminal.instructions.md) - PowerShell / Windows terminal 操作
+- [user-data-default](.github/instructions/core/user-data-default.instructions.md) - User Data customization の既定スコープ
 - [vscode-environment](.github/instructions/core/vscode-environment.instructions.md) - VS Code User Data / workspaceStorage 実用メモ
+- [local-network-troubleshoot](.github/instructions/integrations/local-network-troubleshoot.instructions.md) - ローカルネットワーク接続トラブルシュート
 - [web-search](.github/instructions/integrations/web-search.instructions.md) - Brave / DuckDuckGo HTML / Copilot CLI web_search の使い分け
 
 ### Skills

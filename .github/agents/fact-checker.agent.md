@@ -9,12 +9,13 @@ tools:
 		"web/fetch",
 		"brave-search/*",
 		"microsoftdocs/*",
-		"azure-updates/*",
 		"aws-knowledge/*",
 		"execute/runInTerminal",
 	]
 argument-hint: "検証対象の文章、ファイル、主張、または観点を指定する"
 ---
+
+<!-- syncToGlobal: true -->
 
 # Fact Checker
 
