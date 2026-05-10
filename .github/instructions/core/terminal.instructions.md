@@ -43,6 +43,8 @@ applyTo: "**"
 
 - 一時変数を使うコマンド（例: `gh issue comment --body`）は、変数定義と実行を同一ターミナル実行にまとめる。
 - 日本語を含むファイルや JSON を扱うときは UTF-8 を維持する。
+- VS Code task は完了後も「ターミナルはタスクで再利用されます」と表示された task terminal を残すため、一回限りの監査・同期・検証では原則増やさない。必要で使った場合は、完了前に `.vscode/tasks.json` の一時 task と一時スクリプトを削除し、残った terminal / task の扱いを最終報告に書く。
+- 検証用の一時スクリプトや JSON は、永続成果物でない限り `output/`, `tmp/`, `output_sessions/` 等に残さず、完了前に削除する。証跡として残す必要がある場合は理由と保存先を報告する。
 - Windows 環境で高速な全文検索が必要な場合は、`Select-String` より `ripgrep` (`rg`) を優先してよい。
 - `rg` 未導入なら `winget install --id BurntSushi.ripgrep.MSVC --scope user --accept-source-agreements --accept-package-agreements` で導入してよい。
 - 導入直後のシェルで `rg` が見つからない場合は、ターミナル再起動か、`$env:Path = [System.Environment]::GetEnvironmentVariable('Path','Machine') + ';' + [System.Environment]::GetEnvironmentVariable('Path','User')` で PATH を再読込してよい。
