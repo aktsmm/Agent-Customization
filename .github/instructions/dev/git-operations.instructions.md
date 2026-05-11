@@ -30,6 +30,7 @@ applyTo: "**"
 - 主な type: `feat` `fix` `docs` `refactor` `test` `chore`
 - subject は命令形・簡潔・文末ピリオドなし。
 - 必要なら ` - <user.name>` を末尾に付与してよい。
+- PowerShell で `git commit -m` を使う場合、メッセージはシングルクォートで囲む（`(scope)` の括弧がサブ式として評価されるため）。
 
 ## Destructive Operations
 
