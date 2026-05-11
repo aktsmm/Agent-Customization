@@ -1,6 +1,6 @@
 ---
 name: "Refine Product 100"
-description: "プロダクトを機能・非機能・UI/UX で徹底レビューし、修正・テスト・同観点スイープ・ドキュメント整備・不要物削除まで自律実行。妥協なく 100% パスを目指す汎用プロンプト。リリース指示があれば最後に配布まで進める"
+description: "プロダクトを機能・非機能・UI/UX で徹底レビューし、修正・テスト・同観点スイープ・ドキュメント整備・不要物削除まで自律実行。妥協なく 100% パスを目指す汎用プロンプト。リリース指示があれば品質 gate 後に配布まで進める"
 argument-hint: "対象、重点観点、モード（例: current workspace / all / auto / quick / release）"
 ---
 
@@ -45,14 +45,21 @@ argument-hint: "対象、重点観点、モード（例: current workspace / all
 | `standard` | high-confidence gap を 1 サイクル閉じ + Sweep。追加 gap は最大 1 件、残りは Next Steps |
 | `auto` | 安全に直せる gap が尽きるまで複数サイクル |
 | `quick` | P0/P1 と検証だけ。Sweep / Docs / Cleanup は「なし」で省略可 |
+| `release` | `auto` の品質改善ループを完了後、ソフトウェア配布物なら Version sync → test/audit/build/pack/hygiene → commit → push → publish → GitHub Release → 裏取り → cleanup まで進める |
 
-「リリース」「release」「公開」指示時はソフトウェア配布物なら §Release Loop を確認。ドキュメント等は最終チェック + 配置手順を Next Steps に書く。
+Release intent:
+
+- `Release`, `release`, `リリース`, `公開`, `publish`, `PushPublish`, `Marketplace`, `マケプレ` が入力に含まれる場合は full release intent と扱う。
+- 明示 Release intent がある場合、確認不能を理由に local prep へ縮退しない。
+- Release intent は品質改善ループをスキップしない。§5 と §5.5 を通過してから §8 に進む。
+- ただし secret / 本番データ / 破壊的履歴改変 / credentials 不足 / 外部サービス認証失敗 / duplicate version などの Block は記録し、非破壊の Guard now を先に試す。
+- ドキュメント等は最終チェック + 配置手順を Next Steps に書く。
 
 ## Safety Constraints
 
 - ワークスペース内のユーザー所有物に限定
 - secret / token / 個人情報を出力・保存しない
-- `git push` / publish / deploy は §Release Loop または明示指示時のみ
+- `git push` / publish / deploy は §Release Loop または明示 Release intent がある場合のみ実行する。明示 Release intent がある場合は full release 完了を期待値とする
 - 破壊的操作・データ削除・外部公開は事前確認なし不可
 - 依頼範囲外（新規設定追加・無関係リファクタ・仕様変更）は勝手に始めず Next Steps に積む
 
@@ -123,17 +130,24 @@ argument-hint: "対象、重点観点、モード（例: current workspace / all
 
 不要な一時ファイル / dead code / 検証用資材を削除。迷うものは Next Steps へ。terminal / task / dev server は停止。
 
-### 8. Release Loop（ソフトウェア配布物 + 明示指示時のみ）
+### 8. Release Loop（ソフトウェア配布物 + 明示 Release intent 時）
 
-ドキュメント等は skip。配布シグナル検出時は「配布まで進めますか？」と 1 回だけ確認。
+ドキュメント等は skip。ソフトウェア配布物で明示 Release intent がある場合は、§5/§5.5 の品質改善ループを完了してから full release まで進める。
+
+「配布まで進めますか？」の確認は、Release intent が曖昧な場合だけ行う。`Release` / `publish` / `PushPublish` / `Marketplace` / `マケプレ` が明示されている場合は確認待ちで local prep に縮退しない。
 
 1. **公開前重複確認**: 対象 version が既に公開済みでないか確認（既存ならパッチを上げる）
 2. **Version sync**: package メタ / lockfile / バージョン表示 / CHANGELOG / release notes を同時更新
 3. **必須テスト**: typecheck / lint / unit / integration / 依存脆弱性監査
+	- `npm audit` 等の監査は publish 前 gate。Fix now 可能なものは直して再検証する。
+	- 残件がある場合は、dev-only / upstream fix なし / semver-major 等を分類し、publish 可否を Findings と Safe-to-Fix に明記する。
 4. **Build + Pack**: 配布形態に応じた pack（vsix / npm / python / docker 等）
 5. **配布物 Hygiene Check**: 中身を必ず列挙し、開発資材（src / test / .github / .vscode / sourcemap / 内部設計資料）混入なしを確認。混入時は publish せず ignore 設定修正 → 再パッケージ。ignore 修正も commit に含める
 6. **Commit**: `[Release] vX.Y.Z - <要約>` → Push → Publish（duplicate-safe オプション使用。`already published` は version 上げ直し）
-7. **裏取り**: 公開状態を別経路で確認（API 応答だけ信用しない）。配布物 SHA256 とサイズを release notes に反映
+7. **裏取り**: 公開状態を別経路で確認（API 応答だけ信用しない）
+	- Marketplace / package registry / GitHub Release など、公開先ごとに別経路で確認する。
+	- VS Code Marketplace は HTML 表示が遅延・キャッシュされることがあるため、`vsce show <publisher.extension> --json` の version metadata を優先して確認する。
+	- 配布物 SHA256 とサイズを release notes に反映する。
 8. **後片付け**: 検証用一時資材を削除
 
 ### 9. State Update（任意）

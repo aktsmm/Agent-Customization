@@ -34,6 +34,13 @@ argument-hint: "エラーログ、diff、会話要約、またはインシデン
 - User Data / `~/.copilot` に置くべき内容はこの prompt では扱わず handoff を提案
 - Gate 失敗時は理由と安全な代替案を出して停止
 
+## Execution Mode
+
+- 既定モードは `safe-auto`。workspace scope が明確で、Safety Gate を通過し、既存資産への小〜中規模な統合・更新で済む場合は、確認なしで反映まで実行してよい
+- `review-only` / `確認だけ` / `dry-run` / `プレビュー` が明示された場合だけ、変更案の提示で停止する
+- 次の場合だけユーザー確認で停止する: scope 判断が曖昧、大規模削除、公開・同期範囲変更、実行コードや hook の高リスク変更、既存 workflow の意味を大きく変える変更、secret / 個人情報 / 環境固有値の扱いに迷う場合
+- typo・小さな手順補正・既存ルールの抜け補完・確認フローの簡素化は、safe-auto でそのまま反映する
+
 ## 反映先
 
 | 対象 | パス |
@@ -42,7 +49,7 @@ argument-hint: "エラーログ、diff、会話要約、またはインシデン
 | workspace 共通ルール | `.github/copilot-instructions.md` |
 | ドメイン別ルール | `.github/instructions/**/*.instructions.md` |
 | prompt / agent / hooks | `.github/prompts/` `.github/agents/` `.github/hooks/` |
-| 汎用 script | `scripts/` 等（再利用価値があり、承認前は提案止まり） |
+| 汎用 script | `scripts/` 等（再利用価値があり、高リスク実行や大規模変更は確認） |
 
 **反映禁止**: User Data / `~/.copilot` / `/memories/**` / `.github/skills/**` / Resource Ninja 関連
 
@@ -67,11 +74,12 @@ argument-hint: "エラーログ、diff、会話要約、またはインシデン
 - まず既存 workspace 資産へ統合できないかを見る
 - 新規作成は既存の役割に収まらない場合だけ
 - 最小差分で反映する
-- ユーザー承認前はファイル編集しない（提案に留める）
+- safe-auto ではファイル編集まで実行する。review-only 指定時と Gate 停止時だけ提案に留める
 
-### 3. 承認 + 反映
+### 3. 反映 + 必要時承認
 
-- 承認後に対象ファイルを作成・編集
+- safe-auto で対象ファイルを作成・編集
+- 確認が必要な条件に該当する場合だけ、対象・理由・影響を示してユーザー承認後に反映
 - Gate: workspace scope 確認済み / 重複なし / 既存設計と矛盾なし / Safety Gate 通過済み
 
 ### 4. 報告
@@ -91,10 +99,10 @@ argument-hint: "エラーログ、diff、会話要約、またはインシデン
 - ...
 
 ## Review Checkpoint
-- [ ] User approved
+- [ ] safe-auto executed or user approval obtained when gated
 - [ ] Workspace scope confirmed
 - [ ] No duplicate rules
 - [ ] Safety Gate passed
 ```
 
-Stop: 知見なし / ユーザー拒否 / Gate 失敗 / handoff-required
+Stop: 知見なし / ユーザー拒否 / Gate 失敗 / handoff-required / review-only
