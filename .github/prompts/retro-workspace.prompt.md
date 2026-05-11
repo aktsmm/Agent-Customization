@@ -59,6 +59,10 @@ argument-hint: "エラーログ、diff、会話要約、またはインシデン
 - 新規ファイルより既存への統合を優先
 - 50 行以下の小ファイルは最小差分
 - 冗長説明は圧縮するが根拠 URL・非自明手順は消さない
+- append-only に節を足し続けるのを通常運用とみなさない
+- 変更前に `削除 → 統合 → 分離 → 追加` の順で検討する
+- `AGENTS.md` と `.github/copilot-instructions.md` のような always-on / 入口ファイルは、役割過多になっていないかを先に見る
+- workflow 手順、長い例外規則、詳細 recipe を入口ファイルへ追記する前に、domain instructions / prompts / agents へ分離できないか確認する
 
 ## 実行手順
 
@@ -72,9 +76,17 @@ argument-hint: "エラーログ、diff、会話要約、またはインシデン
 
 - 優先度: Impact x Recurrence（P1/P2/P3）
 - まず既存 workspace 資産へ統合できないかを見る
+- 既存資産が長くなりすぎていないか、同じ概念を別ファイルに重複定義していないかを確認する
+- 追記前に「既存文の置換で済むか」「domain instructions / prompt / agent に分離した方がよいか」を判断する
 - 新規作成は既存の役割に収まらない場合だけ
 - 最小差分で反映する
 - safe-auto ではファイル編集まで実行する。review-only 指定時と Gate 停止時だけ提案に留める
+
+#### Context Refactor Gate
+
+- 対象が workspace entry file のときは、追加より先に圧縮を検討する
+- `AGENTS.md` は registry / entry point、`.github/copilot-instructions.md` は短い repo-wide 原則、という役割差分を崩さない
+- casual chat や通常応答が不安定な incident では、`AGENTS.md` 不整合より先に entry file の over-scoped / duplicated instructions を疑う
 
 ### 3. 反映 + 必要時承認
 

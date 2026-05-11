@@ -26,6 +26,10 @@ workspace 固有の `.github/instructions/**/*.instructions.md`、`.github/copil
 - 保存先の確認が必要でも、質問は最小限にとどめる
 - 単純なひな型作成では、まず最小構成で作ってから不足分だけ確認する
 
+## Content Size and Granularity
+
+中身の量・粒度・always-on の扱い・具体例の最小化は `context-management.instructions.md` を SSOT とする。ここでは frontmatter / 保存先 / sync ポリシーだけ扱う。
+
 ## YAML Frontmatter
 
 VS Code が認識する `description` / `applyTo` / `name` は、HTML コメントではなく **YAML frontmatter** に書く。

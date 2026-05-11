@@ -9,6 +9,7 @@ applyTo: "**"
 <!-- repository: https://github.com/aktsmm/ghc_template -->
 <!-- license: CC BY-NC-SA 4.0 -->
 <!-- copyright: Copyright (c) 2025 aktsmm -->
+<!-- updated: 2026-05-12 -->
 
 # Terminal Command Execution Instructions
 
@@ -57,7 +58,8 @@ applyTo: "**"
 - deferred tool を呼ぶ前に `tool_search` でロード済みかを確認する。同一 tool で 2 回エラーが出たら即 `tool_search` に切り替える。
 - `create_and_run_task` はターミナル ID を返さないため出力追跡に使えない。出力確認が必要な場合は `run_in_terminal` を使う。スクリプトファイルを先に作成して `run_in_terminal` で実行する方法も有効。
 - `create_and_run_task` はワークスペース外パスの操作に原則使わない。やむを得ず一時 task から外部 repo を確認する場合は、`Set-Location` 依存ではなく `git -C <repo>` や対象 script の明示パスなど、コマンド自体に対象 repo を明示する。
-- `+`、空白、括弧、長い quoted 引数列を含む PowerShell 実行は、共有 terminal に直打ちせず、短い runner script と引数配列で実行する（2026-05-11 / GitHub Copilot）。
-- task / runner の stdout が Windows encoding で失敗しても、JSON artifact を生成する設計なら artifact の存在と内容を先に確認する。stdout は ASCII / UTF-8 か静音を優先する（2026-05-11 / GitHub Copilot）。
-- `--output-json` や同等の JSON status artifact を返す長時間 runner は、stdout の見た目や終了メッセージより `final_status` `overall_status` `status` などの機械可読フィールドを正本として完了判定する。stdout は補助証跡として扱う（2026-05-11 / GitHub Copilot）。
-- 一時 VS Code task を使った場合は、対象 label と一時 runner を削除し、最後に tasks JSON が parse できることを確認する（2026-05-11 / GitHub Copilot）。
+- `+`、空白、括弧、長い quoted 引数列を含む PowerShell 実行は、共有 terminal に直打ちせず、短い runner script と引数配列で実行する。
+- `@(...)` 配列リテラル、複数行 string、長い release notes 生成など、PowerShell が `>>` 継続入力に落ちやすい content generation は共有 terminal に直打ちせず、`create_file` / `apply_patch` / 短い runner script でファイル化する。
+- task / runner の stdout が Windows encoding で失敗しても、JSON artifact を生成する設計なら artifact の存在と内容を先に確認する。stdout は ASCII / UTF-8 か静音を優先する。
+- `--output-json` や同等の JSON status artifact を返す長時間 runner は、stdout の見た目や終了メッセージより `final_status` `overall_status` `status` などの機械可読フィールドを正本として完了判定する。stdout は補助証跡として扱う。
+- 一時 VS Code task を使った場合は、対象 label と一時 runner を削除し、最後に tasks JSON が parse できることを確認する。

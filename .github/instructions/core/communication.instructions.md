@@ -9,6 +9,7 @@ applyTo: "**"
 <!-- repository: https://github.com/aktsmm/ghc_template -->
 <!-- license: CC BY-NC-SA 4.0 -->
 <!-- copyright: Copyright (c) 2025 aktsmm -->
+<!-- updated: 2026-05-12 -->
 
 # Communication Instructions
 
@@ -52,4 +53,4 @@ applyTo: "**"
 - コードコメントは既存スタイルに合わせ、必要な箇所だけに書く。
 - 生成物は再現できる形にする。
 - 手順やコマンドは PowerShell / Windows 環境を前提に、必要なら UTF-8 やパスの注意を添える。
-- 作業ログや設計資産を永続化するときは、必ず日時と使ったモデルを記録する。
+- 作業ログや設計資産を永続化するときは、必要ならファイル上部の `updated` / metadata を更新する。本文への履歴注記は原則書かない。

@@ -44,6 +44,18 @@ VS Code Chat の instructions 読み込み場所は `chat.instructionsFilesLocat
 
 読み込み漏れや重複が疑わしい場合は、まずこの設定と Chat Diagnostics を確認する。
 
+### Always-Loaded ファイルの軽量化
+
+自動ロードされる instruction は、**毎ターン読まれる前提**で短く保つ。
+中身の量と粒度、Always-On 特有のルール、書かないもの、追加前のチェックは `context-management.instructions.md` を SSOT とする。
+
+対象:
+
+- `%APPDATA%/Code/User/prompts/*.instructions.md`
+- `$HOME/.copilot/copilot-instructions.md`
+- `.github/copilot-instructions.md`
+- `AGENTS.md`
+
 ## Copilot CLI で自動ロードされるファイル
 
 | ファイル | スコープ | 備考 |
@@ -64,6 +76,17 @@ VS Code Chat の instructions 読み込み場所は `chat.instructionsFilesLocat
 | `$HOME/.copilot/skills/*/SKILL.md` | `skill` ツールで invoke | ユーザーレベルスキル |
 | `.github/skills/*/SKILL.md` | `skill` ツールで invoke | プロジェクトスキル |
 
+## `copilot-instructions.md` と `AGENTS.md` の役割差分
+
+両方とも workspace で自動ロードされうるが、役割は分けて扱う。
+
+| ファイル | 主な役割 |
+| --- | --- |
+| `.github/copilot-instructions.md` | repo 全体で広く効く短い原則、routing、少数の global guardrails |
+| `AGENTS.md` | agent / workflow の索引、入口、役割分担、関連資産の参照起点 |
+
+中身を増やしすぎない原則と、不安定挙動の診断順は `context-management.instructions.md` を参照する。
+
 ## サブフォルダ配置
 
 - `.github/instructions/**/*.instructions.md` は再帰スキャンされるため、サブフォルダ配下でも有効
@@ -80,6 +103,12 @@ VS Code Chat の instructions 読み込み場所は `chat.instructionsFilesLocat
 | 特定タスクの手順 | `.github/agents/` or `.github/skills/` | OCR仕分け、経費精算自動化 |
 | 長い外部ツール連携ワークフロー | `$HOME/.copilot/skills/` or `.github/skills/` | Browser/CDP automation、PowerPoint automation |
 | 短い外部サービス参照ルール | `$HOME/.copilot/instructions/integrations/` または VS Code User Data | MS Learn MCP、ローカルネットワーク調査 |
+
+補足:
+
+- User Data 側の入口 instruction は「全体方針」だけに留める
+- 特定タスク専用の重いルールを常時ロードに入れない
+- 迷ったら `prompt / agent / applyTo 付き instruction` へ分離し、入口ファイルは圧縮する
 
 ## 公式 Docs
 

@@ -7,7 +7,7 @@ argument-hint: "対象、重点観点、モード（例: current workspace / all
 <!-- syncToGlobal: true -->
 <!-- author: aktsmm -->
 <!-- license: CC BY-NC-SA 4.0 -->
-<!-- updated: 2026-05-11 -->
+<!-- updated: 2026-05-12 -->
 
 # refine product 100
 
@@ -142,11 +142,14 @@ Release intent:
 	- `npm audit` 等の監査は publish 前 gate。Fix now 可能なものは直して再検証する。
 	- 残件がある場合は、dev-only / upstream fix なし / semver-major 等を分類し、publish 可否を Findings と Safe-to-Fix に明記する。
 4. **Build + Pack**: 配布形態に応じた pack（vsix / npm / python / docker 等）
+	- `vsce package` や同等コマンドの完了判定は、terminal の `DONE` 文言より生成物ファイルの存在・サイズ・更新時刻を正本にする。stdout が静かでも artifact が更新されていれば先に artifact を確認する。
 5. **配布物 Hygiene Check**: 中身を必ず列挙し、開発資材（src / test / .github / .vscode / sourcemap / 内部設計資料）混入なしを確認。混入時は publish せず ignore 設定修正 → 再パッケージ。ignore 修正も commit に含める
 6. **Commit**: `[Release] vX.Y.Z - <要約>` → Push → Publish（duplicate-safe オプション使用。`already published` は version 上げ直し）
 7. **裏取り**: 公開状態を別経路で確認（API 応答だけ信用しない）
 	- Marketplace / package registry / GitHub Release など、公開先ごとに別経路で確認する。
-	- VS Code Marketplace は HTML 表示が遅延・キャッシュされることがあるため、`vsce show <publisher.extension> --json` の version metadata を優先して確認する。
+	- VS Code Marketplace は HTML 表示が遅延・キャッシュされることがある。`vsce show <publisher.extension> --json` は有用だが、publish 直後は stale な metadata を返すことがある。
+	- `vsce publish --skip-duplicate` で対象 VSIX に対して `already published` が返った場合は、その publish 結果を一次の正本として扱う。`vsce show` が古い snapshot を返しているだけで version bump や再 publish をしない。
+	- `vsce show` が stale に見える場合は、Git tag / GitHub Release / package registry など別経路の公開証跡で補完する。
 	- 配布物 SHA256 とサイズを release notes に反映する。
 8. **後片付け**: 検証用一時資材を削除
 
