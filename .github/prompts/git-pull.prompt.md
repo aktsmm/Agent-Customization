@@ -1,4 +1,5 @@
 ---
+name: "git-pull"
 description: リモートからPullして変更箇所を表示
 ---
 

@@ -1,4 +1,5 @@
 ---
+name: "sync-public-skills"
 description: "セッションから得られた知見を 00_Ag-SkillBuilder のスキル・エージェントに反映し、公開リポジトリに同期"
 ---
 

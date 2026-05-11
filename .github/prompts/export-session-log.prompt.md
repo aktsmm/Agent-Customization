@@ -1,4 +1,5 @@
 ---
+name: "export-session-log"
 description: "セッション内容を「作業ログ・ブログネタ」向けに構造化して出力"
 ---
 

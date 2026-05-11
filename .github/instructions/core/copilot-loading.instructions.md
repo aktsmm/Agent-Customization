@@ -47,7 +47,6 @@ VS Code Chat の instructions 読み込み場所は `chat.instructionsFilesLocat
 ### Always-Loaded ファイルの軽量化
 
 自動ロードされる instruction は、**毎ターン読まれる前提**で短く保つ。
-中身の量と粒度、Always-On 特有のルール、書かないもの、追加前のチェックは `context-management.instructions.md` を SSOT とする。
 
 対象:
 
@@ -55,6 +54,8 @@ VS Code Chat の instructions 読み込み場所は `chat.instructionsFilesLocat
 - `$HOME/.copilot/copilot-instructions.md`
 - `.github/copilot-instructions.md`
 - `AGENTS.md`
+
+これらには、読み込み場所の説明に直接関係しない長い task 手順や recipe を混ぜない。
 
 ## Copilot CLI で自動ロードされるファイル
 
@@ -85,7 +86,11 @@ VS Code Chat の instructions 読み込み場所は `chat.instructionsFilesLocat
 | `.github/copilot-instructions.md` | repo 全体で広く効く短い原則、routing、少数の global guardrails |
 | `AGENTS.md` | agent / workflow の索引、入口、役割分担、関連資産の参照起点 |
 
-中身を増やしすぎない原則と、不安定挙動の診断順は `context-management.instructions.md` を参照する。
+診断順:
+
+1. casual chat や通常応答が不安定なら、まず `copilot-instructions.md` の過積載を疑う
+2. 次に、entry file と domain instructions の重複を疑う
+3. その後で `AGENTS.md` と `.agent.md` / workflow 定義の不整合を疑う
 
 ## サブフォルダ配置
 
@@ -108,7 +113,7 @@ VS Code Chat の instructions 読み込み場所は `chat.instructionsFilesLocat
 
 - User Data 側の入口 instruction は「全体方針」だけに留める
 - 特定タスク専用の重いルールを常時ロードに入れない
-- 迷ったら `prompt / agent / applyTo 付き instruction` へ分離し、入口ファイルは圧縮する
+- 入口ファイルは、読み込み場所の説明と配置判断に必要な範囲へ留める
 
 ## 公式 Docs
 

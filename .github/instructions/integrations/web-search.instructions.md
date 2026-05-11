@@ -1,5 +1,6 @@
 ---
-description: "Web 検索やページ取得が必要なときに使う。Brave / DuckDuckGo HTML / Copilot CLI web_search を使い分け、公式 Docs を優先させるためのルール"
+description: "Web 検索・ページ取得の tool 選択と参照優先順位ルール"
+applyTo: "**"
 ---
 
 <!-- syncToGlobal: true -->

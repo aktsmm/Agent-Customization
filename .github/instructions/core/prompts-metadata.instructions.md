@@ -28,7 +28,7 @@ workspace 固有の `.github/instructions/**/*.instructions.md`、`.github/copil
 
 ## Content Size and Granularity
 
-中身の量・粒度・always-on の扱い・具体例の最小化は `context-management.instructions.md` を SSOT とする。ここでは frontmatter / 保存先 / sync ポリシーだけ扱う。
+ここでは frontmatter / 保存先 / sync ポリシーだけを扱う。
 
 ## YAML Frontmatter
 

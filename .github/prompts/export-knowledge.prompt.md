@@ -1,4 +1,5 @@
 ---
+name: "export-knowledge"
 description: "セッション中の「知見」を構造化してドメイン別（microsoft / copilot など）に振り分けて出力"
 ---
 

@@ -1,4 +1,5 @@
 ---
+name: "git-commit-push"
 description: 保存してコミット＆プッシュ
 ---
 

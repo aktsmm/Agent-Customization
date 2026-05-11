@@ -1,5 +1,7 @@
 ---
-description: "AST/構造マップから防御的に脆弱性を観察・特定するセキュリティレビュー専用 prompt。所有または診断許可済み対象に限定。横断的な SSOT/構造レビューは `review-agents-and-instructions`、製品全体の品質スイープは `refine-product-100`、単発のコンテキスト最適化は `refactor-context` を使う"
+name: "review-security-structure-map"
+description: "AST/構造マップから防御的に脆弱性を観察・特定するセキュリティレビュー専用 prompt。所有または診断許可済み対象に限定し、構造情報を優先して読む"
+argument-hint: "対象パス、構造マップ、AST レポート、call graph、scan 結果など"
 ---
 
 <!-- syncToGlobal: true -->

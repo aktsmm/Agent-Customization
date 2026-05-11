@@ -1,4 +1,5 @@
 ---
+name: "refactor-context"
 description: "指定スコープの instruction / prompt / agent 定義を単発でコンテキスト最適化する"
 ---
 
@@ -16,7 +17,9 @@ description: "指定スコープの instruction / prompt / agent 定義を単発
 
 - 使う: 単発で対象ファイル / フォルダのコンテキストを圧縮・整理したいとき
 - 使う: その場で冗長説明や重複表現を最適化したいとき
-- 使わない: 複数資産を横断して SSOT・整合性・構造を判定したいとき → `review-agents-and-instructions` を使う
+- 使わない: 複数資産を横断して SSOT・整合性・構造を判定したいとき
+
+その場合は、この prompt でも扱える範囲だけ整理してよいが、横断レビューそのものを前提にはしない。
 
 ## モード
 

@@ -1,4 +1,5 @@
 ---
+name: "git-commit"
 description: 保存してコミット（Pushなし）
 ---
 

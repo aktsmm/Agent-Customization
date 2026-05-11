@@ -13,7 +13,6 @@ applyTo: "**"
 # Git Operations Instructions
 
 エージェントが Git 操作を安全・一貫して行うための最小ルールです。
-公開判断（repo visibility / `.github` / `.vscode` の公開可否）は [git-publish-policy.instructions.md](git-publish-policy.instructions.md) を参照してください。
 
 ## Core Rules
 
@@ -52,6 +51,3 @@ applyTo: "**"
 - Issue コメント削除（`gh api -X DELETE`）が失敗した場合は、`gh issue comment --edit-last --body "(deleted)"` で内容を差し替えてからリトライする。
 - 長いマークダウンを `--body` で直接渡すとシェルの問題が起きやすいので、`--body-file` でファイル経由で渡す。
 
-## See Also
-
-- [git-publish-policy.instructions.md](git-publish-policy.instructions.md) - 公開同期と visibility 判断のルール

@@ -21,7 +21,7 @@ argument-hint: "エラーログ、diff、会話要約、またはインシデン
 - 使う: `.github/**`、`AGENTS.md`、repo 固有 instructions / prompts / agents / hooks への反映
 - 使う: 汎用 script / task / helper への昇格が妥当なとき
 - 使わない: typo のみ / 環境固有問題のみ
-- 使わない: User Data や `~/.copilot` 配下（別スコープ向け retro prompt を呼ぶ）
+- 使わない: User Data や `~/.copilot` 配下
 
 ## 入力
 
@@ -31,7 +31,7 @@ argument-hint: "エラーログ、diff、会話要約、またはインシデン
 
 - 反映禁止: secret / 認証情報 / 個人情報 / 顧客情報 / ローカル絶対パス / 端末固有値
 - memory 系スコープ（`/memories/**` 等）は反映先にしない
-- User Data / `~/.copilot` に置くべき内容はこの prompt では扱わず handoff を提案
+- User Data / `~/.copilot` に置くべき内容はこの prompt では扱わず、scope 不一致として停止する
 - Gate 失敗時は理由と安全な代替案を出して停止
 
 ## Execution Mode

@@ -1,8 +1,7 @@
 ---
-description: "Microsoft / Azure / Microsoft 365 の仕様・手順・制限・エラー・コード例を扱うときに使う。microsoftdocs MCP / mrc-mcp (Azure Updates / M365 Roadmap) を優先し、参照元 URL を明記するためのルール"
+description: "Microsoft / Azure / M365 の仕様・手順・制限・エラー検索の参照優先順位と出典 URL 明記ルール"
+applyTo: "**"
 ---
-
-
 <!-- syncToGlobal: true -->
 <!-- author: aktsmm -->
 <!-- repository: https://github.com/aktsmm/ghc_template -->

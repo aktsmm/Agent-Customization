@@ -1,4 +1,5 @@
 ---
+name: "export-copilot-session-dialogue"
 description: "セッション中の「対話フロー・使用ツール・手順」を構造化して出力"
 ---
 

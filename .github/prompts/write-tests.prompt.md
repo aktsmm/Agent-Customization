@@ -1,4 +1,5 @@
 ---
+name: "write-tests"
 description: コードを分析し、テストを段階的に生成・実行
 ---
 

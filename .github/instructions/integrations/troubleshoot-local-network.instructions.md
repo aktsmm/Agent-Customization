@@ -1,9 +1,6 @@
 ---
-description: "ローカルネットワーク接続トラブルシュート（RDP不通、IP変更、hosts管理）。ネットワーク不通時に明示参照するレシピ集"
+description: "ローカルネットワーク接続障害（RDP不通、IP変更、hosts管理）の調査・復旧手順"
 ---
-
-<!-- syncToGlobal: true -->
-
 
 <!-- author: yamapan -->
 <!-- repository: n/a -->

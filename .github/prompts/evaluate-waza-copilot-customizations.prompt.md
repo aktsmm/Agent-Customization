@@ -1,4 +1,5 @@
 ---
+name: "evaluate-waza-copilot-customizations"
 agent: "agent"
 description: "Waza で User Data / ワークスペース / 任意パスの prompts / instructions / agents / skills をセットアップ、static/runtime 評価、gate 単体実行、結果要約、report 更新まで行う。"
 tools: ["execute/runInTerminal", "read/readFile", "search/fileSearch", "search/textSearch", "edit/editFiles", "todo"]
