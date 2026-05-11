@@ -1,8 +1,7 @@
 ---
 description: "Git の公開同期ポリシー（repo visibility、.github/.vscode の公開判断、公開済み時の対応）"
+applyTo: "**"
 ---
-
-
 <!-- syncToGlobal: true -->
 <!-- author: aktsmm -->
 <!-- repository: https://github.com/aktsmm/ghc_template -->
@@ -21,14 +20,14 @@ description: "Git の公開同期ポリシー（repo visibility、.github/.vscod
 
 ## Persist the Decision
 
-- 初回確認結果は repo ローカルの `.hiker/repo-visibility-policy.json` に保存する。
+- 初回確認結果は repo ローカルの `.git/info/repo-visibility-policy.json` に保存する。
 - 参照キーは `origin URL` 推奨。
 - 方針変更の明示指示がない限り、同じ質問を繰り返さない。
-- `.hiker/` は `.gitignore` 対象にする。
+- `.git/info/` 配下は Git 管理外なので、追加の ignore 設定は不要。
 
 ## Non-Public Mode
 
-- 追跡を止めるときは `git rm --cached` でインデックスから外し、`.gitignore` に `/.github/` `/.vscode/` `/.hiker/` を追加する。
+- 追跡を止めるときは `git rm --cached` でインデックスから外し、`.gitignore` に `/.github/` `/.vscode/` を追加する。
 - ローカル実ファイルは削除しない。
 - 追跡するのは「リポジトリ公開に必要なファイル」だけにする。
 - `.github` は workflow / automation / 運用上必要なメタデータのみ追跡し、不要な補助資料は追跡しない。
@@ -39,8 +38,3 @@ description: "Git の公開同期ポリシー（repo visibility、.github/.vscod
 - 履歴から削除するのはユーザーの明示指示があるときだけ。
 - 履歴改変時はバックアップを取ってから `git filter-repo` + `force push` を実施し、共同開発者へ再同期手順を案内する。
 - 必要ならシークレットを失効・再発行する。
-
-## Default License Policy
-
-- 新規公開 repo は原則 CC BY-NC-SA 4.0 LICENSE を採用する。
-- 例外: `Agent-Skills` と `ghc_template`。

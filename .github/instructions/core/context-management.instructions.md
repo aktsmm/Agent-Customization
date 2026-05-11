@@ -43,6 +43,7 @@ Customization 資産（instructions / prompts / agents / SKILL / copilot-instruc
 - 詳細手順、長い recipe、persona、ドメイン固有規則は always-on に置かない
 - always-on の入口ファイルには routing と少数の global guardrails だけ残す
 - それ以外は `applyTo` を絞った instruction、`.prompt.md`、`.agent.md`、references に逃がす
+- ただし Global User Data の prompt / instruction は、他の global prompt / instruction を前提にしない
 
 ### 5. 反復・テスト前提
 - 一発で完成させず、小さく始めて反復で磨く
@@ -95,9 +96,10 @@ Customization 資産（instructions / prompts / agents / SKILL / copilot-instruc
 知見を反映する前に、必ずこの順で検討する。
 
 1. 削除: 古い・陳腐化した節を消せないか
-2. 統合: 既存節の置換・圧縮で済まないか
-3. 分離: 別 instruction / prompt / agent / references に逃がすべきか
-4. 追加: ここで初めて追記を検討する
+2. 統合/圧縮: 既存節の置換・圧縮で済まないか
+3. 分離: 責務や対象を切り分ける必要があるか
+4. 参照化: 低頻度の深い detail だけを外へ逃がす必要があるか
+5. 追加: ここで初めて追記を検討する
 
 順番を守るだけで append-only 化をかなり防げる。
 
