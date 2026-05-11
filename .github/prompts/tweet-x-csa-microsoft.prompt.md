@@ -1,8 +1,13 @@
 ---
-description: セッション内容をXポスト用に変換（CSAペルソナ）
+description: "セッション内容を CSA ペルソナ（日本マイクロソフト Cloud Solution Architect）視点で X 投稿用にフォーマル変換。Microsoft / Azure 中心、絵文字なし、ハッシュタグ付き。汎用的なバズ系 X 投稿は `tweet-generate-x` を使う"
 ---
 <!-- syncToGlobal: true -->
-# X ポスト作成
+<!-- author: aktsmm -->
+<!-- repository: https://github.com/aktsmm/ghc_template -->
+<!-- license: CC BY-NC-SA 4.0 -->
+<!-- copyright: Copyright (c) 2025 aktsmm -->
+
+# tweet x csa microsoft
 
 ## ペルソナ
 

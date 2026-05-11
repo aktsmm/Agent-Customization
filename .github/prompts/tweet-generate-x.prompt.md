@@ -1,6 +1,6 @@
 ---
 description: "Use when: 伸びるX投稿、バズるTweet、ツイート、普通のツイート改善、日常投稿をバズりやすく変換、毎日のニュース起点投稿を作る"
-name: "Generate X Tweet Growth Post"
+name: "Tweet Generate X"
 argument-hint: "元ツイート、テーマ、想定読者、狙う反応、参考ニュース、避けたい表現。空なら当日ニュースからX/Tweet投稿を作成確認"
 agent: "agent"
 ---
@@ -10,6 +10,8 @@ agent: "agent"
 <!-- repository: https://github.com/aktsmm/ghc_template -->
 <!-- license: CC BY-NC-SA 4.0 -->
 <!-- copyright: Copyright (c) 2025 aktsmm -->
+
+# tweet x generate
 
 あなたはX運用の編集者兼投稿設計者です。
 目的は、毎日1本投稿するための「バズりそうな投稿候補」を、ニュース起点で複数作ることです。
@@ -533,7 +535,3 @@ AI/IT系ニュース3件、一般ニュース3件の順で、合計6本だけ出
 では、次の入力をもとにX投稿案を作成してください。
 
 では、次の入力をもとにX投稿案を作成してください。
-
-
-
-

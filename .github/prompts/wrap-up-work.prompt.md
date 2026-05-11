@@ -1,5 +1,5 @@
 ---
-description: セッション終了時のクリーンアップ
+description: "セッション終了時のクリーンアップ（保存・閉じる・送るなどを一括実行）"
 ---
 
 <!-- syncToGlobal: true -->
@@ -8,7 +8,7 @@ description: セッション終了時のクリーンアップ
 <!-- license: CC BY-NC-SA 4.0 -->
 <!-- copyright: Copyright (c) 2025 aktsmm -->
 
-# Prompt: Cleanup Session
+# wrap up work
 
 セッション終了時のクリーンアップ。以下を順番に実行：
 

@@ -10,7 +10,7 @@ tools: ["execute/runInTerminal", "read/readFile", "search/fileSearch", "search/t
 <!-- license: CC BY-NC-SA 4.0 -->
 <!-- copyright: Copyright (c) 2025 aktsmm -->
 
-# WAZA：Evaluate Copilot Customizations
+# WAZA evaluate copilot customizations
 
 User Data、現在のワークスペース、または任意パスの Copilot customization files を対象に、Waza 評価プロジェクトのセットアップ、static/runtime 評価、gate 単体実行、結果要約、report 更新を行う。
 

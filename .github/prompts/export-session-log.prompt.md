@@ -1,5 +1,5 @@
 ---
-description: セッションログ / ブログネタ（AI可読・構造化）
+description: "セッション内容を「作業ログ・ブログネタ」向けに構造化して出力"
 ---
 
 <!-- syncToGlobal: true -->
@@ -8,7 +8,7 @@ description: セッションログ / ブログネタ（AI可読・構造化）
 <!-- license: CC BY-NC-SA 4.0 -->
 <!-- copyright: Copyright (c) 2025 aktsmm -->
 
-# Export Session Log
+# export session log
 
 セッション内容を構造化されたMarkdownにエクスポートします。
 

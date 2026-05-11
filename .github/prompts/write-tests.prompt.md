@@ -8,7 +8,7 @@ description: コードを分析し、テストを段階的に生成・実行
 <!-- license: CC BY-NC-SA 4.0 -->
 <!-- copyright: Copyright (c) 2025 aktsmm -->
 
-# Write Tests
+# write tests
 
 テストを書いてね！✨
 

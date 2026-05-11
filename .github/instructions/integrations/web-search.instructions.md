@@ -1,6 +1,5 @@
 ---
-description: "Web 検索とページ取得の使い分け（Brave、DuckDuckGo HTML、Copilot CLI web_search、公式 Docs 優先）"
-applyTo: "**"
+description: "Web 検索やページ取得が必要なときに使う。Brave / DuckDuckGo HTML / Copilot CLI web_search を使い分け、公式 Docs を優先させるためのルール"
 ---
 
 <!-- syncToGlobal: true -->
@@ -12,6 +11,12 @@ applyTo: "**"
 # Web Search Instructions
 
 Web 検索、ページ取得、最新情報確認、出典付き調査を行うときの共通ルール。
+
+## When to Use
+
+- 使う: 一般的な Web 検索やページ取得が必要なとき
+- 使う: 公式 Docs と並んで他社記事・コミュニティ情報・リリースノートを参照したいとき
+- 使わない: Microsoft / Azure / M365 中心の調査 → `microsoft-docs` を使う
 
 ## Core Rules
 

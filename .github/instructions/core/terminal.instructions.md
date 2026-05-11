@@ -44,7 +44,6 @@ applyTo: "**"
 - 一時変数を使うコマンド（例: `gh issue comment --body`）は、変数定義と実行を同一ターミナル実行にまとめる。
 - 日本語を含むファイルや JSON を扱うときは UTF-8 を維持する。
 - VS Code task は完了後も「ターミナルはタスクで再利用されます」と表示された task terminal を残すため、一回限りの監査・同期・検証では原則増やさない。必要で使った場合は、完了前に `.vscode/tasks.json` の一時 task と一時スクリプトを削除し、残った terminal / task の扱いを最終報告に書く。
-- 検証用の一時スクリプトや JSON は、永続成果物でない限り `output/`, `tmp/`, `output_sessions/` 等に残さず、完了前に削除する。証跡として残す必要がある場合は理由と保存先を報告する。
 - Windows 環境で高速な全文検索が必要な場合は、`Select-String` より `ripgrep` (`rg`) を優先してよい。
 - `rg` 未導入なら `winget install --id BurntSushi.ripgrep.MSVC --scope user --accept-source-agreements --accept-package-agreements` で導入してよい。
 - 導入直後のシェルで `rg` が見つからない場合は、ターミナル再起動か、`$env:Path = [System.Environment]::GetEnvironmentVariable('Path','Machine') + ';' + [System.Environment]::GetEnvironmentVariable('Path','User')` で PATH を再読込してよい。
@@ -53,3 +52,5 @@ applyTo: "**"
 - 共有 `pwsh` が未終了 here-string、`>>`、prompt-only、継続入力待ちに落ちた場合、その terminal は**汚染済み**として扱う。終端文字や追加コマンドで復旧を試み続けず、以後の検証・生成・永続化は VS Code task、clean shell、または事前作成済みスクリプトの単発実行へ切り替える。
 - Brave などの Web 検索が同一タスク内で 3 回以上連続して失敗した場合は、Web 検索不能と決めつけず、`copilot -p "{クエリ}" --allow-all-tools --allow-all-urls --available-tools web_search --silent` をフォールバックとして使ってよい。
 - URL 列挙が目的のときは、URL のみを 1 行 1 件で返すよう指示し、CLI 出力の前置き文は除去して扱う。
+- instruction ファイルや設計資産内のコードブロックにも絶対パスを埋め込まない。`Set-Location` が必要な場合は「ワークスペースルートで実行する前提」とコメントで補足し、パスのハードコードは省く。
+- deferred tool を呼ぶ前に `tool_search` でロード済みかを確認する。同一 tool で 2 回エラーが出たら即 `tool_search` に切り替える。

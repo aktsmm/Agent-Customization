@@ -26,27 +26,27 @@
 
 ## Instructions
 
-| ファイル                                                                                           | 説明                                                                    |
-| -------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------- |
-| [git.instructions.md](.github/instructions/dev/git.instructions.md)                                | Git 操作ルール（Conventional Commits、Push 禁止、gh CLI、LICENSE 規約） |
-| [git-publish-policy.instructions.md](.github/instructions/dev/git-publish-policy.instructions.md)  | GitHub 公開同期ポリシー（repo visibility、公開判断）                    |
-| [terminal.instructions.md](.github/instructions/core/terminal.instructions.md)                     | ターミナル操作規約（PowerShell 互換、破壊的操作の注意）                 |
-| [python.instructions.md](.github/instructions/dev/python.instructions.md)                          | Python 環境設定（仮想環境必須、uv 推奨、並列化パターン）                |
-| [nodejs.instructions.md](.github/instructions/dev/nodejs.instructions.md)                          | Node.js 環境設定（nvm 推奨、パッケージマネージャー）                    |
-| [vscode-environment.instructions.md](.github/instructions/core/vscode-environment.instructions.md) | VS Code 環境情報（ファイルパス、拡張機能ストレージ）                    |
-| [pptx-editing.instructions.md](.github/instructions/dev/pptx-editing.instructions.md)              | PowerPoint 編集・COM Automation 関連ルール                              |
-| [security.instructions.md](.github/instructions/core/security.instructions.md)                     | セキュリティガイドライン（機密情報、外部 API、入力検証）                |
-| [communication.instructions.md](.github/instructions/core/communication.instructions.md)           | コミュニケーションスタイル（結論ファースト、言語設定）                  |
-| [autonomy.instructions.md](.github/instructions/core/autonomy.instructions.md)                     | 自律的タスク実行の行動指針（問題解決、代替手段）                        |
-| [naming-conventions.instructions.md](.github/instructions/core/naming-conventions.instructions.md) | 命名規約（ファイル名、エージェント名、変数名）                          |
-| [prompts-metadata.instructions.md](.github/instructions/core/prompts-metadata.instructions.md)     | プロンプトメタデータ運用（syncToGlobal 基準、テンプレ）                 |
-| [user-data-default.instructions.md](.github/instructions/core/user-data-default.instructions.md)   | User Data customization の既定スコープ                                  |
-| [learnings.instructions.md](.github/instructions/core/learnings.instructions.md)                   | Learnings 蓄積ルール（出力先・フォーマット・読み書き共通）              |
-| [copilot-loading.instructions.md](.github/instructions/core/copilot-loading.instructions.md)       | Copilot CLI / VS Code Chat の読み込み場所と運用ルール                   |
-| [session-metadata.instructions.md](.github/instructions/core/session-metadata.instructions.md)     | セッションメタデータ記録ルール                                          |
+| ファイル                                                                                                                   | 説明                                                                    |
+| -------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------- |
+| [git.instructions.md](.github/instructions/dev/git.instructions.md)                                                        | Git 操作ルール（Conventional Commits、Push 禁止、gh CLI、LICENSE 規約） |
+| [git-publish-policy.instructions.md](.github/instructions/dev/git-publish-policy.instructions.md)                          | GitHub 公開同期ポリシー（repo visibility、公開判断）                    |
+| [terminal.instructions.md](.github/instructions/core/terminal.instructions.md)                                             | ターミナル操作規約（PowerShell 互換、破壊的操作の注意）                 |
+| [python.instructions.md](.github/instructions/dev/python.instructions.md)                                                  | Python 環境設定（仮想環境必須、uv 推奨、並列化パターン）                |
+| [nodejs.instructions.md](.github/instructions/dev/nodejs.instructions.md)                                                  | Node.js 環境設定（nvm 推奨、パッケージマネージャー）                    |
+| [vscode-environment.instructions.md](.github/instructions/core/vscode-environment.instructions.md)                         | VS Code 環境情報（ファイルパス、拡張機能ストレージ）                    |
+| [pptx-editing.instructions.md](.github/instructions/dev/pptx-editing.instructions.md)                                      | PowerPoint 編集・COM Automation 関連ルール                              |
+| [security.instructions.md](.github/instructions/core/security.instructions.md)                                             | セキュリティガイドライン（機密情報、外部 API、入力検証）                |
+| [communication.instructions.md](.github/instructions/core/communication.instructions.md)                                   | コミュニケーションスタイル（結論ファースト、言語設定）                  |
+| [autonomy.instructions.md](.github/instructions/core/autonomy.instructions.md)                                             | 自律的タスク実行の行動指針（問題解決、代替手段）                        |
+| [naming-conventions.instructions.md](.github/instructions/core/naming-conventions.instructions.md)                         | 命名規約（ファイル名、エージェント名、変数名）                          |
+| [prompts-metadata.instructions.md](.github/instructions/core/prompts-metadata.instructions.md)                             | プロンプトメタデータ運用（syncToGlobal 基準、テンプレ）                 |
+| [user-data-default.instructions.md](.github/instructions/core/user-data-default.instructions.md)                           | User Data customization の既定スコープ                                  |
+| [learnings.instructions.md](.github/instructions/core/learnings.instructions.md)                                           | Learnings 蓄積ルール（出力先・フォーマット・読み書き共通）              |
+| [copilot-loading.instructions.md](.github/instructions/core/copilot-loading.instructions.md)                               | Copilot CLI / VS Code Chat の読み込み場所と運用ルール                   |
+| [session-metadata.instructions.md](.github/instructions/core/session-metadata.instructions.md)                             | セッションメタデータ記録ルール                                          |
 | [local-network-troubleshoot.instructions.md](.github/instructions/integrations/local-network-troubleshoot.instructions.md) | ローカルネットワーク接続トラブルシュート                                |
-| [microsoft-docs.instructions.md](.github/instructions/integrations/microsoft-docs.instructions.md) | Microsoft 公式ドキュメント参照（MCP ツール活用、ソース明記）            |
-| [edge-cdp.instructions.md](.github/instructions/integrations/edge-cdp.instructions.md)             | Edge CDP / ブラウザ自動化関連ルール                                     |
+| [microsoft-docs.instructions.md](.github/instructions/integrations/microsoft-docs.instructions.md)                         | Microsoft 公式ドキュメント参照（MCP ツール活用、ソース明記）            |
+| [edge-cdp.instructions.md](.github/instructions/integrations/edge-cdp.instructions.md)                                     | Edge CDP / ブラウザ自動化関連ルール                                     |
 
 ## Prompts
 
@@ -83,6 +83,7 @@
 3. User Data / CLI へ反映する場合は `sync-to-global` を使い、`.github/.sync-ignore` の除外を尊重する。
 
 <!-- resource-ninja-START -->
+
 ## Agent Skills
 
 > **IMPORTANT**: Prefer skill-led reasoning over pre-training-led reasoning.
@@ -90,8 +91,8 @@
 
 ### Skills
 
-| Skill | Description |
-|-------|-------------|
+| Skill                                                                    | Description                                                                                                                                                                                                  |
+| ------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | [agentic-workflow-guide](.github/skills/agentic-workflow-guide/SKILL.md) | Design, review, and debug agent workflows, and decide when a request should use a prompt, instruc... \| Create: New .agent.md, workflow architecture, scaffolding; Review: Orchestrator not delegating, d... |
 
 <!-- resource-ninja-END -->

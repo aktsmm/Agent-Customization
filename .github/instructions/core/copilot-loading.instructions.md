@@ -14,9 +14,9 @@ applyTo: "**/*.prompt.md,**/*.instructions.md,**/*.agent.md,**/SKILL.md,**/copil
 エージェントやインストラクションがいつ・どこから読まれるかの整理。
 ファイルを追加・編集するときにどこに置くべきか判断するために参照する。
 
-## VS Code GitHub Copilot Chat で自動ロードされるファイル
-
 > 補足: `.github/copilot-instructions.md` と `AGENTS.md` は読み込み対象だが、User Data 側の metadata/frontmatter ルールをそのまま要求する対象ではない。
+
+## VS Code GitHub Copilot Chat で自動ロードされるファイル
 
 | ファイル | スコープ | 備考 |
 |---------|---------|------|
@@ -63,6 +63,12 @@ VS Code Chat の instructions 読み込み場所は `chat.instructionsFilesLocat
 | `.github/agents/*.agent.md` | VS Code: `@agent名`、CLI: task ツールの custom agent | エージェント定義 |
 | `$HOME/.copilot/skills/*/SKILL.md` | `skill` ツールで invoke | ユーザーレベルスキル |
 | `.github/skills/*/SKILL.md` | `skill` ツールで invoke | プロジェクトスキル |
+
+## サブフォルダ配置
+
+- `.github/instructions/**/*.instructions.md` は再帰スキャンされるため、サブフォルダ配下でも有効
+- 適用条件は「直下にあるか」ではなく `applyTo` パターンで決まる
+- 整理時は直下に平置きするより、責務ごとにサブフォルダへ分ける方を優先してよい（`core/` `dev/` `agents/` `integrations/` 等）
 
 ## 配置の判断基準
 

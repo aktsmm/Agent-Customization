@@ -1,5 +1,5 @@
 ---
-description: "ローカルネットワーク接続トラブルシュートの手順（RDP不通、IP変更、hosts管理）"
+description: "ローカルネットワーク接続トラブルシュート（RDP不通、IP変更、hosts管理）。ネットワーク不通時に明示参照するレシピ集"
 ---
 
 <!-- syncToGlobal: true -->
@@ -10,7 +10,7 @@ description: "ローカルネットワーク接続トラブルシュートの手
 <!-- license: CC BY-NC-SA 4.0 -->
 <!-- copyright: Copyright (c) 2025 yamapan -->
 
-# Local Network Troubleshoot Instructions
+# Troubleshoot Local Network Instructions
 
 ローカルネットワーク上のサーバーに接続できないときの調査・復旧手順。
 
