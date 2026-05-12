@@ -2,7 +2,7 @@
 name: 😎workflow-designer
 description: エージェント、ワークフロー、instructions、skills、prompts の設計・レビュー・改善を支援する。配置妥当性、SSOT、常時ロード肥大化、サブエージェント評価を重視する。
 tools:
-  ['read/readFile', 'edit/editFiles', 'search/fileSearch', 'search/textSearch', 'agent', 'todo']
+  [vscode/getProjectSetupInfo, vscode/installExtension, vscode/memory, vscode/newWorkspace, vscode/resolveMemoryFileUri, vscode/runCommand, vscode/vscodeAPI, vscode/extensions, vscode/askQuestions, vscode/toolSearch, execute/runNotebookCell, execute/getTerminalOutput, execute/killTerminal, execute/sendToTerminal, execute/runTask, execute/createAndRunTask, execute/runInTerminal, execute/runTests, read/getNotebookSummary, read/problems, read/readFile, read/viewImage, read/readNotebookCellOutput, read/skill, read/terminalSelection, read/terminalLastCommand, read/getTaskOutput, agent/runSubagent, edit/createDirectory, edit/createFile, edit/createJupyterNotebook, edit/editFiles, edit/editNotebook, edit/rename, search/changes, search/codebase, search/fileSearch, search/listDirectory, search/searchResults, search/textSearch, search/usages, mrc-mcp/get_azure_update_by_id, mrc-mcp/get_m365_roadmap_by_id, mrc-mcp/get_recent_azure_updates, mrc-mcp/get_recent_m365_roadmaps, ms-python.python/getPythonEnvironmentInfo, ms-python.python/getPythonExecutableCommand, ms-python.python/installPythonPackage, ms-python.python/configurePythonEnvironment, todo]
 ---
 
 <!-- author: aktsmm
@@ -42,6 +42,7 @@ Create → Review → Update のループで、エージェント / ワークフ
 - [ ] 目的・スコープ・対象資産を明確化した
 - [ ] 対象が always-loaded / scoped / task-specific / reference-only のどれかを判定した
 - [ ] 配置先、SSOT、重複、発火条件の妥当性を確認した
+- [ ] casual input を不必要に task intake へ倒す構造がないか確認した
 - [ ] 新規作成または改善が必要な場合のみ、対象ファイルを作成・更新した
 - [ ] サブエージェントレビュー、または利用不可時の明示的な fallback review を実施した
 - [ ] 新規 agent / workflow の場合は、適切な catalog に登録した
@@ -100,6 +101,13 @@ entry file を触る場合は、現在環境で適用される placement / conte
 6. **Deterministic Offload**: extract / count / validate / diff / format / parse / lint など決定論的処理が LLM / agent ループに紛れ込んでいないか（混じっていれば script / IR / hook へ逃がす。判定基準は `references/review-checklist.md` の Deterministic Offload Check）
 7. **Placement / SSOT**: 内容が正しいだけでなく、置き場所が正しいか。入口ファイルが索引や workflow 一覧で肥大化していないか。入口ファイル同士で同じ rule を重複させていないか
 
+Instruction Elevation Check:
+
+- always-loaded entry を扱うレビューでは、強い命令語の有無だけでなく、その直下に catalog、reference list、workflow map、rule inventory が近接していないかを確認する
+- 強い命令語が下位の重い構造を会話の優先ルール群に昇格させる場合は、wording issue ではなく structural issue として扱う
+- findings は design issue と runtime issue に分けて報告する
+- casual input を task intake に不必要に倒す構造は fail 候補にする
+
 総合判定:
 
 - 全 PASS: PASS
@@ -133,6 +141,9 @@ NEEDS_IMPROVEMENT の場合は、まず次の順で改善する。
 3. 登録先 catalog を報告する
 4. 検証結果と残リスクを報告する
 5. 変更後の肥大化チェック結果を報告する
+
+- 各 findings に review-only か runtime-affected かを明記して報告する
+- 修正提案は `削除 / 統合 / 分離 / 移動 / 追加 / 維持` の順で整理する
 
 `AGENTS.md` は、共通 guardrail の変更が必要な場合だけ更新する。
 
