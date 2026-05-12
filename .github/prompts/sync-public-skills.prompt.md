@@ -75,6 +75,10 @@ Set-Location D:\03_github\00_VSC_tools\00_Ag-SkillBuilder; git branch --show-cur
 - 反映先が main SKILL や主要 reference の場合、追加より先に圧縮を検討する
 - 既存 skill が knowledge dump 化している場合は、新規追記より reference への移動や重複統合を優先する
 
+### 3.5. 肥大化チェック（反映後）
+
+反映後、編集したファイルに DRY 違反・冗長表現・重複定義がないか確認する。あれば圧縮・削除・分離を実施し、報告に「⚠️ 肥大化警告」を含める。
+
 ### 4. 公開同期
 
 **必ず `Sync-AndPush.ps1` を使う**（直接コピー禁止）:

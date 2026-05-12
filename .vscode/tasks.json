@@ -1,0 +1,28 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "sync-user-customizations-commit-push",
+			"type": "shell",
+			"command": "git",
+			"args": [
+				"add",
+				".github/instructions/core/context-management.instructions.md",
+				".github/instructions/dev/git-publish-policy.instructions.md",
+				";",
+				"git",
+				"commit",
+				"-m",
+				"chore(sync): mirror updated user instructions",
+				";",
+				"git",
+				"push",
+				"origin",
+				"master"
+			],
+			"isBackground": false,
+			"problemMatcher": [],
+			"group": "none"
+		}
+	]
+}

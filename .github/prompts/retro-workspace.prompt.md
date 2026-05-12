@@ -18,6 +18,7 @@ argument-hint: "エラーログ、diff、会話要約、またはインシデン
 
 - 使う: バグ解決後 / 再発時 / workspace 設計ギャップ発見時
 - 使う: セッション中に既存手順より効率的な方法を発見したとき
+- 使う: ユーザーが繰り返し同じ指示をしている → 既定動作・ガードレールとして設計資産に組み込むべきとき
 - 使う: `.github/**`、`AGENTS.md`、repo 固有 instructions / prompts / agents / hooks への反映
 - 使う: 汎用 script / task / helper への昇格が妥当なとき
 - 使わない: typo のみ / 環境固有問題のみ
@@ -31,7 +32,7 @@ argument-hint: "エラーログ、diff、会話要約、またはインシデン
 
 - 反映禁止: secret / 認証情報 / 個人情報 / 顧客情報 / ローカル絶対パス / 端末固有値
 - memory 系スコープ（`/memories/**` 等）は反映先にしない
-- User Data / `~/.copilot` に置くべき内容はこの prompt では扱わず、scope 不一致として停止する
+- User Data（`%APPDATA%/Code/User/`）/ `~/.copilot` に置くべき内容はこの prompt では扱わず、scope 不一致として停止する
 - Gate 失敗時は理由と安全な代替案を出して停止
 
 ## Execution Mode
@@ -53,6 +54,8 @@ argument-hint: "エラーログ、diff、会話要約、またはインシデン
 
 **反映禁止**: User Data / `~/.copilot` / `/memories/**` / `.github/skills/**` / Resource Ninja 関連
 
+> `.github/skills/**` は汎用的・ポータブルな知見の置き場。SKILL 向きだと判断した場合は、直接編集せず提案して停止する。
+
 ## Refactor Rules
 
 - SSOT を守る。重複定義は統合
@@ -68,7 +71,7 @@ argument-hint: "エラーログ、diff、会話要約、またはインシデン
 
 ### 1. 知見抽出
 
-- カテゴリ: 設計原則 / ワークフロー / プロンプト設計 / コンテキスト設計 / エラーパターン / 手順改善（既存 prompt / instruction の効率化・簡素化）
+- カテゴリ: 設計原則 / ワークフロー / プロンプト設計 / コンテキスト設計 / エラーパターン / 手順改善（既存 prompt / instruction の効率化・簡素化）/ **繰り返し指示の既定化**（ユーザーが毎回言っていることを instruction / prompt のデフォルト動作に昇格）
 - 1 件ごとに Learning / Evidence / Impact を作成
 - actionable な知見がなければ停止
 
@@ -93,6 +96,10 @@ argument-hint: "エラーログ、diff、会話要約、またはインシデン
 - safe-auto で対象ファイルを作成・編集
 - 確認が必要な条件に該当する場合だけ、対象・理由・影響を示してユーザー承認後に反映
 - Gate: workspace scope 確認済み / 重複なし / 既存設計と矛盾なし / Safety Gate 通過済み
+
+### 3.5. 肥大化チェック（反映後）
+
+反映後、編集したファイルに DRY 違反・冗長表現・重複定義がないか確認する。あれば圧縮・削除・分離を実施し、報告に「⚠️ 肥大化警告」を含める。
 
 ### 4. 報告
 
