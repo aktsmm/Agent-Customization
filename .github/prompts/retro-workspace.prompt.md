@@ -1,6 +1,6 @@
 ---
 name: "retro-workspace"
-description: "workspace / repository の設計資産へ反映するレトロ。インシデントや会話から知見を抽出し、.github、AGENTS.md、hooks への変更案に落とす"
+description: "workspace / repository の設計資産や再利用可能な automation 資産へ反映するレトロ。インシデントや会話から知見を抽出し、.github、AGENTS.md、scripts、tasks への変更案に落とす"
 argument-hint: "エラーログ、diff、会話要約、またはインシデント内容"
 ---
 
@@ -12,7 +12,7 @@ argument-hint: "エラーログ、diff、会話要約、またはインシデン
 
 # retro workspace
 
-インシデント・会話から再利用可能な知見を抽出し、workspace / repository の設計資産への変更案を作る。
+インシデント・会話から再利用可能な知見を抽出し、workspace / repository の設計資産や automation 資産への変更案を作る。
 
 ## When to Use
 
@@ -20,7 +20,8 @@ argument-hint: "エラーログ、diff、会話要約、またはインシデン
 - 使う: セッション中に既存手順より効率的な方法を発見したとき
 - 使う: ユーザーが繰り返し同じ指示をしている → 既定動作・ガードレールとして設計資産に組み込むべきとき
 - 使う: `.github/**`、`AGENTS.md`、repo 固有 instructions / prompts / agents / hooks への反映
-- 使う: 汎用 script / task / helper への昇格が妥当なとき
+- 使う: 汎用 script / task / helper / validator への昇格や整理が妥当なとき
+- 使う: 手作業より script 化した方が安全・再現可能・高速になると判断できるとき
 - 使わない: typo のみ / 環境固有問題のみ
 - 使わない: User Data や `~/.copilot` 配下
 
@@ -41,6 +42,7 @@ argument-hint: "エラーログ、diff、会話要約、またはインシデン
 - `review-only` / `確認だけ` / `dry-run` / `プレビュー` が明示された場合だけ、変更案の提示で停止する
 - 次の場合だけユーザー確認で停止する: scope 判断が曖昧、大規模削除、公開・同期範囲変更、実行コードや hook の高リスク変更、既存 workflow の意味を大きく変える変更、secret / 個人情報 / 環境固有値の扱いに迷う場合
 - typo・小さな手順補正・既存ルールの抜け補完・確認フローの簡素化は、safe-auto でそのまま反映する
+- script / task / helper 整備も、既存配置への小〜中規模な更新で、preflight・dry-run・検証手段を用意できる場合は safe-auto で反映してよい
 
 ## 反映先
 
@@ -50,11 +52,14 @@ argument-hint: "エラーログ、diff、会話要約、またはインシデン
 | workspace 共通ルール | `.github/copilot-instructions.md` |
 | ドメイン別ルール | `.github/instructions/**/*.instructions.md` |
 | prompt / agent / hooks | `.github/prompts/` `.github/agents/` `.github/hooks/` |
-| 汎用 script | `scripts/` 等（再利用価値があり、高リスク実行や大規模変更は確認） |
+| 汎用 script / helper | repo 内の既存 script directory（例: `scripts/`, `tools/`, `workspace/`） |
+| task / automation entry | repo 内 task 定義や runner（例: `.vscode/tasks.json`, script runner） |
 
 **反映禁止**: User Data / `~/.copilot` / `/memories/**` / `.github/skills/**` / Resource Ninja 関連
 
 > `.github/skills/**` は汎用的・ポータブルな知見の置き場。SKILL 向きだと判断した場合は、直接編集せず提案して停止する。
+
+> script / task 整備は「再利用価値」「検証可能性」「影響範囲の狭さ」が揃うときだけ直接反映する。単発調査用・高リスク自動化・外部公開前提のものは提案止まりにする。
 
 ## Refactor Rules
 
@@ -66,12 +71,13 @@ argument-hint: "エラーログ、diff、会話要約、またはインシデン
 - 変更前に `削除 → 統合 → 分離 → 追加` の順で検討する
 - `AGENTS.md` と `.github/copilot-instructions.md` のような always-on / 入口ファイルは、役割過多になっていないかを先に見る
 - workflow 手順、長い例外規則、詳細 recipe を入口ファイルへ追記する前に、domain instructions / prompts / agents へ分離できないか確認する
+- script 化は「再発しやすい」「手作業だとミスしやすい」「dry-run や事後検証を付けられる」場合を優先する
 
 ## 実行手順
 
 ### 1. 知見抽出
 
-- カテゴリ: 設計原則 / ワークフロー / プロンプト設計 / コンテキスト設計 / エラーパターン / 手順改善（既存 prompt / instruction の効率化・簡素化）/ **繰り返し指示の既定化**（ユーザーが毎回言っていることを instruction / prompt のデフォルト動作に昇格）
+- カテゴリ: 設計原則 / ワークフロー / プロンプト設計 / コンテキスト設計 / エラーパターン / 手順改善（既存 prompt / instruction の効率化・簡素化）/ automation 改善（script / task / helper / validator）/ **繰り返し指示の既定化**（ユーザーが毎回言っていることを instruction / prompt のデフォルト動作に昇格）
 - 1 件ごとに Learning / Evidence / Impact を作成
 - actionable な知見がなければ停止
 
@@ -79,11 +85,13 @@ argument-hint: "エラーログ、diff、会話要約、またはインシデン
 
 - 優先度: Impact x Recurrence（P1/P2/P3）
 - まず既存 workspace 資産へ統合できないかを見る
+- script / task 化が適切なら、既存 runner や script directory へ統合できないかも見る
 - 既存資産が長くなりすぎていないか、同じ概念を別ファイルに重複定義していないかを確認する
 - 追記前に「既存文の置換で済むか」「domain instructions / prompt / agent に分離した方がよいか」を判断する
 - 新規作成は既存の役割に収まらない場合だけ
 - 最小差分で反映する
 - safe-auto ではファイル編集まで実行する。review-only 指定時と Gate 停止時だけ提案に留める
+- script / task を新規作成・更新する場合は、実行前提条件、dry-run の有無、事後検証方法を明示できる形を優先する
 
 #### Context Refactor Gate
 
