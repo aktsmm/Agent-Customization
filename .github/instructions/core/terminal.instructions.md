@@ -68,6 +68,7 @@ applyTo: "**"
 - 長い quoted 引数列、複数行文字列、here-string、長文 Markdown/JSON/issue body など、引用崩れしやすい内容は terminal に直打ちせず、短い runner script や一時ファイルに逃がす。
 - PowerShell の共有 shell で長い here-string を組み立てる変更系操作は避け、`gh issue create --body-file <file>` のように body-file / temp file を優先する。`>>` 継続待ちに入ると復旧より clean shell への切替の方が速いことが多い。
 - 環境変数永続化や単発の OS 設定変更は、shared shell より one-shot `pwsh -NoProfile -Command` を優先してよい。
+- 既存の VS Code terminal では User スコープ環境変数が現在の Process に未反映のことがある。`$env:` に無ければ未設定と断定せず、必要なら `[System.Environment]::GetEnvironmentVariable('<NAME>','User')` も確認する。
 - CLI が無出力で終了しても成功とみなさず、想定 artifact がある場合は存在・サイズ・必要なら先頭数行や機械可読フィールドを確認する。
 - 出力確認が必要な実行では、stdout だけで完了判定せず、生成 artifact の存在、更新時刻、機械可読な出力を優先して確認する。
 - `run_in_terminal` の sync 実行が `Command produced no output` を返したり、async 実行が prompt 復帰前に idle した場合も、直ちに失敗扱いにせず expected artifact を先に確認する。artifact が生成済みなら render/capture 問題として扱い、未生成なら dedicated terminal や短い follow-up command で観測を補強する。
