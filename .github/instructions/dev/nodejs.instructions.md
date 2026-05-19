@@ -12,93 +12,32 @@ applyTo: "**/*.{js,ts,mjs,cjs,jsx,tsx},**/package.json"
 
 # Node.js Environment Instructions
 
-Node.js プロジェクトでは**バージョン管理ツールを使用**してください。直接インストールよりも柔軟に対応できます。
+Node.js では、セットアップ手順より project behavior rule を優先する。
 
----
+## Core Rules
 
-## 推奨: nvm-windows
+- Node.js はバージョン管理ツール経由で使う
+- repo に `.nvmrc`、`.node-version`、`package.json#engines` があればそれを尊重する
+- lock file がある project では、その package manager を優先し、混在させない
+- `node_modules/` はコミットしない
+- 開発用依存は原則として local dependency に置き、グローバル install を常用しない
 
-[nvm-windows](https://github.com/coreybutler/nvm-windows) は Node.js のバージョンを切り替えられるツール。プロジェクトごとに異なるバージョンを使い分けられます。
+## Package Manager Rules
 
-```powershell
-# バージョン確認
-nvm version
+- `package-lock.json` があるなら npm、`pnpm-lock.yaml` があるなら pnpm、`yarn.lock` があるなら yarn を優先する
+- automation や CI 相当の実行では、`ci` や `--frozen-lockfile` 相当で再現性を守る
+- lock file を削除して依存関係を作り直すのは最後の手段にする
 
-# インストール可能なバージョン一覧
-nvm list available
+## Execution Rules
 
-# Node.js LTS をインストール
-nvm install 20
+- 依存導入や script 実行前に Node.js の version と package manager を確認する
+- `package.json` の script と `engines` を尊重する
+- 新しい依存を追加したら、必要なら audit や test で確認する
 
-# バージョン切り替え
-nvm use 20
+## Out of Scope Here
 
-# インストール済み一覧
-nvm list
-```
+- nvm / fnm の導入手順
+- package manager の詳細比較
+- 長いセットアップ tutorial
 
-## 代替: fnm
-
-[fnm](https://github.com/Schniz/fnm) は Rust 製で高速。`.node-version` ファイルで自動切り替え可能。
-
-```powershell
-# インストール
-winget install Schniz.fnm
-
-# Node.js をインストール
-fnm install 20
-fnm use 20
-```
-
----
-
-## パッケージマネージャー
-
-| ツール   | 特徴                            |
-| -------- | ------------------------------- |
-| **npm**  | 標準、安定                      |
-| **pnpm** | 高速、ディスク効率              |
-| **yarn** | Facebook 製、ワークスペース対応 |
-
-```powershell
-# pnpm を使う場合
-npm install -g pnpm
-pnpm install
-```
-
----
-
-## エージェントへの指示
-
-1. **nvm でバージョン確認** — `nvm list` で現在のバージョンを確認
-2. **package.json を尊重** — `engines` フィールドがあれば従う
-3. **lock ファイルを維持** — `package-lock.json` / `pnpm-lock.yaml` をコミット
-4. **グローバルインストールは最小限** — 開発ツール以外は devDependencies へ
-
----
-
-## やってはいけないこと
-
-- ❌ `npm install -g <package>` の多用（devDependencies 推奨）
-- ❌ `package-lock.json` / `pnpm-lock.yaml` の削除（再現性が壊れる）
-- ❌ `node_modules/` をコミット
-- ❌ `engines` フィールドを無視したバージョンで実行
-- ❌ 異なるパッケージマネージャーの混在（npm と pnpm を同一プロジェクトで使うなど）
-
----
-
-## 検証方法
-
-```powershell
-# Node.js バージョン確認
-node --version
-
-# 依存関係の整合性チェック
-npm ci  # または pnpm install --frozen-lockfile
-
-# 脆弱性スキャン
-npm audit
-
-# package.json の engines フィールド確認
-npm pkg get engines
-```
+それらは repo ドキュメントや onboarding 手順に分ける。

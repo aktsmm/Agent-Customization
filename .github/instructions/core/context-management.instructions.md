@@ -42,13 +42,24 @@ Customization 資産（instructions / prompts / agents / SKILL / copilot-instruc
 ### 4. 分離する
 - 詳細手順、長い recipe、persona、ドメイン固有規則は always-on に置かない
 - always-on の入口ファイルには routing と少数の global guardrails だけ残す
+- `tasks.json` のような registry file を実行履歴や試行錯誤ログの置き場にしない
+- prompt / instruction / skill / agent / hook は最小の primitive を選び、より単純な primitive で解けるなら agent 化しない
 - それ以外は `applyTo` を絞った instruction、`.prompt.md`、`.agent.md`、references に逃がす
+- AI と script / hook の使い分けは汎用原則だけを always-on に置き、具体的な判定表・例・手順は scoped instruction や review asset を正本にする
+- 判断や曖昧さ解消は AI、同じ入力なら同じ結果が望ましい純作業は script / hook に寄せる
+- 単発でも再現性、fail fast、証跡が重要なら script / hook を優先する
+- review 用 prompt / checklist / skill は設計レビューの置き場であり、既定の対話挙動を変えたい rule は always-on entry か scoped instruction に置く
 - ただし Global User Data の prompt / instruction は、他の global prompt / instruction を前提にしない
+- always-on file に Markdown リンク付きの索引を作らない。リンク先まで参照経路に乗ると、本文が短くても入口としては太る
+- 入口 file で詳細の所在を示すときは、Markdown リンク列挙より「詳細は別ディレクトリ / README / docs 側」の一文で済まないかを先に検討する
 
 ### 5. 反復・テスト前提
 - 一発で完成させず、小さく始めて反復で磨く
+- 設計は、会話から抽出 → primitive と scope 決定 → 不明点だけ確認 → escalation と pattern 判定 → 拡張前レビュー → 実装と反復、の順で小さく進める
 - 効いていないルールは消す、効いているルールは残す
 - 新ルールは 1 つずつ足して、追加前後で挙動差を見る
+- デバッグ途中の仮説を設計資産へ確定事実として反映しない
+- prompt / instruction / agent への反映は、独立検証で再現性を確認してから行う
 
 ## 書き方の規範
 
@@ -91,6 +102,12 @@ Customization 資産（instructions / prompts / agents / SKILL / copilot-instruc
 
 判断: 「これは casual chat にも効いてほしいか？」が No なら always-on に書かない。
 
+補足:
+
+- 「入口に索引を置く」は原則として避ける。always-on file の索引は、そのまま参照リンク集になりやすい
+- `copilot-instructions.md` と `AGENTS.md` は、リンクを起点に深い detail を読ませる場ではなく、入口の役割に徹する
+- 挨拶、短い Q&A、番号だけの返答のような軽い入力を、明示的な task context なしに workflow intake へ強制しない
+
 ## 追加前のチェック
 
 知見を反映する前に、必ずこの順で検討する。
@@ -109,7 +126,8 @@ casual chat や通常応答が不安定になったら、まず always-on の入
 
 1. `.github/copilot-instructions.md` の過積載
 2. 入口ファイルと `.github/instructions/**` の重複
-3. `AGENTS.md` と `.agent.md` の役割不整合
+3. 入口ファイル内の Markdown 参照リンクによる実質的な肥大化
+4. `AGENTS.md` と `.agent.md` の役割不整合
 
 入口ファイルを rename / disable した瞬間に casual chat が正常化したら、それは「壊れた」のではなく **over-scoped 確定** のサイン。
 

@@ -9,7 +9,7 @@ applyTo: "**"
 <!-- repository: https://github.com/aktsmm/ghc_template -->
 <!-- license: CC BY-NC-SA 4.0 -->
 <!-- copyright: Copyright (c) 2025 aktsmm -->
-<!-- updated: 2026-05-12 -->
+<!-- updated: 2026-05-19 -->
 
 # Terminal Command Execution Instructions
 
@@ -41,25 +41,31 @@ applyTo: "**"
 - サーバー・watch・監視処理はバックグラウンド実行を優先する。
 - 長時間実行時は、ユーザーへ意図と停止方法を簡潔に伝える。
 
+## 4.5 Task vs Terminal
+
+- 単発の調査、デバッグ、認証依存、環境変数依存、出力追跡が必要な実行は terminal を優先する。
+- task は、再利用する stable entry point、watch、background job、problem matcher が必要な実行に限る。
+- 同じ単発実行が 2 回以上発生したら、まず script / CLI に昇格し、task は wrapper が必要な場合だけ追加する。
+- `retry` `debug` `with fresh auth` のような派生 one-off task を常設しない。
+
 ## 5. 運用メモ
 
 - 一時変数を使うコマンド（例: `gh issue comment --body`）は、変数定義と実行を同一ターミナル実行にまとめる。
+- `gh` や類似 CLI で `--json number,title,url` のようなカンマ区切り引数や、空白を含む検索式を渡すときは、PowerShell で必ず 1 つの文字列として引用する。分解されると別引数扱いになり、検索失敗や `accepts 1 arg(s)` 系エラーになりやすい。
 - 日本語を含むファイルや JSON を扱うときは UTF-8 を維持する。
-- VS Code task は完了後も「ターミナルはタスクで再利用されます」と表示された task terminal を残すため、一回限りの監査・同期・検証では原則増やさない。必要で使った場合は、完了前に `.vscode/tasks.json` の一時 task と一時スクリプトを削除し、残った terminal / task の扱いを最終報告に書く。
+- スクリプトや CLI を実行する前に、対象 script / 実行ファイルの存在を確認する。不在時は実行せず、read/grep などの代替検証へ切り替える。
+- VS Code task は再利用する task の registry として扱い、日付入り・対象固定の one-off task を常設しない。単発実行は terminal か一時 script を優先し、残すなら入力付きの generic task に寄せる。
+- 一時 task を使った場合は、完了前に `.vscode/tasks.json` の一時 task と一時スクリプトを削除し、残った task terminal の扱いを最終報告に書く。
+- スクリプトや CLI の変更系操作は、既定を read-only / dry-run にし、破壊的変更や外部反映は `--apply` などの明示フラグを必須にする。
+- 不要になった async terminal や、timeout 後に裏で残った terminal は、作業完了前に閉じる。
+- terminal を残す場合は、残す理由と停止方法を最終報告に明記する。
+- 汚染済み terminal は復旧を粘らず、必要なら閉じて clean shell へ切り替える。
 - Windows 環境で高速な全文検索が必要な場合は、`Select-String` より `ripgrep` (`rg`) を優先してよい。
 - `rg` 未導入なら `winget install --id BurntSushi.ripgrep.MSVC --scope user --accept-source-agreements --accept-package-agreements` で導入してよい。
 - 導入直後のシェルで `rg` が見つからない場合は、ターミナル再起動か、`$env:Path = [System.Environment]::GetEnvironmentVariable('Path','Machine') + ';' + [System.Environment]::GetEnvironmentVariable('Path','User')` で PATH を再読込してよい。
-- PowerShell で `rg` の日本語出力が文字化けする場合は、`[Console]::OutputEncoding = [System.Text.UTF8Encoding]::new($false)` と `$OutputEncoding = [Console]::OutputEncoding` を先に設定してよい。
-- Python CLI の出力で `¥` などが `ﾂ･` 等に化けるときは、コンソール側 cp932 表示の問題でファイル本体は正常なケースが多い。デバッグでは `--json out.json` 等で出力ファイルを書き、別エディタで開いて検証する。Python 側は冒頭で `sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8', line_buffering=True)` を入れて `UnicodeEncodeError` を防ぐ。
-- 共有 `pwsh` が未終了 here-string、`>>`、prompt-only、継続入力待ちに落ちた場合、その terminal は**汚染済み**として扱う。`run_in_terminal` も同じ汚染セッションを再利用することがあるため、終端文字や追加コマンドで復旧を試み続けず、以後の検証・生成・永続化は VS Code task、clean shell、または事前作成済みスクリプトの単発実行へ切り替える。
-- Brave などの Web 検索が同一タスク内で 3 回以上連続して失敗した場合は、Web 検索不能と決めつけず、`copilot -p "{クエリ}" --allow-all-tools --allow-all-urls --available-tools web_search --silent` をフォールバックとして使ってよい。
-- URL 列挙が目的のときは、URL のみを 1 行 1 件で返すよう指示し、CLI 出力の前置き文は除去して扱う。
-- instruction ファイルや設計資産内のコードブロックにも絶対パスを埋め込まない。`Set-Location` が必要な場合は「ワークスペースルートで実行する前提」とコメントで補足し、パスのハードコードは省く。
-- deferred tool を呼ぶ前に `tool_search` でロード済みかを確認する。同一 tool で 2 回エラーが出たら即 `tool_search` に切り替える。
-- `create_and_run_task` はターミナル ID を返さないため出力追跡に使えない。出力確認が必要な場合は `run_in_terminal` を使う。スクリプトファイルを先に作成して `run_in_terminal` で実行する方法も有効。
-- `create_and_run_task` はワークスペース外パスの操作に原則使わない。やむを得ず一時 task から外部 repo を確認する場合は、`Set-Location` 依存ではなく `git -C <repo>` や対象 script の明示パスなど、コマンド自体に対象 repo を明示する。
-- `+`、空白、括弧、長い quoted 引数列を含む PowerShell 実行は、共有 terminal に直打ちせず、短い runner script と引数配列で実行する。
-- `@(...)` 配列リテラル、複数行 string、長い release notes 生成など、PowerShell が `>>` 継続入力に落ちやすい content generation は共有 terminal に直打ちせず、`create_file` / `apply_patch` / 短い runner script でファイル化する。
-- task / runner の stdout が Windows encoding で失敗しても、JSON artifact を生成する設計なら artifact の存在と内容を先に確認する。stdout は ASCII / UTF-8 か静音を優先する。
-- `--output-json` や同等の JSON status artifact を返す長時間 runner は、stdout の見た目や終了メッセージより `final_status` `overall_status` `status` などの機械可読フィールドを正本として完了判定する。stdout は補助証跡として扱う。
-- 一時 VS Code task を使った場合は、対象 label と一時 runner を削除し、最後に tasks JSON が parse できることを確認する。
+- 共有 terminal が継続入力待ちや引用崩れで不安定になった場合は、同じ terminal で復旧を試み続けず、clean shell、短い runner script、task などへ切り替える。
+- 長い quoted 引数列、複数行文字列、長文生成など、引用崩れしやすい内容は terminal に直打ちせず、短い runner script や一時ファイルに逃がす。
+- CLI が無出力で終了しても成功とみなさず、想定 artifact がある場合は存在・サイズ・必要なら先頭数行や機械可読フィールドを確認する。
+- 出力確認が必要な実行では、stdout だけで完了判定せず、生成 artifact の存在、更新時刻、機械可読な出力を優先して確認する。
+- PowerShell script を編集した場合は、`[scriptblock]::Create((Get-Content -Raw -Encoding UTF8 <file>))` で構文確認してよい。
+- 同じ browser / CDP / SaaS 管理画面を操作するコマンドは、競合を避けるため直列実行を優先する。

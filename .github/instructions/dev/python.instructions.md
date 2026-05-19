@@ -61,6 +61,7 @@ pip install -r requirements.txt
 2. **有効化を確認** — `python -c "import sys; print(sys.executable)"` でパスをチェック
 3. **依存関係を記録** — `requirements.txt` または `pyproject.toml` を更新
 4. **グローバル禁止** — `pip install --user` も NG
+5. **検証後の掃除** — `py_compile` などで生成した `__pycache__/` や `*.pyc` を差分へ残さない
 
 ---
 

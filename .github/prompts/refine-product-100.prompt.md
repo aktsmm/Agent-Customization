@@ -7,7 +7,7 @@ argument-hint: "対象、重点観点、モード（例: current workspace / all
 <!-- syncToGlobal: true -->
 <!-- author: aktsmm -->
 <!-- license: CC BY-NC-SA 4.0 -->
-<!-- updated: 2026-05-12 -->
+<!-- updated: 2026-05-17 -->
 
 # refine product 100
 
@@ -143,6 +143,7 @@ Release intent:
 	- 残件がある場合は、dev-only / upstream fix なし / semver-major 等を分類し、publish 可否を Findings と Safe-to-Fix に明記する。
 4. **Build + Pack**: 配布形態に応じた pack（vsix / npm / python / docker 等）
 	- `vsce package` や同等コマンドの完了判定は、terminal の `DONE` 文言より生成物ファイルの存在・サイズ・更新時刻を正本にする。stdout が静かでも artifact が更新されていれば先に artifact を確認する。
+	- packer が出力ファイル名や出力先を明示できる場合は、決定的な artifact 名を指定する。install / publish / checksum / release notes 更新は、その生成済み artifact パスを SSOT として扱う。
 5. **配布物 Hygiene Check**: 中身を必ず列挙し、開発資材（src / test / .github / .vscode / sourcemap / 内部設計資料）混入なしを確認。混入時は publish せず ignore 設定修正 → 再パッケージ。ignore 修正も commit に含める
 6. **Commit**: `[Release] vX.Y.Z - <要約>` → Push → Publish（duplicate-safe オプション使用。`already published` は version 上げ直し）
 7. **裏取り**: 公開状態を別経路で確認（API 応答だけ信用しない）

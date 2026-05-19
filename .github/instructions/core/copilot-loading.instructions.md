@@ -11,109 +11,64 @@ applyTo: "**/*.prompt.md,**/*.instructions.md,**/*.agent.md,**/SKILL.md,**/copil
 
 # Copilot CLI / VS Code インストラクション読み込みルール
 
-エージェントやインストラクションがいつ・どこから読まれるかの整理。
-ファイルを追加・編集するときにどこに置くべきか判断するために参照する。
+エージェントやインストラクションが「どこから読まれるか」と「どこに置くべきか」を判断するための整理。
 
 > 補足: `.github/copilot-instructions.md` と `AGENTS.md` は読み込み対象だが、User Data 側の metadata/frontmatter ルールをそのまま要求する対象ではない。
 
-## VS Code GitHub Copilot Chat で自動ロードされるファイル
+## VS Code GitHub Copilot Chat で自動ロードされる主な file
 
 | ファイル | スコープ | 備考 |
-|---------|---------|------|
-| `$HOME/.copilot/instructions/**/*.instructions.md` | ユーザー（VS Code） | 公式 Docs 記載のユーザープロファイル instructions |
-| `%APPDATA%/Code/User/prompts/*.instructions.md` | ユーザー（VS Code） | VS Code プロファイル固有の User Data 側 instructions |
-| `.github/copilot-instructions.md` | ワークスペース | プロジェクト固有のルール |
-| `.github/instructions/**/*.instructions.md` | ワークスペース（`applyTo` パターン） | プロジェクト分野別ルール |
-| `AGENTS.md` | ワークスペース（git root & cwd） | スキルインデックス等 |
-| `CLAUDE.md` / `.claude/CLAUDE.md` / `$HOME/.claude/CLAUDE.md` | 互換 | Claude Code 互換の always-on instructions |
+| --- | --- | --- |
+| `$HOME/.copilot/instructions/**/*.instructions.md` | ユーザー | 公式 Docs 記載のユーザープロファイル instructions |
+| `%APPDATA%/Code/User/prompts/*.instructions.md` | ユーザー | VS Code プロファイル固有の User Data instructions |
+| `.github/copilot-instructions.md` | ワークスペース | repo-wide の短い原則 |
+| `.github/instructions/**/*.instructions.md` | ワークスペース | `applyTo` 付きの scoped rule |
+| `AGENTS.md` | ワークスペース | agent / workflow の入口 |
+| `CLAUDE.md` 系 | 互換 | Claude Code 互換の instructions |
 
-> 注意: 公式 Docs 上は VS Code のユーザープロファイル instructions として `$HOME/.copilot/instructions` が記載されている。実際に読み込まれたかは Chat の Diagnostics または `Chat: Configure Instructions` の tooltip で確認する。
+## VS Code で確認する場所
 
-### VS Code の読み込み場所設定
+- 読み込み経路は Chat Diagnostics か `Chat: Configure Instructions` の tooltip で確認する
+- `chat.instructionsFilesLocations` が `false` の場所は、Docs に載っていても自動ロードされない
 
-VS Code Chat の instructions 読み込み場所は `chat.instructionsFilesLocations` で制御できる。
-公式 Docs に載っている場所でも、この設定で `false` になっている場合は読み込まれない。
-
-```json
-"chat.instructionsFilesLocations": {
-	".github/instructions": true,
-	"~/.copilot/instructions": false,
-	"~/.claude/rules": false
-}
-```
-
-読み込み漏れや重複が疑わしい場合は、まずこの設定と Chat Diagnostics を確認する。
-
-### Always-Loaded ファイルの軽量化
-
-自動ロードされる instruction は、**毎ターン読まれる前提**で短く保つ。
-
-対象:
-
-- `%APPDATA%/Code/User/prompts/*.instructions.md`
-- `$HOME/.copilot/copilot-instructions.md`
-- `.github/copilot-instructions.md`
-- `AGENTS.md`
-
-これらには、読み込み場所の説明に直接関係しない長い task 手順や recipe を混ぜない。
-
-## Copilot CLI で自動ロードされるファイル
+## Copilot CLI で自動ロードされる主な file
 
 | ファイル | スコープ | 備考 |
-|---------|---------|------|
-| `$HOME/.copilot/copilot-instructions.md` | グローバル（全セッション） | ユーザー共通の原則 |
-| `.github/copilot-instructions.md` | ワークスペース | プロジェクト固有のルール |
-| `.github/instructions/**/*.instructions.md` | ワークスペース（`applyTo` パターン） | プロジェクト分野別ルール |
-| `AGENTS.md` | ワークスペース（git root & cwd） | スキルインデックス等 |
-| `CLAUDE.md` / `GEMINI.md` | ワークスペース | 互換ファイル |
+| --- | --- | --- |
+| `$HOME/.copilot/copilot-instructions.md` | グローバル | CLI 全体の原則 |
+| `.github/copilot-instructions.md` | ワークスペース | repo-wide の原則 |
+| `.github/instructions/**/*.instructions.md` | ワークスペース | `applyTo` 付き rule |
+| `AGENTS.md` | ワークスペース | agent / workflow の入口 |
+| `CLAUDE.md` / `GEMINI.md` | 互換 | 互換 file |
 
-> 注意: Copilot CLI で追加ディレクトリを読ませる場合は、`COPILOT_CUSTOM_INSTRUCTIONS_DIRS` に対象ディレクトリを指定する。CLI は指定ディレクトリ内の `AGENTS.md` と `.github/instructions/**/*.instructions.md` を探す。
+- 追加ディレクトリを CLI に読ませるときは `COPILOT_CUSTOM_INSTRUCTIONS_DIRS` を使う
 
-## 明示的に呼んだときだけ読まれるファイル
+## 明示的に呼んだときだけ読まれる file
 
 | ファイル | 呼び出し方 | 備考 |
-|---------|-----------|------|
-| `.github/agents/*.agent.md` | VS Code: `@agent名`、CLI: task ツールの custom agent | エージェント定義 |
-| `$HOME/.copilot/skills/*/SKILL.md` | `skill` ツールで invoke | ユーザーレベルスキル |
-| `.github/skills/*/SKILL.md` | `skill` ツールで invoke | プロジェクトスキル |
+| --- | --- | --- |
+| `.github/agents/*.agent.md` | `@agent名` など | エージェント定義 |
+| `$HOME/.copilot/skills/*/SKILL.md` | `skill` ツール | ユーザースキル |
+| `.github/skills/*/SKILL.md` | `skill` ツール | プロジェクトスキル |
 
-## `copilot-instructions.md` と `AGENTS.md` の役割差分
+## 入口 file の役割
 
-両方とも workspace で自動ロードされうるが、役割は分けて扱う。
-
-| ファイル | 主な役割 |
+| ファイル | 役割 |
 | --- | --- |
-| `.github/copilot-instructions.md` | repo 全体で広く効く短い原則、routing、少数の global guardrails |
-| `AGENTS.md` | agent / workflow の索引、入口、役割分担、関連資産の参照起点 |
+| `.github/copilot-instructions.md` | repo-wide の短い原則、routing、少数の guardrails |
+| `AGENTS.md` | agent / workflow の薄い registry と入口 |
 
-診断順:
-
-1. casual chat や通常応答が不安定なら、まず `copilot-instructions.md` の過積載を疑う
-2. 次に、entry file と domain instructions の重複を疑う
-3. その後で `AGENTS.md` と `.agent.md` / workflow 定義の不整合を疑う
-
-## サブフォルダ配置
-
-- `.github/instructions/**/*.instructions.md` は再帰スキャンされるため、サブフォルダ配下でも有効
-- 適用条件は「直下にあるか」ではなく `applyTo` パターンで決まる
-- 整理時は直下に平置きするより、責務ごとにサブフォルダへ分ける方を優先してよい（`core/` `dev/` `agents/` `integrations/` 等）
+入口 file を詳細索引や長い workflow 手順の置き場にしない。詳細は scoped instruction、agent、skill、docs 側へ逃がす。
 
 ## 配置の判断基準
 
-| 学びの性質 | 配置先 | 例 |
-|-----------|--------|-----|
-| VS Code Chat の個人ルール | VS Code User Data または `$HOME/.copilot/instructions/{category}/` | Git、Python、ターミナル操作 |
-| Copilot CLI の個人ルール | `$HOME/.copilot/copilot-instructions.md` | CLI 全体に効かせる共通原則 |
-| 特定ワークスペース固有 | `.github/copilot-instructions.md` | D365カテゴリマッピング |
-| 特定タスクの手順 | `.github/agents/` or `.github/skills/` | OCR仕分け、経費精算自動化 |
-| 長い外部ツール連携ワークフロー | `$HOME/.copilot/skills/` or `.github/skills/` | Browser/CDP automation、PowerPoint automation |
-| 短い外部サービス参照ルール | `$HOME/.copilot/instructions/integrations/` または VS Code User Data | MS Learn MCP、ローカルネットワーク調査 |
-
-補足:
-
-- User Data 側の入口 instruction は「全体方針」だけに留める
-- 特定タスク専用の重いルールを常時ロードに入れない
-- 入口ファイルは、読み込み場所の説明と配置判断に必要な範囲へ留める
+| 内容 | 配置先 |
+| --- | --- |
+| VS Code Chat の個人 rule | VS Code User Data または `$HOME/.copilot/instructions/` |
+| Copilot CLI の個人 rule | `$HOME/.copilot/copilot-instructions.md` |
+| repo-wide の短い rule | `.github/copilot-instructions.md` |
+| 特定ファイル群に効く rule | `.github/instructions/**/*.instructions.md` |
+| 特定 workflow / task | `.github/agents/` または `.github/skills/` |
 
 ## 公式 Docs
 
