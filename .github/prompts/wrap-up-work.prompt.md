@@ -14,9 +14,7 @@ description: "終了前の保存とUI整理を一括実行"
 順に実行する。
 
 - 順番固定
-- 未対応は skipped
-- 保存不能なら stop
-- 最後は 1 行で結果だけ返す
+- 保存不能なら stop。未対応は skipped
 
 1. `workbench.action.files.saveAll` — 全ファイル保存
 2. `workbench.files.action.collapseExplorerFolders` — フォルダツリーを折りたたむ
@@ -25,3 +23,4 @@ description: "終了前の保存とUI整理を一括実行"
 5. `workbench.action.closePanel` — 下部パネルを閉じる
 6. `workbench.action.closeSidebar` — サイドバーを閉じる
 7. `workbench.action.terminal.killAll` — ターミナル全削除
+8. `workbench.action.closeWindow` — 現在の VS Code ウインドウを閉じる

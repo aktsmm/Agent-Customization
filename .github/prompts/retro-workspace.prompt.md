@@ -67,6 +67,7 @@ argument-hint: "エラーログ、diff、会話要約、またはインシデン
 - 新規ファイルより既存への統合を優先
 - 50 行以下の小ファイルは最小差分
 - 冗長説明は圧縮するが根拠 URL・非自明手順は消さない
+- 同じ Learning / Evidence / Impact を言い換えて繰り返さない。1 論点 1 塊でまとめる
 - append-only に節を足し続けるのを通常運用とみなさない
 - 変更前に `削除 → 統合 → 分離 → 追加` の順で検討する
 - `AGENTS.md` と `.github/copilot-instructions.md` のような always-on / 入口ファイルは、役割過多になっていないかを先に見る
@@ -131,5 +132,7 @@ argument-hint: "エラーログ、diff、会話要約、またはインシデン
 - [ ] No duplicate rules
 - [ ] Safety Gate passed
 ```
+
+- 同じ判断や影響を `Learnings` / `Changes` / `Target Rationale` に重複記載しない。各論点は最も適切な 1 箇所にだけ書く
 
 Stop: 知見なし / ユーザー拒否 / Gate 失敗 / handoff-required / review-only

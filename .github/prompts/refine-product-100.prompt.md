@@ -7,7 +7,7 @@ argument-hint: "対象、重点観点、モード（例: current workspace / all
 <!-- syncToGlobal: true -->
 <!-- author: aktsmm -->
 <!-- license: CC BY-NC-SA 4.0 -->
-<!-- updated: 2026-05-17 -->
+<!-- updated: 2026-05-19 -->
 
 # refine product 100
 
@@ -18,6 +18,8 @@ argument-hint: "対象、重点観点、モード（例: current workspace / all
 ## Prime Directive
 
 最初から 100% を目指す。「案内だけで終わる」「95% で満足」「検証せず完了」「1 件直して同根を放置」は禁止。
+
+**`残した観点` は既定で 0 件**。書いてよいのは `Guard now` または `Block` に該当し、かつ「何を試したか」「なぜ今は unsafe / low-confidence か」「AI 代替で何を追加したか」を記録できるものだけ。**`Fix now` を `残した観点` に送ったら未完了**。
 
 止まる前の自問（**1 つでも yes ならまだ止まらない**）:
 1. 安全に直せる gap が残っていないか
@@ -75,6 +77,15 @@ Release intent:
 
 `Block` は完了逃げに使わない。不足入力・AI 代替を試した内容・次の確認を必ず残す。破壊的変更が最善に見えても auto で実行しない。互換 shim / feature flag off / deprecation warning / dry-run / backup 手順 / 静的ガードなど非破壊 `Guard now` を先に試す。
 
+`Guard now` も「観点だけ残す」は禁止。**最低 1 つの成果物**（回帰テスト、静的ガード、ログ採取、設定チェック、README/runbook 更新、確認手順の固定化）を追加してから残す。
+
+`残した観点` に書ける条件:
+
+1. `Guard now` または `Block` に分類済み
+2. 少なくとも 1 回は Fix / Guard を試した、または安全制約上それが不可能と説明できる
+3. AI 代替（テスト / 静的ガード / docs / checklist）の追加有無を記録できる
+4. 次に何を確認すれば閉じるかを 1 文で言える
+
 修正 → 検証 → 失敗原因読解 → 再修正のループは同一原因で最大 3 回。超えたら Block。
 
 ## Workflow
@@ -116,11 +127,19 @@ Release intent:
 4. **Verify**: diagnostics → lint → typecheck → test → build
 5. **Repeat**: 検証失敗は原因を読み Fix now / Guard now / Block に再分類。テスト期待値更新は、既存仕様・README・テスト・後方互換を確認し実装が正しいと説明できる場合のみ
 
+**Residual rule**: 修正後に high-confidence な `Fix now` が 1 件でも残った場合、`standard` でも **追加 1 サイクル** 回してから止まる。`残した観点` に送れるのは `Guard now` / `Block` のみ。
+
 実行ルール: 既存 scripts/CI 優先、ターミナルは非対話・単発・timeout 付き、watch/dev server は起動しない。使い終わった terminal は原則閉じ、残す場合は理由を最終報告に書く。
 
 ### 5.5. Coverage Sweep（standard / auto 必須）
 
 修正後に全観点を再スイープ。standard は追加 1 件まで修正、auto は gap が尽きるまで。quick は P0/P1 限定。
+
+Coverage Sweep の停止条件:
+
+- `Fix now` が 0 件
+- `Guard now` / `Block` は各項目について「試したこと / AI 代替 / 次の確認」が書ける
+- `残した観点` に high-confidence 項目が混ざっていない
 
 ### 6. Documentation Sweep
 
@@ -183,6 +202,8 @@ Release intent:
 ## Coverage Sweep
 - 再確認した観点 / 追加で直したもの / 残した観点 / Subagent 使用有無
 
+`残した観点` を書く場合は各項目に `分類`, `試したこと`, `AI代替`, `今は止める理由` を含める。`Fix now` は不可。
+
 ## Documentation / Cleanup（該当時のみ）
 
 ## 100% Pass 判定
@@ -201,6 +222,7 @@ Release intent:
 - 発見 gap を Fix now / Guard now / Block に分類済み。Block は不足入力と AI 代替検討を記録済み
 - Fix now / Guard now は修正後の検証失敗を読み、再修正・再検証まで完了済み
 - Coverage Sweep 実施済み
+- `残した観点` は Guard now / Block のみで、各項目に試行内容と AI 代替が記録済み
 - 検証が具体的（コマンド・exit code 明示）
 - 依頼スコープ外への拡張なし
 - 仮説判断した場合は Done または Findings.対応に根拠が記録済み

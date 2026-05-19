@@ -33,9 +33,11 @@ Create → Review → Update のループで、エージェント / ワークフ
 - 入口ファイルには、ふるまいの境界・安全原則・参照先の最小案内だけを置く
 - `copilot-instructions.md` は GitHub Copilot 向けの正本入口として扱う
 - `AGENTS.md` は複数 AI agent 共通の薄い guardrail として扱う
+- 汎用設計原則は skill / references を正本にし、repo local `.instructions.md` には workspace 固有差分だけを残す
 - agent 一覧、workflow map、prompt 一覧、設計資産 catalog は README や docs へ分離する
 - `copilot-instructions.md` と `AGENTS.md` は、同じ intake / routing / catalog を二重保持しないよう DRY / SSOT を確認する
 - 正しい内容でも、always-loaded に置くと文脈汚染を起こす detail は修正対象とする
+- IR は原則 in-memory とし、中間 file は validator / script handoff が必要な場合だけ materialize する
 
 ## Done Criteria
 
@@ -78,6 +80,7 @@ entry file を触る場合は、現在環境で適用される placement / conte
 
 1. 対象資産の種類と配置先を判定する
 2. entry file を触る場合は、追加前に削除 / 統合 / 分離 / 移動で解けないか先に確認
+3. repo local の generic instruction が見つかった場合は、skill / references へ merge back できないか先に確認する
 3. 新規作成が必要な場合のみ `.agent.md` や関連ファイルを作成する
 4. 既存レビューの場合は、直接変更せず findings と改善案を先に出す
 
