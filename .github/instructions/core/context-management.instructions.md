@@ -32,6 +32,7 @@ Customization 資産（instructions / prompts / agents / SKILL / copilot-instruc
 - 既存節を置換・圧縮できないかを先に検討してから追記する
 - 言い換えただけの新節を足さない
 - 失敗事例は「ルール 1 行 + 理由 1 行」に圧縮、長文列挙はしない
+- ただし DRY/SSOT の厳しさは同一ではない。always-on entry と `.instructions.md` の重複は強く避け、明示呼び出し前提の `.prompt.md` 同士は本文内の自己矛盾・更新漏れリスク・description 競合が無ければ、役割近接だけで即統合しない
 
 ### 3. 短く保つ
 - 冗長な前置き、「重要！」連打、自明な説明を削る
