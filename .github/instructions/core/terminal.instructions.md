@@ -59,6 +59,7 @@ applyTo: "**"
 - 一時 task を使った場合は、完了前に `.vscode/tasks.json` の一時 task と一時スクリプトを削除し、残った task terminal の扱いを最終報告に書く。
 - スクリプトや CLI の変更系操作は、既定を read-only / dry-run にし、破壊的変更や外部反映は `--apply` などの明示フラグを必須にする。
 - 不要になった async terminal や、timeout 後に裏で残った terminal は、作業完了前に閉じる。
+- cleanup 対象は、自分がそのターンで起動した dedicated / ad hoc terminal を優先する。共有 `pwsh`、既存の editor terminal、拡張機能が管理する terminal は、不要と断定できる場合を除いて勝手に閉じない。
 - terminal を残す場合は、残す理由と停止方法を最終報告に明記する。
 - 共有 shell が `>>` 継続待ちや引用崩れで不安定になったら、回復確認は 1 回までに留め、復旧しなければ clean shell、短い runner script、task、または one-shot `pwsh -NoProfile -Command` に切り替える。
 - Windows 環境で高速な全文検索が必要な場合は、`Select-String` より `ripgrep` (`rg`) を優先してよい。
@@ -69,6 +70,7 @@ applyTo: "**"
 - 環境変数永続化や単発の OS 設定変更は、shared shell より one-shot `pwsh -NoProfile -Command` を優先してよい。
 - CLI が無出力で終了しても成功とみなさず、想定 artifact がある場合は存在・サイズ・必要なら先頭数行や機械可読フィールドを確認する。
 - 出力確認が必要な実行では、stdout だけで完了判定せず、生成 artifact の存在、更新時刻、機械可読な出力を優先して確認する。
+- `run_in_terminal` の sync 実行が `Command produced no output` を返したり、async 実行が prompt 復帰前に idle した場合も、直ちに失敗扱いにせず expected artifact を先に確認する。artifact が生成済みなら render/capture 問題として扱い、未生成なら dedicated terminal や短い follow-up command で観測を補強する。
 - PowerShell script を編集した場合は、`[scriptblock]::Create((Get-Content -Raw -Encoding UTF8 <file>))` で構文確認してよい。
 - 同じ browser / CDP / SaaS 管理画面を操作するコマンドは、競合を避けるため直列実行を優先する。
 - 既存ブラウザの認証状態を使う CDP 起動では、認証が特定プロファイルに紐づく場合 `--profile-directory=<known profile>` を優先し、場当たり的な `--user-data-dir` 新設は避ける。別ログイン状態と大量キャッシュを生みやすい。
