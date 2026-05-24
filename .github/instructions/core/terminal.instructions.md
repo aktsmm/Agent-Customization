@@ -9,7 +9,7 @@ applyTo: "**"
 <!-- repository: https://github.com/aktsmm/ghc_template -->
 <!-- license: CC BY-NC-SA 4.0 -->
 <!-- copyright: Copyright (c) 2025 aktsmm -->
-<!-- updated: 2026-05-20 -->
+<!-- updated: 2026-05-23 -->
 
 # Terminal Command Execution Instructions
 
@@ -72,6 +72,10 @@ applyTo: "**"
 - CLI が無出力で終了しても成功とみなさず、想定 artifact がある場合は存在・サイズ・必要なら先頭数行や機械可読フィールドを確認する。
 - 出力確認が必要な実行では、stdout だけで完了判定せず、生成 artifact の存在、更新時刻、機械可読な出力を優先して確認する。
 - `run_in_terminal` の sync 実行が `Command produced no output` を返したり、async 実行が prompt 復帰前に idle した場合も、直ちに失敗扱いにせず expected artifact を先に確認する。artifact が生成済みなら render/capture 問題として扱い、未生成なら dedicated terminal や短い follow-up command で観測を補強する。
+- 長い `npm` / `node` / test suite で stdout capture が不安定な場合は、`cmd /c "... && echo OK"` や `Write-Output "name-exit=$LASTEXITCODE"` のような success marker を付け、末尾の marker か exit code を正本にする。`> $null` や `Select-Object -Last N` を使う場合も marker か exit code の確認を省略しない。
+- VS Code 拡張の local 修正版を実機確認するとき、`Developer: Reload Window` だけでは workspace の未インストール変更は読まれず、既に入っている Marketplace / VSIX 版を再読込するだけのことがある。workspace のコードを確認したい場合は、`code --install-extension <generated.vsix> --force` で入れ直してから reload するか、Extension Development Host (`F5`) を使う。
 - PowerShell script を編集した場合は、`[scriptblock]::Create((Get-Content -Raw -Encoding UTF8 <file>))` で構文確認してよい。
 - 同じ browser / CDP / SaaS 管理画面を操作するコマンドは、競合を避けるため直列実行を優先する。
 - 既存ブラウザの認証状態を使う CDP 起動では、認証が特定プロファイルに紐づく場合 `--profile-directory=<known profile>` を優先し、場当たり的な `--user-data-dir` 新設は避ける。別ログイン状態と大量キャッシュを生みやすい。
+- Edge が既に CDP ポート付きで起動済み（例: `--remote-debugging-port=9222 --profile-directory=Default`）のとき、別プロファイルが必要なら同じ user-data-dir の Edge をポート指定なしで起動する（`msedge.exe --profile-directory="Profile 2" <url>`）。新ウィンドウが同一プロセスに合流し、既存 CDP ポートで両方のプロファイルタブにアクセスできる。全 Edge を `Stop-Process` する必要はない。
+- CDP `Page.navigate` はハッシュベース SPA（`#/path`）のルート遷移に無効（SPA ルーターが反応しない）。`Runtime.evaluate` で `location.href='<hash-url>'` を代入するか、in-page のリンク click を使う。

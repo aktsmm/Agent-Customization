@@ -23,6 +23,14 @@ applyTo: "**"
 - `gh issue comment --body` などへ変数を渡すときは、変数定義と実行を同一ターミナル実行で行う。
 - 公開同期、repo visibility、`.github` / `.vscode` の公開判断は `git-publish-policy.instructions.md` を参照する。
 
+## Release Sanity
+
+- release / publish 前に、対象 version が registry に既に存在しないかを確認する。存在する場合は同じ version を再利用せず、HEAD に合わせて patch 以上を上げる。
+- release tag を作る前に、その tag が指す commit と現在の HEAD を比較する。既存 tag が HEAD より古いなら tag の付け替えではなく version bump で進める。
+- package publish では ignore 設定や packer の想定を信じ切らず、実 tarball の中身を列挙して runtime artifact だけが入っていることを確認する。
+- npm package の `files` を使う repo では、必要な runtime artifact を include pattern で明示し、sourcemap などの開発資材が混入しないことを pack 後に確認する。
+- `vsce publish` の直後は `vsce show --json` や Marketplace の version 表示が stale なことがある。publish 成功出力、remote tag、GitHub Release、Marketplace page の更新時刻など別経路の証跡を先に確認し、stale 表示だけで再 publish や追加 version bump をしない。
+
 ## Conventional Commits
 
 - 形式: `<type>(<scope>): <subject>`
@@ -44,6 +52,7 @@ applyTo: "**"
 ## gh CLI
 
 - private repo で `Could not resolve to a Repository` や scope 不足が出たら、repo 名や remote を疑う前に `gh auth status` で active credential を確認する。
+- `gh` を複数アカウントで使っている環境では、release 作成や release asset 操作の前に `gh auth status` で **active account** を確認する。対象 repo の owner ではない account が active だと、`gh release create` が `workflow scope may be required` などの分かりにくい権限エラーで失敗することがある。
 - `GITHUB_TOKEN` / `GH_TOKEN` が設定されていると、keyring に保存された高権限認証より優先されることがある。
 - そのシェルだけ保存済み認証を使いたい場合は、`$env:GITHUB_TOKEN=$null; $env:GH_TOKEN=$null` を設定してから `gh` を再実行してよい。
 - private repo の PR/Issue 確認で認証が怪しいときは、`gh pr list -R <owner>/<repo> ...` のように `-R` を明示して切り分けてよい。
