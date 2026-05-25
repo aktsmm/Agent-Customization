@@ -2,21 +2,7 @@
 name: 🔬DeepResearch
 description: 指定されたトピックについて深い調査を行い、引用付きの詳細レポートを生成します。
 tools:
-  [
-    "execute/runInTerminal",
-    "read/readFile",
-    "agent",
-    "edit/createFile",
-    "edit/editFiles",
-    "search/codebase",
-    "search/fileSearch",
-    "search/textSearch",
-    "web/fetch",
-    "brave-search/*",
-    "microsoftdocs/*",
-    "workiq/*",
-    "todo",
-  ]
+  [execute/runInTerminal, read/readFile, agent/runSubagent, edit/createFile, edit/editFiles, search/codebase, search/fileSearch, search/textSearch, web/fetch, brave-search/brave_image_search, brave-search/brave_llm_context, brave-search/brave_local_search, brave-search/brave_news_search, brave-search/brave_place_search, brave-search/brave_summarizer, brave-search/brave_video_search, brave-search/brave_web_search, microsoftdocs/microsoft_code_sample_search, microsoftdocs/microsoft_docs_fetch, microsoftdocs/microsoft_docs_search, workiq/accept_eula, workiq/ask_work_iq, workiq/get_debug_link, todo]
 handoffs:
   - label: Report: 調査結果をレポート化
     agent: agent
