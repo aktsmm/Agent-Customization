@@ -58,19 +58,17 @@ applyTo: "**"
 - VS Code task は再利用する task の registry として扱い、日付入り・対象固定の one-off task を常設しない。単発実行は terminal か一時 script を優先し、残すなら入力付きの generic task に寄せる。
 - 一時 task を使った場合は、完了前に `.vscode/tasks.json` の一時 task と一時スクリプトを削除し、残った task terminal の扱いを最終報告に書く。
 - スクリプトや CLI の変更系操作は、既定を read-only / dry-run にし、破壊的変更や外部反映は `--apply` などの明示フラグを必須にする。
-- 不要になった async terminal や、timeout 後に裏で残った terminal は、作業完了前に閉じる。
-- cleanup 対象は、自分がそのターンで起動した dedicated / ad hoc terminal を優先する。共有 `pwsh`、既存の editor terminal、拡張機能が管理する terminal は、不要と断定できる場合を除いて勝手に閉じない。
+- 不要になった async terminal や timeout 後に裏で残った terminal は作業完了前に閉じる。対象は自分がそのターンで起動した dedicated / ad hoc terminal を優先し、共有 `pwsh`・editor terminal・拡張機能管理の terminal は不要と断定できない限り閉じない。
 - terminal を残す場合は、残す理由と停止方法を最終報告に明記する。
 - 共有 shell が `>>` 継続待ちや引用崩れで不安定になったら、回復確認は 1 回までに留め、復旧しなければ clean shell、短い runner script、task、または one-shot `pwsh -NoProfile -Command` に切り替える。
 - Windows 環境で高速な全文検索が必要な場合は、`Select-String` より `ripgrep` (`rg`) を優先してよい。
 - `rg` 未導入なら `winget install --id BurntSushi.ripgrep.MSVC --scope user --accept-source-agreements --accept-package-agreements` で導入してよい。
 - 導入直後のシェルで `rg` が見つからない場合は、ターミナル再起動か、`$env:Path = [System.Environment]::GetEnvironmentVariable('Path','Machine') + ';' + [System.Environment]::GetEnvironmentVariable('Path','User')` で PATH を再読込してよい。
-- 長い quoted 引数列、複数行文字列、here-string、長文 Markdown/JSON/issue body など、引用崩れしやすい内容は terminal に直打ちせず、短い runner script や一時ファイルに逃がす。
-- PowerShell の共有 shell で長い here-string を組み立てる変更系操作は避け、`gh issue create --body-file <file>` のように body-file / temp file を優先する。`>>` 継続待ちに入ると復旧より clean shell への切替の方が速いことが多い。
+- 長い quoted 引数列、複数行文字列、here-string、長文 Markdown/JSON/issue body など引用崩れしやすい内容は terminal に直打ちせず、runner script か `--body-file` のように一時ファイル経由で渡す。`>>` 継続待ちに入ると復旧より clean shell への切替の方が速い。
 - 環境変数永続化や単発の OS 設定変更は、shared shell より one-shot `pwsh -NoProfile -Command` を優先してよい。
 - 既存の VS Code terminal では User スコープ環境変数が現在の Process に未反映のことがある。`$env:` に無ければ未設定と断定せず、必要なら `[System.Environment]::GetEnvironmentVariable('<NAME>','User')` も確認する。
-- CLI が無出力で終了しても成功とみなさず、想定 artifact がある場合は存在・サイズ・必要なら先頭数行や機械可読フィールドを確認する。
-- 出力確認が必要な実行では、stdout だけで完了判定せず、生成 artifact の存在、更新時刻、機械可読な出力を優先して確認する。
+- `$env:$name` は構文エラーになる（`:` の後に変数参照は不可）。名前を変数で動的にアクセスするには `(Get-Item "Env:$name" -ErrorAction SilentlyContinue).Value` か `[System.Environment]::GetEnvironmentVariable($name, 'Process')` を使う。
+- CLI が無出力で終了しても成功とみなさず、想定 artifact の存在・更新時刻・機械可読フィールドを確認する。stdout だけで完了判定しない。
 - `run_in_terminal` の sync 実行が `Command produced no output` を返したり、async 実行が prompt 復帰前に idle した場合も、直ちに失敗扱いにせず expected artifact を先に確認する。artifact が生成済みなら render/capture 問題として扱い、未生成なら dedicated terminal や短い follow-up command で観測を補強する。
 - 長い `npm` / `node` / test suite で stdout capture が不安定な場合は、`cmd /c "... && echo OK"` や `Write-Output "name-exit=$LASTEXITCODE"` のような success marker を付け、末尾の marker か exit code を正本にする。`> $null` や `Select-Object -Last N` を使う場合も marker か exit code の確認を省略しない。
 - VS Code 拡張の local 修正版を実機確認するとき、`Developer: Reload Window` だけでは workspace の未インストール変更は読まれず、既に入っている Marketplace / VSIX 版を再読込するだけのことがある。workspace のコードを確認したい場合は、`code --install-extension <generated.vsix> --force` で入れ直してから reload するか、Extension Development Host (`F5`) を使う。

@@ -1,181 +1,192 @@
 ---
 name: "sync-public-skills"
-description: "セッションから得られた知見を 00_Ag-SkillBuilder のスキル・エージェントに反映し、公開リポジトリに同期"
+description: "private skill repo の既存 SKILL 差分を監査し、公開リポジトリへ同期する。Use when: sync public skills, skill publish, SKILL 公開同期。学びの取り込みや SKILL 本文編集は行わない"
+argument-hint: "対象 skill 名/パス、dirty skills、mode（safe-auto / review-only）"
+agent: "agent"
+tools: ["agent", "execute/runInTerminal"]
 ---
 
 <!-- syncToGlobal: true -->
+<!-- author: aktsmm -->
+<!-- repository: https://github.com/aktsmm/ghc_template -->
+<!-- license: CC BY-NC-SA 4.0 -->
+<!-- copyright: Copyright (c) 2025 aktsmm -->
 
 # sync public skills
 
-セッションで得た知見をスキルリポジトリに反映し、公開リポジトリに同期する。
-**環境固有情報・顧客情報は含めないこと。**
+private skill repo の `.github/skills/<skill>/` に作成済みの差分を監査し、公開リポジトリへ同期する。SKILL content authoring はこの prompt の責務ではない。
 
-## パス
+workspace で試しただけの SKILL 変更を公開したい場合は、先に `retro-workspace-skill` を `private mirror` 指定で実行し、private skill repo に同期準備済みの差分を作る。
 
-| 用途 | パス |
+## When to Use
+
+- 使う: private skill repo にある既存 SKILL 差分を公開リポジトリへ同期したいとき
+- 使う: 明示された skill、変更済み skill、または dirty skill を監査して publish したいとき
+- 使う: `Sync-AndPush.ps1` 経由で public repo へ安全に同期したいとき
+- 使わない: 学びを抽出して SKILL 本文へ入れたいとき。先に `retro-workspace-skill` を使う
+- 使わない: workspace `.github/skills` だけにある変更を直接公開したいとき。先に `retro-workspace-skill` で private mirror する
+- 使わない: `~/.copilot/skills` の個人 runtime SKILL を直接公開元にしたいとき
+- 使わない: 新規 skill の設計や scaffold をしたいとき。まず確認して別 workflow に分ける
+
+## Inputs / Modes
+
+- Input: skill 名、skill パス、`dirty skills`、または private repo の対象差分
+- Mode: `safe-auto` / `review-only` / `dry-run` / `プレビュー`。空欄は `safe-auto`
+
+`review-only` / `dry-run` / `プレビュー` が明示された場合は、候補、監査、予定差分、commit message を提示して停止する。
+
+## Paths
+
+| 用途 | 解決方法 |
 | --- | --- |
-| プライベート repo | `<private skill repo clone>` |
-| 公開 repo | `<public skill repo clone>` |
+| private skill repo | `SYNC_PUBLIC_SKILLS_PRIVATE_REPO` |
+| public skill repo | `SYNC_PUBLIC_SKILLS_PUBLIC_REPO` |
+| sync script | `SYNC_PUBLIC_SKILLS_SCRIPT` |
 
-| 種別 | 反映先（プライベート repo 内） |
-| --- | --- |
-| スキル | `.github/skills/` |
+環境変数は Process scope を優先し、無ければ User scope を読む。値は prompt 本文や成果物に埋め込まない。
 
-### ローカル override（任意）
+PowerShell で動的な環境変数を読むときは `$env:$name` を使わない。`(Get-Item "Env:$name" -ErrorAction SilentlyContinue).Value` か `[System.Environment]::GetEnvironmentVariable($name, 'User')` を使う。
 
-この prompt は public-safe な placeholder を保持する。検索を省略したい場合だけ、以下の環境変数で local path を上書きしてよい。`$env:` に無くても、User スコープに定義済みのことがある。
+## Scope Boundary
 
-| 変数 | 用途 |
-| --- | --- |
-| `SYNC_PUBLIC_SKILLS_PRIVATE_REPO` | private repo clone の絶対パス |
-| `SYNC_PUBLIC_SKILLS_PUBLIC_REPO` | public repo clone の絶対パス |
-| `SYNC_PUBLIC_SKILLS_SCRIPT` | `Sync-AndPush.ps1` の絶対パス |
+- この prompt は sync-only。SKILL 本文の統合、置換、圧縮、学びの抽出はしない
+- publish source は private skill repo の `.github/skills/` のみ。workspace `.github/skills/` は直接読まない
+- public 対象判定の SSOT は `Sync-AndPush.ps1` の `$ExcludeSkills` 配列
+- 新規 skill の公開追加、`$ExcludeSkills` 変更、公開可否不明の skill は確認で停止する
+- README / index 更新が必要に見える場合は停止し、別 workflow へ回す。sync-only 実行中に内容編集しない
+- `git add -A` で repo 全体を stage しない。対象 skill directory だけ明示的に stage する
 
-環境変数はローカル専用 override として扱い、prompt 本文には実パスを埋め戻さない。PowerShell では Process に無ければ User スコープを読む。
+## Classification
+
+| 分類 | 条件 | 動作 |
+| --- | --- | --- |
+| `primary` | ユーザーが明示した skill / 今回同期したい skill | 監査通過後に stage / commit / sync |
+| `co-batch` | 関連し、公開安全で、小さく説明可能な dirty skill | `dirty skills` 指定時だけ safe-auto 同梱可 |
+| `blocked` | 公開可否不明、ライセンス不明、顧客/社内情報、意味変更が大きい | stage しない。理由を報告 |
+
+co-batch は skill ごとに「何を変えたか」「なぜ一緒に流して安全か」を 1 行で説明できる場合だけ採用する。採用する co-batch は最終 selected list に明示してから stage する。`dirty skills` 指定がない場合は報告のみで stage しない。
+
+## Audit Gate
+
+- 検出対象: secret、API key、password、client secret、connection string、refresh token、秘密鍵、token 形式、メールアドレス、実 ID、顧客/社内情報、個人環境値
+- placeholder、ポリシー文、一般語だけでは除外しない
+- 固有イベント名、個人ユーザー名入りパス、組織内でしか通じない文脈は blocked または修正依頼にする
+- 監査が通らない場合は commit / push / public sync をしない
+- deterministic check として、対象差分に対して secret scan、`git diff --check`、selected dirs 外の staged file 確認を行う
+
+この prompt で監査中に内容修正が必要だと分かった場合は、原則として停止し、`retro-workspace-skill` での修正と private mirror を提案する。
+
+## Workflow
+
+### 1. Resolve Paths
+
+1. override 環境変数を Process scope、User scope の順で読む
+2. private repo、public repo、sync script を `Test-Path` で確認する
+3. 未設定または存在しない場合だけ、既知 repo 名と script 名でローカル検索する
+4. 0 件または複数件なら、検索範囲、候補、不足情報を報告して停止する
+
+初期確認:
 
 ```powershell
-foreach ($name in 'SYNC_PUBLIC_SKILLS_PRIVATE_REPO','SYNC_PUBLIC_SKILLS_PUBLIC_REPO','SYNC_PUBLIC_SKILLS_SCRIPT') {
-	if (-not $env:$name) { $env:$name = [System.Environment]::GetEnvironmentVariable($name, 'User') }
-}
+Set-Location <private-skill-repo>
+git branch --show-current
+git status --short
 ```
 
-## 公開対象（blacklist 方式）
+### 2. Select Skill Dirs
 
-SSOT は `Sync-AndPush.ps1` の `$ExcludeSkills` 配列。`.github/skills/` 配下で `$ExcludeSkills` に含まれないものはすべて公開対象。
-非公開にすべきケース: ライセンス未確認 / 顧客・社内情報 / 開発中 / 個人環境依存。
+- 入力が workspace `.github/skills` のパスや current workspace のみの変更を指している場合は停止し、`retro-workspace-skill` を `private mirror` 指定で実行するよう案内する
+- 入力に skill 名またはパスがあれば、それを `primary` とする
+- `dirty skills` 指定または入力なしの場合は、private repo の `.github/skills/` 配下の dirty skill を列挙する
+- 入力なしで複数 dirty skill が見つかった場合は、safe-auto で広げず候補一覧を出して停止する
+- 対象外 dirty skill は blocked または未採用として分離し、stage しない
+- 新規 skill directory の公開追加は確認で停止する
 
-## 反映ルール
+### 3. Audit and Confirm
 
-- **追記より更新・統合・置換を優先**
-- 新規追加は既存に収まらない場合だけ
-- 汎用化できない内容、単発メモ、同じ失敗の言い換えは反映しない
-- 例やサンプルコマンドに固有イベント名、個人ユーザー名入りパス、組織内でしか通じない文脈が残る場合は、公開前に汎用例へ置換する
-- 永続化する価値がなければ変更なしで終了してよい
-- append-only に節や箇条書きを足し続けるのを通常運用とみなさない
-- 変更前に `削除 → 統合 → 分離 → 追加` の順で検討する
-- 既存 skill の main SKILL や references が長くなりすぎていないかを確認し、追記前に既存文の置換や圧縮で済まないかを見る
-- 既定モードは `safe-auto`。公開不可情報・ライセンス不明・公開範囲変更・大規模削除・意味変更・判断に迷う点がなければ、反映 + 公開同期 + push まで自律実行してよい
-- `review-only` / `確認だけ` / `dry-run` / `プレビュー` が明示された場合だけ、確認表示で停止する
-- 大規模削除・意味変更・公開範囲変更・公開可否に迷う場合はユーザー確認で停止する
-- co-batch の方針は Step 1.5 / 2.5 を参照。`git add -A` で repo 全体を巻き込まない
+- primary / co-batch の候補だけを監査する
+- public-safe か、sync-only で完結するかを確認する
+- `review-only` または停止条件に該当する場合は、予定差分と commit message を提示して停止する
 
-### 反映してよい / してはいけない
+### 4. Commit Private Repo
 
-| OK | NG |
-| --- | --- |
-| 繰り返し使う手順・判断基準・失敗回避策 | 環境依存パス、アカウント、顧客・社内情報 |
-| 既存ルールの抜け・古さの補正 | 既存ルールの言い換えだけで実質差分なし |
-| 公開安全で他環境でも再利用可能 | 一時デバッグログ、単発メモ、公開品質未達 |
+- 対象 skill directory だけを明示的に stage する
+- stage 後に `git diff --cached --name-only` を確認し、selected skill dirs 外、README/index、script、予期しない削除が含まれたら停止する
+- `git diff --cached --check` を実行し、whitespace/error があれば停止する
+- commit message は `sync: <skill summary>` 形式にする
+- 既に対象差分が commit 済みなら、新規 commit なしで次へ進んでよい
+- commit 後は current branch と upstream/remote を確認し、曖昧でなければ private repo へ push する
+- push 後に `git status --short` と remote ref または `git log -1 --oneline` で対象 commit を確認する
+- private repo push が rejected された場合は、状況を確認してから非破壊に再試行する
 
-## 実行手順
+### 5. Public Sync
 
-### 1. 初期化
+必ず `Sync-AndPush.ps1` を使う。直接コピーで代替しない。
 
-- まず Process スコープの override を確認し、無ければ User スコープの同名環境変数を現在のセッションへ補完して使う
-- override が未設定、placeholder のまま、または `Test-Path` に失敗した場合だけ、repo 名検索へフォールバックする
-- まずパス表の private / public repo と `scripts/Sync-AndPush.ps1` を `Test-Path` で確認する
-- パス表が placeholder のまま、またはパスが存在しない場合は即停止せず、repo 名 `00_Ag-SkillBuilder` / `Agent-Skills` と `Sync-AndPush.ps1` を PowerShell でローカル検索する
-- 1 件だけ見つかった場合はそのパスを使う。0 件または複数件なら、検索した範囲・候補・不足している確認事項を報告して停止する
-- workspace-scoped search だけで repo 不在と断定しない
+script 実行前に、unselected / blocked dirty skill が script 経由で public 側へ流れないことを確認する。不明なら停止する。
 
 ```powershell
-Set-Location <private-skill-repo>; git branch --show-current; git status --short
+<sync-script> -Message "sync: <skill summary>" -SkipDevPush
 ```
 
-### 1.5 dirty skill スキャン
+script が失敗したら、エラーを読み、原因を解消してから再実行する。手動コピーに切り替えない。
 
-- private repo の `.github/skills/` 配下の未コミット変更を skill 単位で列挙する
-- 各 skill を以下に分類する
-	- **primary candidate**: 今回の依頼で直接編集した skill
-	- **co-batch candidate**: 今回の依頼外だが、公開安全で一緒に同期して問題ない skill
-	- **blocked candidate**: ライセンス不明、公開可否不明、顧客/社内情報、意味変更が大きい、または差分意図が説明できない skill
-- `safe-auto` では primary + co-batch をまとめて進めてよい。blocked は除外して理由を報告する
-- dirty skill が 0 件なら通常どおり続行する
+### 6. Verify Public Repo
 
-### 2. 差分収集 + 内部レビュー
+- public repo のルート構造を確認する
+- ルートに誤った `skills/` フォルダが作られていないか確認する
+- public repo の直近 commit / diff stat が期待した skill dirs だけを含むことを確認する
+- public repo の `git status --short` と直近 commit を確認する
+- 必要に応じて公開 URL / remote URL を報告する
 
-#### 反映先ルーティング
+## Report Format
 
-- 知見候補を抽出したら、`.github/skills/*/SKILL.md` の `name` + `description` を走査し、各知見がどの skill の領域に属するかを判定する
-- 1 skill に明確にマッチ → その skill の SKILL.md または references 配下が反映先
-- 複数 skill にまたがる → 最も specific な skill を優先し、残りは別 skill への分割を検討
-- **0 マッチ（既存 skill に収まらない）** → 「新規 skill 候補」フラグを立てて Step 3 で扱う
+```markdown
+## Summary
+- {同期結果 1-3 行}
 
-#### 内部レビュー
+## Selected Skills
+- primary: ...
+- co-batch: ...
+- blocked: ...
 
-- セッションから知見候補を抽出
-- ルーティング結果に基づき、既存ファイルとの重複・統合可能性を確認
-- **統合候補 / 削除候補 / 追加候補** に分類（反映ルールの優先順に従う）
-- 対象ファイルが「追記され続けて太っていないか」を確認する
-- 追加候補は、追記ではなく既存文の置換・圧縮・reference への逃がしで解決できないかを先に検討する
-- co-batch candidate も同じ基準でレビューし、primary と同じ品質基準を満たす場合だけ同梱する
+## Audit
+- {監査結果、ヒット有無、除外理由}
 
-### 2.5 co-batch gate
+## Sync
+- private commit/push: ...
+- public sync: ...
+- script: `Sync-AndPush.ps1 -SkipDevPush`
 
-- co-batch candidate を含める場合は、skill ごとに 1 行で「何を変えたか」「なぜ今回一緒に流して安全か」を説明できること
-- 依頼と無関係でも、公開安全で差分が小さく、同時同期の説明が立つなら同梱してよい
-- 差分が大きい、レビュー不足、公開判断に迷う場合は blocked に落として今回の対象から外す
+## Verify
+- public repo structure: PASS / FAIL
+- README/index: not edited / blocked（理由）
+- cleanup: ...
 
-### 3. 反映
-
-- 自律的に反映。影響が大きい場合、または公開判断に迷う場合のみユーザー確認
-- README は入口情報が古くなる場合だけ更新（private / public 両方）
-
-#### 新規 skill 候補の扱い
-
-- Step 2 で「新規 skill 候補」フラグが立った知見は、`create-skill` skill または `agent-customization` skill に scaffold を委任する
-- この prompt 内で scaffold 手順を再実装しない
-- 新規 skill 作成後、blacklist 判定（公開可否）と README 更新要否を確認してから Step 3.5 以降に進む
-
-### 3.5. 肥大化チェック（反映後）
-
-- 反映後、編集したファイルに DRY 違反・冗長表現・重複定義がないか確認する
-- `行数が増える = 改善` とみなさない。追加より圧縮・reference 分離を先に検討する
-- 問題があれば修正し、報告に「⚠️ 肥大化警告」を含める
-
-### 3.8. private repo への個別 commit / push
-
-- `Sync-AndPush.ps1` 実行前に、primary + co-batch として採用した skill だけを明示的に stage して commit / push する
-- 例: `git add .github/skills/skill-a .github/skills/skill-b`
-- `git commit` は stage 済みの対象だけで行い、他の dirty skill は未 staged のまま残してよい
-- その後の公開同期は `-SkipDevPush` を付けて実行する
-- `git status --short` に対象外の dirty skill が残っていても、今回の採用 skill だけが commit 済みなら続行してよい
-
-### 4. 公開同期
-
-**必ず `Sync-AndPush.ps1` を使う**（直接コピー禁止）:
-
-```powershell
-.\scripts\Sync-AndPush.ps1 -Message "sync: <変更内容>" -SkipDevPush
+## Not Done
+- {未同期、blocked、retro-workspace-skill に戻すべき項目}
 ```
 
-同期後に `Get-ChildItem <public-skill-repo> | Select-Object Name` で構造確認。`skills/` フォルダが存在したらバグ → 即削除して push。
+## Stop Conditions
 
-```powershell
-Get-ChildItem <public-skill-repo> | Select-Object Name
-```
+- path ambiguity
+- public safety audit failure
+- new skill publication without confirmation
+- `$ExcludeSkills` change needed
+- unexpected deletion
+- branch / remote ambiguity
+- dirty changes outside selected skill dirs cannot be separated
+- content authoring is needed before sync
+- requested changes exist only in workspace `.github/skills`
 
-`Sync-AndPush.ps1` がエラーで終了した場合は、エラー出力を確認し、手動コピーで代替しない。原因を解消してから再実行する。
+## Done Criteria
 
-### 5. 報告
-
-1. 統合候補として扱ったもの
-2. 削除候補として扱い、実際に削除または見送ったもの
-3. 追加候補として扱い、実際に追加したもの
-4. 追加しなかったものとその理由
-5. co-batch として一緒に反映した skill と、その採用理由
-6. blocked として今回除外した dirty skill と、その理由
-7. 更新したファイル一覧
-8. README 更新有無（更新しなかった場合は理由 1 行）
-
-## 完了条件
-
-- 反映候補が既存資産と重複していない
-- 更新・統合・整理が追記より優先されている
-- README 更新要否が確認済み
-- 公開不可情報が含まれていない
-- primary / co-batch / blocked の分類が済み、unsafe な dirty skill が巻き込まれていない
-- private repo では採用した skill だけが個別 commit / push されている
-- 全知見が反映先 / 新規 skill / 見送りのいずれかに分類済み
-- 同期後の公開リポジトリ構造が正しい
-- 判断に迷う懸念がなければ公開 repo への push まで完了している
+- selected skill dirs are classified as primary / co-batch / blocked
+- unsafe or unrelated dirty skill dirs are not staged
+- audit passed before commit / push
+- selected skill dirs only are staged and committed when needed
+- staged files are verified before commit and private repo push is confirmed when performed
+- public sync ran through `Sync-AndPush.ps1`
+- public repo structure was verified
+- content authoring was not performed by this prompt
+- publish source was private skill repo, not workspace `.github/skills`

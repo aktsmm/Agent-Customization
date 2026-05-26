@@ -38,7 +38,6 @@ Customization 資産（instructions / prompts / agents / SKILL / copilot-instruc
 - 冗長な前置き、「重要！」連打、自明な説明を削る
 - 主要 instruction は ~120 行を目安、500 行を超えたら強い refactor サイン
 - 「行数が増える = 改善」とみなさない
-- whitespace は AI から見えない。区切りは見た目の問題でしかない
 
 ### 4. 分離する
 - 詳細手順、長い recipe、persona、ドメイン固有規則は always-on に置かない
@@ -46,13 +45,10 @@ Customization 資産（instructions / prompts / agents / SKILL / copilot-instruc
 - `tasks.json` のような registry file を実行履歴や試行錯誤ログの置き場にしない
 - prompt / instruction / skill / agent / hook は最小の primitive を選び、より単純な primitive で解けるなら agent 化しない
 - それ以外は `applyTo` を絞った instruction、`.prompt.md`、`.agent.md`、references に逃がす
-- AI と script / hook の使い分けは汎用原則だけを always-on に置き、具体的な判定表・例・手順は scoped instruction や review asset を正本にする
-- 判断や曖昧さ解消は AI、同じ入力なら同じ結果が望ましい純作業は script / hook に寄せる
-- 単発でも再現性、fail fast、証跡が重要なら script / hook を優先する
+- AI と script / hook の切り分けは、判断や曖昧さ解消は AI、再現性や fail fast が重要な純作業は script / hook を優先する
+- 具体的な判定表・例・手順は always-on ではなく scoped instruction や review asset を正本にする
 - review 用 prompt / checklist / skill は設計レビューの置き場であり、既定の対話挙動を変えたい rule は always-on entry か scoped instruction に置く
 - ただし Global User Data の prompt / instruction は、他の global prompt / instruction を前提にしない
-- always-on file に Markdown リンク付きの索引を作らない。リンク先まで参照経路に乗ると、本文が短くても入口としては太る
-- 入口 file で詳細の所在を示すときは、Markdown リンク列挙より「詳細は別ディレクトリ / README / docs 側」の一文で済まないかを先に検討する
 
 ### 5. 反復・テスト前提
 - 一発で完成させず、小さく始めて反復で磨く
@@ -68,7 +64,6 @@ Customization 資産（instructions / prompts / agents / SKILL / copilot-instruc
 - 命令形・具体的・実行可能に書く
 - ルールには **理由** を添える（例: deprecation、security、performance、bundle size）
 - 構造は distinct headings + bullet points
-- linter / formatter が enforce するルールは書かない
 - whitespace は AI から見えない。改行で区切っても意味は変わらない
 
 ## 具体例の扱い
@@ -77,7 +72,7 @@ Customization 資産（instructions / prompts / agents / SKILL / copilot-instruc
 - **判断基準（rule）が主、例は補助**
 - 環境固有値（ID、パス、Tenant、コース名など）を例に埋めない
 - 1 例で意図が伝わらないなら、例を増やすより rule の書き方を直す
-- 「理由を書く」と「例は最小限」は両立する。理由は短い文、例は最大 1 ブロック
+- 理由は短い文で添え、例は最大 1 ブロックにする
 
 ## 書かないもの
 
@@ -85,7 +80,7 @@ Customization 資産（instructions / prompts / agents / SKILL / copilot-instruc
 
 - 抽象的な品質要求: `be more accurate` / `don't miss any issues`
 - 外部 URL を参照させる指示（取得されない、内容を直接書く）
-- 出力スタイル強制（emoji、bold、コメント書式）
+- 装飾・好みの出力スタイル強制: emoji、bold、コメント書式など（検証可能な出力形式は除く）
 - PR ブロック等の挙動変更要求
 - linter / formatter / formatter 設定で済むルール
 - 「常に X 文字以内で答える」など固定の出力長制約
@@ -99,14 +94,14 @@ Customization 資産（instructions / prompts / agents / SKILL / copilot-instruc
 | `%APPDATA%/Code/User/prompts/*.instructions.md` | 全会話に効く短い原則 | `applyTo` を絞った instruction、prompt、agent |
 | `$HOME/.copilot/copilot-instructions.md` | CLI 全体の最低限ルール | 同上 |
 | `.github/copilot-instructions.md` | repo-wide の routing と guardrails | `.github/instructions/**` |
-| `AGENTS.md` | agent / workflow の registry と入口 | 各 `.agent.md`、prompt、skill |
+| `AGENTS.md` | agent / workflow の薄い registry と入口 | 各 `.agent.md`、prompt、skill |
 
 判断: 「これは casual chat にも効いてほしいか？」が No なら always-on に書かない。
 
 補足:
 
-- 「入口に索引を置く」は原則として避ける。always-on file の索引は、そのまま参照リンク集になりやすい
-- `copilot-instructions.md` と `AGENTS.md` は、リンクを起点に深い detail を読ませる場ではなく、入口の役割に徹する
+- 入口 file は索引や Markdown リンク集にしない。リンク先まで参照経路に乗ると本文が短くても太る
+- `copilot-instructions.md` と `AGENTS.md` は入口に徹し、詳細の所在は「別ディレクトリ / README / docs 側」程度に留める
 - 挨拶、短い Q&A、番号だけの返答のような軽い入力を、明示的な task context なしに workflow intake へ強制しない
 
 ## 追加前のチェック
