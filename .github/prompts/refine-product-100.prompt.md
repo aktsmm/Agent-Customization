@@ -30,6 +30,7 @@ argument-hint: "対象、重点観点、モード（例: current workspace / all
 6. 配布物に不要物が混入していないか
 7. 最初の修正観点以外に別軸の gap が残っていないか
 8. 不要な terminal / task / dev server が残っていないか
+9. 繰り返しの詰まりが prompt / instruction / skill / script 自体にあるのに、改善せず残していないか
 
 実機確認が必須でも、**機械的代替を最低 1 つ追加してから** 止まる。
 
@@ -51,11 +52,11 @@ argument-hint: "対象、重点観点、モード（例: current workspace / all
 
 Release intent:
 
-- `Release`, `release`, `リリース`, `公開`, `publish`, `PushPublish`, `Marketplace`, `マケプレ` が入力に含まれる場合は full release intent と扱う。
-- 明示 Release intent がある場合、確認不能を理由に local prep へ縮退しない。
-- Release intent は品質改善ループをスキップしない。§5 と §5.5 を通過してから §8 に進む。
-- ただし secret / 本番データ / 破壊的履歴改変 / credentials 不足 / 外部サービス認証失敗 / duplicate version などの Block は記録し、非破壊の Guard now を先に試す。
-- ドキュメント等は最終チェック + 配置手順を Next Steps に書く。
+- `Release`, `release`, `リリース`, `公開`, `publish`, `PushPublish`, `Marketplace`, `マケプレ` を含む入力は full release intent と扱う。
+- Release intent の判定は §1 Context で先に行う。
+- 明示 Release intent がある場合、確認待ちを理由に local prep へ縮退しない。曖昧な場合だけ「配布まで進めるか」を確認する。
+- Release intent でも品質改善ループは必須。§5 と §5.5 を通過してから §8 に進み、Block は記録したうえで非破壊の Guard now を先に試す。
+- ドキュメント等は最終チェックと配置手順を Next Steps に書く。
 
 ## Safety Constraints
 
@@ -75,18 +76,13 @@ Release intent:
 | `Guard now` | 本修正は不可だが、回帰テスト・静的ガード・docs 等の機械的代替でリスク低減可能 |
 | `Block` | 破壊的 / 外部公開 / 本番データ / 仕様判断が必要 → 不足入力 + AI 代替検討を記録 |
 
-`Block` は完了逃げに使わない。不足入力・AI 代替を試した内容・次の確認を必ず残す。破壊的変更が最善に見えても auto で実行しない。互換 shim / feature flag off / deprecation warning / dry-run / backup 手順 / 静的ガードなど非破壊 `Guard now` を先に試す。
+`Block` は完了逃げに使わない。不足入力、試した AI 代替、次の確認を残し、破壊的変更が最善に見えても auto では互換 shim / feature flag off / dry-run / backup / 静的ガードなどの非破壊 `Guard now` を先に試す。
 
-`Guard now` も「観点だけ残す」は禁止。**最低 1 つの成果物**（回帰テスト、静的ガード、ログ採取、設定チェック、README/runbook 更新、確認手順の固定化）を追加してから残す。
+`Guard now` は「観点だけ残す」を禁止し、**最低 1 つの成果物**（回帰テスト、静的ガード、ログ採取、設定チェック、README/runbook 更新、確認手順の固定化）を追加してから残す。
 
-`残した観点` に書ける条件:
+`残した観点` に書けるのは `Guard now` または `Block` のみ。各項目に「試したことまたは unsafe な理由」「追加した AI 代替」「次に何を確認すれば閉じるか」を含める。`Fix now` は不可。
 
-1. `Guard now` または `Block` に分類済み
-2. 少なくとも 1 回は Fix / Guard を試した、または安全制約上それが不可能と説明できる
-3. AI 代替（テスト / 静的ガード / docs / checklist）の追加有無を記録できる
-4. 次に何を確認すれば閉じるかを 1 文で言える
-
-修正 → 検証 → 失敗原因読解 → 再修正のループは同一原因で最大 3 回。超えたら Block。
+修正 → 検証 → 失敗原因読解 → 再修正は同一原因で最大 3 回。超えたら `Block` に再分類する。
 
 ## Workflow
 
@@ -124,12 +120,14 @@ Release intent:
 1. **Implement**: 最小差分で修正。既存設計・命名・テストパターンに合わせる
 2. **Sweep**: 同根原因を全文検索で洗い出し、まとめて直す（**1 件で満足禁止**）
 3. **Test**: 回帰防止テスト追加。実機/外部依存で閉じない箇所は機械的代替（manifest 整合・文言同期・契約テスト）
-4. **Verify**: diagnostics → lint → typecheck → test → build
+4. **Verify**: diagnostics → lint → typecheck → test → build。stdout だけでなく artifact / state / process でも確認する
 5. **Repeat**: 検証失敗は原因を読み Fix now / Guard now / Block に再分類。テスト期待値更新は、既存仕様・README・テスト・後方互換を確認し実装が正しいと説明できる場合のみ
 
 **Residual rule**: 修正後に high-confidence な `Fix now` が 1 件でも残った場合、`standard` でも **追加 1 サイクル** 回してから止まる。`残した観点` に送れるのは `Guard now` / `Block` のみ。
 
 実行ルール: 既存 scripts/CI 優先、ターミナルは非対話・単発・timeout 付き、watch/dev server は起動しない。使い終わった terminal は原則閉じ、残す場合は理由を最終報告に書く。
+
+環境依存・対話 UI・専用アプリでは、都合のよい前提を置かず、既存セッション再利用、可逆性、短い timeout、rollback、cleanup を優先する。具体ルールは該当 skill / instruction / script に寄せる。
 
 ### 5.5. Coverage Sweep（standard / auto 必須）
 
@@ -145,15 +143,17 @@ Coverage Sweep の停止条件:
 
 修正に応じて README / Quick Start / ヘルプ / エラーメッセージ / CHANGELOG / 用語一貫性を同期。
 
+### 6.5. Meta Improvement Sweep
+
+今回の作業で、prompt / instruction / skill / hook / reusable script 自体に再発要因があると分かった場合は、主タスクの修正と検証が終わった後に、**同じスコープで安全に直せる最小変更**だけ反映してよい。対象は今回の問題に直接効く資産に限り、別系統の大整理や public/private sync はしない。
+
 ### 7. Cleanup
 
 不要な一時ファイル / dead code / 検証用資材を削除。迷うものは Next Steps へ。terminal / task / dev server は停止。
 
 ### 8. Release Loop（ソフトウェア配布物 + 明示 Release intent 時）
 
-ドキュメント等は skip。ソフトウェア配布物で明示 Release intent がある場合は、§5/§5.5 の品質改善ループを完了してから full release まで進める。
-
-「配布まで進めますか？」の確認は、Release intent が曖昧な場合だけ行う。`Release` / `publish` / `PushPublish` / `Marketplace` / `マケプレ` が明示されている場合は確認待ちで local prep に縮退しない。
+ドキュメント等は skip。ソフトウェア配布物で明示 Release intent がある場合は、§5/§5.5 完了後に full release まで進める。配布確認は Release intent が曖昧な場合だけ行う。
 
 1. **公開前重複確認**: 対象 version が既に公開済みでないか確認（既存ならパッチを上げる）
 2. **Version sync**: package メタ / lockfile / バージョン表示 / CHANGELOG / release notes を同時更新
@@ -206,6 +206,8 @@ Coverage Sweep の停止条件:
 
 ## Documentation / Cleanup（該当時のみ）
 
+## Meta Improvements（該当時のみ）
+
 ## 100% Pass 判定
 
 ## Next Steps（優先度順、[AI] / [User] 担当付き）
@@ -218,23 +220,16 @@ Coverage Sweep の停止条件:
 
 ## Self-Check（最終報告前に 1 回）
 
-- Sweep 実施済み
-- 発見 gap を Fix now / Guard now / Block に分類済み。Block は不足入力と AI 代替検討を記録済み
-- Fix now / Guard now は修正後の検証失敗を読み、再修正・再検証まで完了済み
-- Coverage Sweep 実施済み
-- `残した観点` は Guard now / Block のみで、各項目に試行内容と AI 代替が記録済み
-- 検証が具体的（コマンド・exit code 明示）
-- 依頼スコープ外への拡張なし
-- 仮説判断した場合は Done または Findings.対応に根拠が記録済み
-- 一時資材・terminal 残留なし
-- サブエージェントを使わなかった場合は理由を記録済み
-- 新観点 3 件が優先度順、AI/User 担当が振られ、`[User]` は AI 代替検討済み
-- 100% Pass 判定が明示
+- Sweep / Coverage Sweep 実施済みで、発見 gap を Fix now / Guard now / Block に分類済み
+- Fix now / Guard now は再修正・再検証まで完了し、検証はコマンド・exit code まで具体化されている
+- `残した観点` は Guard now / Block のみで、試行内容・AI 代替・次の確認が記録済み
+- 依頼スコープ外への拡張がなく、仮説判断・subagent 未使用理由・cleanup 結果を報告に残している
+- 新観点 / 再発防止 / 100% Pass 判定が最終報告に明示されている
 
 ## Stop Conditions
 
 - plan only / review only 指定
 - GATE でユーザーが終了を選んだ
-- Prime Directive の 8 自問が全て no
+- Prime Directive の 9 自問が全て no
 - 同一原因の再試行が 3 回超過
 - 安全上ユーザー確認が必要（代替ガード追加後に停止）
