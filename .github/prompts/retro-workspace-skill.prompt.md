@@ -21,8 +21,7 @@ tools: ["agent", "edit/editFiles", "execute/runInTerminal"]
 - 使う: workspace の SKILL に残すべき繰り返し可能な手順、判断基準、失敗回避策を見つけたとき
 - 使う: 現在の workspace で既存 SKILL の `SKILL.md` / `references/*` / `scripts/*` を小さく更新し、すぐ試したいとき
 - 使う: ローカル workspace で作った、または修正した skill をまず workspace 内で整えたいとき
-- 使わない: workspace 変更を private skill repo に反映したいとき。代わりに `mirror-workspace-skill-to-private` を使う
-- 使わない: public repo へ同期・push したいとき。代わりに `sync-public-skills` を使う
+- 使わない: workspace 変更を private / public repo に反映したいとき。代わりに `sync-public-skills` を使う
 - 使わない: `~/.copilot/skills` の個人 runtime SKILL を直接直すとき。代わりに `retro-copilot` を使う
 - 使わない: VS Code User Data prompt / instruction / agent へ反映する知見。代わりに `retro-user` を使う
 - 使わない: workspace の SKILL 以外の `.github/**` / `AGENTS.md` へ反映する知見。代わりに `retro-workspace` を使う
@@ -39,7 +38,7 @@ tools: ["agent", "edit/editFiles", "execute/runInTerminal"]
 | 対象 | 扱い |
 | --- | --- |
 | workspace `.github/skills/<skill>/` | 既定の反映先 |
-| private skill repo `.github/skills/<skill>/` | 対象外。`mirror-workspace-skill-to-private` に handoff |
+| private skill repo `.github/skills/<skill>/` | 対象外。`sync-public-skills` に handoff |
 | `~/.copilot/skills/<skill>/` | 既定では対象外。`retro-copilot` に handoff |
 | public skill repo | 対象外。`sync-public-skills` に handoff |
 | User Data prompt / instruction / agent | 対象外。`retro-user` に handoff |
@@ -124,8 +123,7 @@ Gate 失敗時は、理由と安全な handoff 先を示して停止する。
 
 ## Next
 - workspace で動作確認する
-- workspace 反映済みの skill を private repo に移す場合: `mirror-workspace-skill-to-private` を対象 skill 名つきで実行
-- private repo 反映済みで公開同期する場合: `sync-public-skills` を対象 skill 名つきで実行
+- workspace 反映済みの skill を private / public repo に反映する場合: `sync-public-skills` を対象 skill 名つきで実行
 ```
 
 Stop: 入力不足 / actionable な知見なし / scope 不一致 / Safety Gate 失敗 / 新規 skill 候補 / review-only。
