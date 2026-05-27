@@ -66,6 +66,7 @@ applyTo: "**"
 - `rg` 未導入なら `winget install --id BurntSushi.ripgrep.MSVC --scope user --accept-source-agreements --accept-package-agreements` で導入してよい。
 - 導入直後のシェルで `rg` が見つからない場合は、ターミナル再起動か、`$env:Path = [System.Environment]::GetEnvironmentVariable('Path','Machine') + ';' + [System.Environment]::GetEnvironmentVariable('Path','User')` で PATH を再読込してよい。
 - 長い quoted 引数列、複数行文字列、here-string、長文 Markdown/JSON/issue body など引用崩れしやすい内容は terminal に直打ちせず、runner script か `--body-file` のように一時ファイル経由で渡す。`>>` 継続待ちに入ると復旧より clean shell への切替の方が速い。
+- read-only な audit / sync / verify で長い quoted payload や here-string が見えている場合は、共有 shell の復旧待ちを前提にせず、最初から一時 script、clean な one-shot shell、または read-only subagent を選んでよい。
 - 環境変数永続化や単発の OS 設定変更は、shared shell より one-shot `pwsh -NoProfile -Command` を優先してよい。
 - 既存の VS Code terminal では User スコープ環境変数が現在の Process に未反映のことがある。`$env:` に無ければ未設定と断定せず、必要なら `[System.Environment]::GetEnvironmentVariable('<NAME>','User')` も確認する。
 - `$env:$name` は構文エラーになる（`:` の後に変数参照は不可）。名前を変数で動的にアクセスするには `(Get-Item "Env:$name" -ErrorAction SilentlyContinue).Value` か `[System.Environment]::GetEnvironmentVariable($name, 'Process')` を使う。

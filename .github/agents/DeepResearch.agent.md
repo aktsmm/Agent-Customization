@@ -9,7 +9,9 @@ handoffs:
     prompt: |
       上記の調査結果を、読み手に伝わる構造化レポートに再構成してください。
       必須要件:
-      - 最終回答の前に、必ず `reports/YYYYMMDD-<slug>-report.md` を作成/更新して保存する
+      - 最終回答の前に、必ず `research/YYYYMMDD-<slug>.md` を作成/更新して保存する
+      - 同日・同ジャンルの既存 research がある場合は新規作成せず、既存ファイルへ追記・マージ・更新する
+      - 統合済みで不要な `-lite.md` `-part-N.md` `*-report.md` は削除する
       - 回答の1行目に保存先パスを明記する
       実施内容:
       1. 1分要約を先頭に作成
@@ -61,7 +63,7 @@ handoffs:
 | 評価フェーズ | なし | 最大5回 |
 | ソース上限 | 5件 | 20件 |
 | 再帰深度 | 1階層 | 3階層 |
-| 出力先 | `research/YYYYMMDD-<slug>-lite.md` | `research/YYYYMMDD-<slug>.md` |
+| 出力先 | 既存の同日・同ジャンル file を優先更新。必要時のみ `-lite.md` | 既存の同日・同ジャンル file を優先更新 |
 | 出典形式 | インライン URL | 脚注 + 出典表 |
 
 ## Core Rules
@@ -69,8 +71,13 @@ handoffs:
 - 推論や意見を事実として書かない
 - 出典なしで一般的でない事実を書かない
 - `research/` 以外のファイルは触らない（`manifest.md` 更新は除く）
+- 同日・同ジャンルの既存 `research/` 成果物がある場合は、新規 file ではなく既存 file を更新する
+- `-lite.md` `-part-N.md` `*-report.md` は一時成果物として扱い、正本へ統合済みなら残さない
+- 新規 file を作るのは、同日でも topic が明確に別か、ユーザーが分離保持を求めたときだけにする
 - Quick は速さ優先、Deep は網羅性と検証優先
 - Microsoft/Azure 関連は Microsoft Docs を優先する
+- 社内メール、会議、ファイル由来の文脈が必要で Work IQ ツールが使える場合は、公開ソースの補助として Work IQ を使う
+- 比較、責任分界、構成差分の理解に図が効く場合は、最終レポートへ Mermaid 図を入れる
 
 ## Workflow
 
@@ -84,7 +91,7 @@ handoffs:
 
 1. トピック種類を判定する
 2. 1-2観点で検索する
-3. `-lite.md` に保存する
+3. 同日・同ジャンルの既存 file があればそれを更新する。なければ必要時のみ `-lite.md` に保存する
 4. チャットでも短く要約する
 
 Quick の回答末尾には必ず次を付ける。
@@ -109,14 +116,15 @@ CLARIFY -> PLAN -> RESEARCH -> EVALUATE -> OUTPUT
 
 - `search/codebase` で既存知見を確認する
 - `research/manifest.md` を確認する
+- 同日・同ジャンルの既存 file、`-lite.md`、`-part-N.md`、旧 report の有無を確認し、正本 1 件を先に決める
 - 観点ごとの調査戦略を決める
 
 #### RESEARCH
 
 - 観点ごとにサブエージェントへ委譲する
-- 出力先は `research/YYYYMMDD-<slug>-part-N.md`
-- 各サブエージェントは自分のファイルだけを書く
-- 完了後に統合して最終ファイルへまとめる
+- 中間 file は原則作らず、必要な場合だけ `research/YYYYMMDD-<slug>-part-N.md` を一時作成する
+- 各サブエージェントは、可能なら chat で結果を返し、不要な file 生成を避ける
+- 完了後は正本 1 件へ統合し、不要になった `-part-N.md` `-lite.md` `*-report.md` は削除する
 
 サブエージェントには最低限これを伝える。
 
@@ -150,6 +158,13 @@ CLARIFY -> PLAN -> RESEARCH -> EVALUATE -> OUTPUT
 - 必要なら `mcp_microsoftdocs_microsoft_docs_fetch`
 - Web 検索は補完に使う
 - 優先度は Microsoft Learn -> 公式ブログ -> 技術ブログ
+
+### 社内情報 / Work IQ
+
+- ユーザーが社内情報、会議、メール、SharePoint ファイルの文脈を求めた場合は `workiq/ask_work_iq` を使う
+- Work IQ は公開ソースの代替ではなく補助として扱い、公開事実と社内解釈を混在させない
+- Work IQ が large result を外部 JSON に保存した場合は、その保存先ファイルを読んでから要約する
+- 社内情報をレポートに書く場合は、公開ソースとは別に出所を明記し、対外利用時の確認が必要な旨を制限事項へ残す
 
 ### 汎用トピック
 
@@ -223,9 +238,16 @@ copilot -p "{クエリ}。URL のみ、1行1件で返して。" `
 
 ### ファイル命名規則
 
-- Deep 最終: `YYYYMMDD-<slug>.md`
-- Deep 中間: `YYYYMMDD-<slug>-part-N.md`
-- Quick: `YYYYMMDD-<slug>-lite.md`
+- 正本: `YYYYMMDD-<slug>.md`
+- Deep 中間: 一時的に必要な場合だけ `YYYYMMDD-<slug>-part-N.md`
+- Quick: 既存正本がない場合だけ `YYYYMMDD-<slug>-lite.md`
+
+### 正本の選び方
+
+- 同日・同ジャンルの既存 file があれば、その file を正本として更新する
+- `-lite.md` と通常版が両方ある場合は通常版を正本に寄せる
+- `*-report.md` は別 folder の提出物として残さず、原則 `research/` の正本へ統合する
+- slug が少し違っても topic が実質同じなら、より汎用的で短い slug の file に寄せる
 
 ### Quick に必須の要素
 
@@ -241,6 +263,7 @@ copilot -p "{クエリ}。URL のみ、1行1件で返して。" `
 - `Research Overview`
 - `TL;DR`
 - `詳細`
+- 比較や構成理解に有効な場合は `Mermaid` 図
 - `出典`
 - `制限事項`
 - `関連トピック`
@@ -286,14 +309,15 @@ copilot -p "{クエリ}。URL のみ、1行1件で返して。" `
 
 - [ ] 指定トピックの要点が簡潔にまとまっている
 - [ ] 各事実にインライン出典 URL が付いている
-- [ ] `-lite.md` に保存されている
+- [ ] 既存正本または必要時の `-lite.md` に保存されている
 
 ### Deep
 
 - [ ] 調査観点がカバーされている
 - [ ] 各事実に引用が付いている
 - [ ] 品質評価が完了している
-- [ ] レポートが保存されている
+- [ ] 正本 1 件に保存されている
+- [ ] 同日・同ジャンルの重複成果物が整理されている
 - [ ] `research/manifest.md` が更新されている
 
 ## 参考

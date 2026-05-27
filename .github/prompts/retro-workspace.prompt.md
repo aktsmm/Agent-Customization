@@ -1,6 +1,6 @@
 ---
 name: "retro-workspace"
-description: "workspace / repository の設計資産や再利用可能な automation 資産へ反映するレトロ。インシデントや会話から知見を抽出し、.github、AGENTS.md、scripts、tasks への変更案に落とす"
+description: "workspace / repository の設計資産や automation 資産へ知見を反映するレトロ。Use when: retro workspace, workspace prompt cleanup, repo automation fix"
 argument-hint: "エラーログ、diff、会話要約、またはインシデント内容"
 ---
 
@@ -12,127 +12,72 @@ argument-hint: "エラーログ、diff、会話要約、またはインシデン
 
 # retro workspace
 
-インシデント・会話から再利用可能な知見を抽出し、workspace / repository の設計資産や automation 資産への変更案を作る。
+インシデント・会話から再利用可能な知見を抽出し、workspace / repository の設計資産や automation 資産へ最小差分で反映する。
 
 ## When to Use
 
 - 使う: バグ解決後 / 再発時 / workspace 設計ギャップ発見時
-- 使う: セッション中に既存手順より効率的な方法を発見したとき
-- 使う: ユーザーが繰り返し同じ指示をしている → 既定動作・ガードレールとして設計資産に組み込むべきとき
-- 使う: `.github/**`、`AGENTS.md`、repo 固有 instructions / prompts / agents / hooks への反映
-- 使う: 汎用 script / task / helper / validator への昇格や整理が妥当なとき
-- 使う: 手作業より script 化した方が安全・再現可能・高速になると判断できるとき
-- 使わない: typo のみ / 環境固有問題のみ
-- 使わない: User Data や `~/.copilot` 配下
+- 使う: 既存手順より安全・再現可能・高速な script / task / helper へ昇格すべき改善を見つけたとき
+- 使う: `.github/**`、`AGENTS.md`、repo 固有 instructions / prompts / agents / hooks、scripts、tasks への反映
+- 使わない: typo のみ / 環境固有問題のみ / User Data / `~/.copilot`
 
 ## 入力
 
 エラーログ / Git diff / 会話履歴 / ターミナル履歴のいずれか 1 つ以上。なければ追加要求して停止。
 
-## Safety Gate
+## Mode
 
-- 反映禁止: secret / 認証情報 / 個人情報 / 顧客情報 / ローカル絶対パス / 端末固有値
-- memory 系スコープ（`/memories/**` 等）は反映先にしない
-- User Data（`%APPDATA%/Code/User/`）/ `~/.copilot` に置くべき内容はこの prompt では扱わず、scope 不一致として停止する
-- Gate 失敗時は理由と安全な代替案を出して停止
-
-## Execution Mode
-
-- 既定モードは `safe-auto`。workspace scope が明確で、Safety Gate を通過し、既存資産への小〜中規模な統合・更新で済む場合は、確認なしで反映まで実行してよい
+- 既定は `safe-auto`。workspace scope が明確で、既存資産への小〜中規模更新で済む場合は確認なしで反映してよい
 - `review-only` / `確認だけ` / `dry-run` / `プレビュー` が明示された場合だけ、変更案の提示で停止する
-- 次の場合だけユーザー確認で停止する: scope 判断が曖昧、大規模削除、公開・同期範囲変更、実行コードや hook の高リスク変更、既存 workflow の意味を大きく変える変更、secret / 個人情報 / 環境固有値の扱いに迷う場合
-- typo・小さな手順補正・既存ルールの抜け補完・確認フローの簡素化は、safe-auto でそのまま反映する
-- script / task / helper 整備も、既存配置への小〜中規模な更新で、preflight・dry-run・検証手段を用意できる場合は safe-auto で反映してよい
+- scope 曖昧、大規模削除、公開・同期範囲変更、高リスクな実行コード / hook 変更、workflow の意味変更、secret / 個人情報 / 環境固有値の扱いに迷う場合だけ確認で停止する
 
-## 反映先
+## Scope Gate
 
-| 対象 | パス |
-| --- | --- |
-| 共通原則 / 導線 | `AGENTS.md` |
-| workspace 共通ルール | `.github/copilot-instructions.md` |
-| ドメイン別ルール | `.github/instructions/**/*.instructions.md` |
-| prompt / agent / hooks | `.github/prompts/` `.github/agents/` `.github/hooks/` |
-| 汎用 script / helper | repo 内の既存 script directory（例: `scripts/`, `tools/`, `workspace/`） |
-| task / automation entry | repo 内 task 定義や runner（例: `.vscode/tasks.json`, script runner） |
+- 反映先は `AGENTS.md`、`.github/**`、repo 固有 scripts / tasks / helpers に限定する
+- secret / 認証情報 / 個人情報 / 顧客情報 / ローカル絶対パス / 端末固有値 / `/memories/**` は反映しない
+- User Data / `~/.copilot` は scope 不一致として停止する
+- `.github/skills/**` は直接編集せず、SKILL 向きなら提案して停止する
 
-**反映禁止**: User Data / `~/.copilot` / `/memories/**` / `.github/skills/**` / Resource Ninja 関連
+## Edit Rules
 
-> `.github/skills/**` は汎用的・ポータブルな知見の置き場。SKILL 向きだと判断した場合は、直接編集せず提案して停止する。
-
-> script / task 整備は「再利用価値」「検証可能性」「影響範囲の狭さ」が揃うときだけ直接反映する。単発調査用・高リスク自動化・外部公開前提のものは提案止まりにする。
-
-## Refactor Rules
-
-- SSOT を守る。重複定義は統合
-- 新規ファイルより既存への統合を優先
-- 50 行以下の小ファイルは最小差分
-- 冗長説明は圧縮するが根拠 URL・非自明手順は消さない
-- 同じ Learning / Evidence / Impact を言い換えて繰り返さない。1 論点 1 塊でまとめる
-- append-only に節を足し続けるのを通常運用とみなさない
-- 変更前に `削除 → 統合 → 分離 → 追加` の順で検討する
-- `AGENTS.md` と `.github/copilot-instructions.md` のような always-on / 入口ファイルは、役割過多になっていないかを先に見る
-- workflow 手順、長い例外規則、詳細 recipe を入口ファイルへ追記する前に、domain instructions / prompts / agents へ分離できないか確認する
-- script 化は「再発しやすい」「手作業だとミスしやすい」「dry-run や事後検証を付けられる」場合を優先する
+- 新規ファイルより既存への統合を優先し、`削除 → 統合 → 分離 → 追加` の順で検討する
+- 冗長説明は圧縮するが、根拠 URL と非自明手順は残す
+- 同じ Learning / Evidence / Impact を言い換えて繰り返さず、1 論点 1 塊でまとめる
+- `AGENTS.md` と `.github/copilot-instructions.md` のような入口ファイルは役割過多を先に疑う
+- script / task 化は、再利用価値・検証可能性・影響範囲の狭さが揃う場合を優先する
 
 ## 実行手順
 
 ### 1. 知見抽出
 
-- カテゴリ: 設計原則 / ワークフロー / プロンプト設計 / コンテキスト設計 / エラーパターン / 手順改善（既存 prompt / instruction の効率化・簡素化）/ automation 改善（script / task / helper / validator）/ **繰り返し指示の既定化**（ユーザーが毎回言っていることを instruction / prompt のデフォルト動作に昇格）
-- 1 件ごとに Learning / Evidence / Impact を作成
-- actionable な知見がなければ停止
+- 設計原則、workflow、context、automation 改善、繰り返し指示の既定化を優先して拾う
+- 1 件ごとに Learning / Evidence / Impact を作る
 
 ### 2. 変更案作成
 
 - 優先度: Impact x Recurrence（P1/P2/P3）
-- まず既存 workspace 資産へ統合できないかを見る
-- script / task 化が適切なら、既存 runner や script directory へ統合できないかも見る
-- 既存資産が長くなりすぎていないか、同じ概念を別ファイルに重複定義していないかを確認する
-- 追記前に「既存文の置換で済むか」「domain instructions / prompt / agent に分離した方がよいか」を判断する
-- 新規作成は既存の役割に収まらない場合だけ
-- 最小差分で反映する
-- safe-auto ではファイル編集まで実行する。review-only 指定時と Gate 停止時だけ提案に留める
-- script / task を新規作成・更新する場合は、実行前提条件、dry-run の有無、事後検証方法を明示できる形を優先する
-
-#### Context Refactor Gate
-
-- 対象が workspace entry file のときは、追加より先に圧縮を検討する
-- `AGENTS.md` は registry / entry point、`.github/copilot-instructions.md` は短い repo-wide 原則、という役割差分を崩さない
-- casual chat や通常応答が不安定な incident では、`AGENTS.md` 不整合より先に entry file の over-scoped / duplicated instructions を疑う
+- まず既存 workspace 資産へ統合できるかを確認する
+- script / task 化が適切なら既存 runner や script directory を優先する
+- entry file では追加より先に圧縮を検討し、`AGENTS.md` と `.github/copilot-instructions.md` の役割差分を崩さない
+- safe-auto では最小差分で反映し、review-only と Gate 停止時だけ提案に留める
 
 ### 3. 反映 + 必要時承認
 
-- safe-auto で対象ファイルを作成・編集
-- 確認が必要な条件に該当する場合だけ、対象・理由・影響を示してユーザー承認後に反映
-- Gate: workspace scope 確認済み / 重複なし / 既存設計と矛盾なし / Safety Gate 通過済み
+- safe-auto で編集する
+- 確認が必要な条件に該当する場合だけ、対象・理由・影響を示して承認後に反映する
 
 ### 3.5. 肥大化チェック（反映後）
 
-反映後、編集したファイルに DRY 違反・冗長表現・重複定義がないか確認する。あれば圧縮・削除・分離を実施し、報告に「⚠️ 肥大化警告」を含める。
+反映後、DRY 違反・冗長表現・重複定義があれば圧縮・削除・分離する。
 
-### 4. 報告
+## Example Report
 
 ```markdown
 # Retro: [Title]
-
-## Learnings
-1. **Learning**: ...
-   - Evidence: ...
-   - Impact: ...
-
-## Changes
-- ...
-
-## Target Rationale
-- ...
-
-## Review Checkpoint
-- [ ] safe-auto executed or user approval obtained when gated
-- [ ] Workspace scope confirmed
-- [ ] No duplicate rules
-- [ ] Safety Gate passed
+- Learnings: ...
+- Changes: ...
+- Target: ...
+- Gate: pass / stop reason
 ```
-
-- 同じ判断や影響を `Learnings` / `Changes` / `Target Rationale` に重複記載しない。各論点は最も適切な 1 箇所にだけ書く
 
 Stop: 知見なし / ユーザー拒否 / Gate 失敗 / handoff-required / review-only
