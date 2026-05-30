@@ -56,7 +56,8 @@ outcome_status: success|partial|failed
 
 ## References
 
-- [Title](URL)
+- Title - https://example.com/article
+- Related File - C:/work/repo/path/to/file.md
 
 ## Next Steps
 
@@ -68,3 +69,11 @@ outcome_status: success|partial|failed
 - Timeline のヘッダーは時刻ではなく `Phase N - {フェーズ名}` の形式にする（正確な時刻が不明なため）
 - 同日同トピックのファイルが存在 → 追記
 - 試行錯誤は圧縮（3+回 → "N attempts" + 最終解決）
+- Web / Docs / ブログ / 外部ページを使ったセッションでは `## References` を省略せず、**実際に結論や説明に使った出典** をタイトル付き URL で列挙する
+- 外部情報に基づく要約、可否判断、仕様説明、比較は、本文だけで完結させず `## References` に対応する出典 URL を残す
+- ブログ向け出力では、出典が 1 件でもある場合は URL だけでなくページタイトルも併記する
+- 使っていない検索候補や本文に反映していない URL は無理に列挙しない
+- 他ワークスペースのファイルや別 repo のローカル資料を参照したセッションでは、`## References` に **関連ファイルのパス** も残す
+- 関連ファイルのパスは、説明に使ったファイル、判断根拠に使ったファイル、次の作業で開き直すと有用なファイルを優先して列挙する
+- 関連ファイルが現在の出力先と別ワークスペースにある場合でも省略せず、必要なら絶対パスまたは十分に特定できるパスを書く
+- URL とファイルパスが両方ある場合は両方残し、`## References` を「出典 URL + 関連ファイル」の索引として使う

@@ -9,7 +9,7 @@ applyTo: "**"
 <!-- repository: https://github.com/aktsmm/ghc_template -->
 <!-- license: CC BY-NC-SA 4.0 -->
 <!-- copyright: Copyright (c) 2025 aktsmm -->
-<!-- updated: 2026-05-27 -->
+<!-- updated: 2026-05-30 -->
 
 # Terminal Command Execution Instructions
 
@@ -25,10 +25,12 @@ applyTo: "**"
 ## 2. PowerShell 構文を使う
 
 - コマンドは PowerShell 互換で書く（Bash 構文を混ぜない）。
+- Bash heredoc (`<<EOF` / `<<'PATCH'`) や patch 本文を terminal に送らない。PowerShell ではリダイレクトとして崩れて `>>` 継続待ちに入りやすいため、ファイル編集ツールか短い単発コマンドへ切り替える。
 - 連結は `;` を使う（`&&` は使わない）。
 - 出力破棄は `/dev/null` ではなく `$null` を使う。
 - 文字列・変数展開・パイプラインは PowerShell の流儀に合わせる。
 - `python -c "..."` の複数行は禁止（here-string `>>` に入りターミナルが復帰不能になる）。1 行で済む簡易チェック以外は `.py` ファイルに書いて実行する。
+- PowerShell `@"..."@` here-strings は `{...}` をサブ式として解釈する。Python f-string (`f"{var}"`)、JS テンプレートリテラル、regex `\d{1,2}` を含むソースの書き出しには使えない。複数行スクリプトの作成はファイル編集ツールを優先し、terminal 経由なら単一行の `[System.IO.File]::WriteAllBytes` + Base64（here-string で包まない）か、既存 `.py` を `replace_string_in_file` で編集する。
 
 ## 3. 安全運用
 
@@ -66,9 +68,12 @@ applyTo: "**"
 - `rg` 未導入なら `winget install --id BurntSushi.ripgrep.MSVC --scope user --accept-source-agreements --accept-package-agreements` で導入してよい。
 - 導入直後のシェルで `rg` が見つからない場合は、ターミナル再起動か、`$env:Path = [System.Environment]::GetEnvironmentVariable('Path','Machine') + ';' + [System.Environment]::GetEnvironmentVariable('Path','User')` で PATH を再読込してよい。
 - 長い quoted 引数列、複数行文字列、here-string、長文 Markdown/JSON/issue body など引用崩れしやすい内容は terminal に直打ちせず、runner script か `--body-file` のように一時ファイル経由で渡す。`>>` 継続待ちに入ると復旧より clean shell への切替の方が速い。
+- 共有 shell に長い配列リテラル、複数行の `@(...)`、長い `Copy-Item` 群、複雑な `foreach` をそのまま流すと `>>` 継続待ちに入りやすい。複数ファイルを扱うときは、短い単発コマンドに分けるか、dry-run 既定の helper script に寄せる。
 - read-only な audit / sync / verify で長い quoted payload や here-string が見えている場合は、共有 shell の復旧待ちを前提にせず、最初から一時 script、clean な one-shot shell、または read-only subagent を選んでよい。
 - 環境変数永続化や単発の OS 設定変更は、shared shell より one-shot `pwsh -NoProfile -Command` を優先してよい。
 - 既存の VS Code terminal では User スコープ環境変数が現在の Process に未反映のことがある。`$env:` に無ければ未設定と断定せず、必要なら `[System.Environment]::GetEnvironmentVariable('<NAME>','User')` も確認する。
+- token 依存 CLI で Process と User の環境変数が食い違うときは、手順書で「環境変数を更新してから再実行」と繰り返すより、repo 側に Process 値を先に検証し、失効・不一致なら User 環境変数へ自動 fallback する wrapper script / npm script を追加する方を優先する。例: `VSCE_PAT` を使う `vsce verify-pat` / `vsce publish`。
+- wrapper が無い既存 workflow を一時的に回す場合でも、stale な Process 値を前提にしない。同じコマンド実行内で `[System.Environment]::GetEnvironmentVariable('<NAME>','User')` を読み直して明示引数や `$env:` に渡す。
 - `$env:$name` は構文エラーになる（`:` の後に変数参照は不可）。名前を変数で動的にアクセスするには `(Get-Item "Env:$name" -ErrorAction SilentlyContinue).Value` か `[System.Environment]::GetEnvironmentVariable($name, 'Process')` を使う。
 - CLI が無出力で終了しても成功とみなさず、想定 artifact の存在・更新時刻・機械可読フィールドを確認する。stdout だけで完了判定しない。
 - `run_in_terminal` の sync 実行が `Command produced no output` を返したり、async 実行が prompt 復帰前に idle した場合も、直ちに失敗扱いにせず expected artifact を先に確認する。artifact が生成済みなら render/capture 問題として扱い、未生成なら dedicated terminal や短い follow-up command で観測を補強する。
@@ -81,3 +86,4 @@ applyTo: "**"
 - 既存ブラウザの認証状態を使う CDP 起動では、認証が特定プロファイルに紐づく場合 `--profile-directory=<known profile>` を優先し、場当たり的な `--user-data-dir` 新設は避ける。別ログイン状態と大量キャッシュを生みやすい。
 - Edge が既に CDP ポート付きで起動済み（例: `--remote-debugging-port=9222 --profile-directory=Default`）のとき、別プロファイルが必要なら同じ user-data-dir の Edge をポート指定なしで起動する（`msedge.exe --profile-directory="Profile 2" <url>`）。新ウィンドウが同一プロセスに合流し、既存 CDP ポートで両方のプロファイルタブにアクセスできる。全 Edge を `Stop-Process` する必要はない。
 - CDP `Page.navigate` はハッシュベース SPA（`#/path`）のルート遷移に無効（SPA ルーターが反応しない）。`Runtime.evaluate` で `location.href='<hash-url>'` を代入するか、in-page のリンク click を使う。
+- 未保存変更がある SPA を CDP でリロード / 再ナビすると native の `beforeunload` 確認ダイアログが出て `Runtime.evaluate` がブロックされる。`accept:true` で閉じると再リロード→連鎖ダイアログを生み、さらにそのダイアログを開いた CDP セッションが閉じると「孤児化ダイアログ」になり、別接続から `Page.handleJavaScriptDialog` が効かず（無反応）手動 Cancel が必要になる。そのため dirty な SPA ではリロードを避け、overlay は Escape / Cancel で閉じてクリーン状態を保ったまま操作する。孤児化したら 1 回だけユーザーに手動 Cancel を依頼する。
