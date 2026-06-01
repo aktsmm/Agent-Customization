@@ -1,0 +1,79 @@
+---
+description: "Copilot CLI と VS Code GitHub Copilot Chat の instructions / prompts / skills 読み込み場所と設定の運用ルール"
+applyTo: "**/*.prompt.md,**/*.instructions.md,**/*.agent.md,**/SKILL.md,**/copilot-instructions.md,**/AGENTS.md"
+---
+
+<!-- syncToGlobal: true -->
+<!-- author: aktsmm -->
+<!-- repository: https://github.com/aktsmm/ghc_template -->
+<!-- license: CC BY-NC-SA 4.0 -->
+<!-- copyright: Copyright (c) 2025 aktsmm -->
+
+# Copilot CLI / VS Code インストラクション読み込みルール
+
+エージェントやインストラクションが「どこから読まれるか」と「どこに置くべきか」を判断するための整理。
+
+> 補足: `.github/copilot-instructions.md` と `AGENTS.md` は読み込み対象だが、User Data 側の metadata/frontmatter ルールをそのまま要求する対象ではない。
+
+## VS Code GitHub Copilot Chat で自動ロードされる主な file
+
+| ファイル | スコープ | 備考 |
+| --- | --- | --- |
+| `$HOME/.copilot/instructions/**/*.instructions.md` | ユーザー | 公式 Docs 記載のユーザープロファイル instructions |
+| `%APPDATA%/Code/User/prompts/*.instructions.md` | ユーザー | VS Code プロファイル固有の User Data instructions |
+| `.github/copilot-instructions.md` | ワークスペース | repo-wide の短い原則 |
+| `.github/instructions/**/*.instructions.md` | ワークスペース | `applyTo` 付きの scoped rule |
+| `AGENTS.md` | ワークスペース | agent / workflow の入口 |
+| `CLAUDE.md` 系 | 互換 | Claude Code 互換の instructions |
+
+## VS Code で確認する場所
+
+- 読み込み経路は Chat Diagnostics か `Chat: Configure Instructions` の tooltip で確認する
+- `chat.instructionsFilesLocations` が `false` の場所は、Docs に載っていても自動ロードされない
+
+## Copilot CLI で自動ロードされる主な file
+
+| ファイル | スコープ | 備考 |
+| --- | --- | --- |
+| `$HOME/.copilot/copilot-instructions.md` | グローバル | CLI 全体の原則 |
+| `.github/copilot-instructions.md` | ワークスペース | repo-wide の原則 |
+| `.github/instructions/**/*.instructions.md` | ワークスペース | `applyTo` 付き rule |
+| `AGENTS.md` | ワークスペース | agent / workflow の入口 |
+| `CLAUDE.md` / `GEMINI.md` | 互換 | 互換 file |
+
+- 追加ディレクトリを CLI に読ませるときは `COPILOT_CUSTOM_INSTRUCTIONS_DIRS` を使う
+
+## 明示的に呼んだときだけ読まれる file
+
+| ファイル | 呼び出し方 | 備考 |
+| --- | --- | --- |
+| `.github/agents/*.agent.md` | `@agent名` など | エージェント定義 |
+| `$HOME/.copilot/skills/*/SKILL.md` | `skill` ツール | ユーザースキル |
+| `.github/skills/*/SKILL.md` | `skill` ツール | プロジェクトスキル |
+
+## 入口 file の役割
+
+| ファイル | 役割 |
+| --- | --- |
+| `.github/copilot-instructions.md` | repo-wide の短い原則、routing、少数の guardrails |
+| `AGENTS.md` | agent / workflow の薄い registry と入口 |
+
+入口 file を詳細索引や長い workflow 手順の置き場にしない。詳細は scoped instruction、agent、skill、docs 側へ逃がす。
+
+## 配置の判断基準
+
+| 内容 | 配置先 |
+| --- | --- |
+| VS Code Chat の個人 rule | VS Code User Data または `$HOME/.copilot/instructions/` |
+| Copilot CLI の個人 rule | `$HOME/.copilot/copilot-instructions.md` |
+| repo-wide の短い rule | `.github/copilot-instructions.md` |
+| 特定ファイル群に効く rule | `.github/instructions/**/*.instructions.md` |
+| 特定 workflow / task | `.github/agents/` または `.github/skills/` |
+
+## 公式 Docs
+
+- VS Code custom instructions: https://code.visualstudio.com/docs/copilot/customization/custom-instructions
+- VS Code prompt files: https://code.visualstudio.com/docs/copilot/customization/prompt-files
+- VS Code Agent Skills: https://code.visualstudio.com/docs/copilot/customization/agent-skills
+- GitHub Copilot CLI custom instructions: https://docs.github.com/en/copilot/how-tos/copilot-cli/customize-copilot/add-custom-instructions
+- GitHub repository custom instructions: https://docs.github.com/copilot/customizing-copilot/adding-custom-instructions-for-github-copilot
