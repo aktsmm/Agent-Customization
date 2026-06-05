@@ -44,8 +44,10 @@ Customization 資産（instructions / prompts / agents / SKILL / copilot-instruc
 - always-on の入口ファイルには routing と少数の global guardrails だけ残す
 - `tasks.json` のような registry file を実行履歴や試行錯誤ログの置き場にしない
 - prompt / instruction / skill / agent / hook は最小の primitive を選び、より単純な primitive で解けるなら agent 化しない
+- skill / prompt / agent は 1 つの用途カテゴリに寄せる。複数カテゴリをまたぐと発火条件と期待出力が曖昧になる
 - それ以外は `applyTo` を絞った instruction、`.prompt.md`、`.agent.md`、references に逃がす
 - AI と script / hook の切り分けは、判断や曖昧さ解消は AI、再現性や fail fast が重要な純作業は script / hook を優先する
+- skill の本体には自明な手順より、よく踏む Gotchas、参照ファイル、scripts / assets の所在を優先して書く
 - 具体的な判定表・例・手順は always-on ではなく scoped instruction や review asset を正本にする
 - review 用 prompt / checklist / skill は設計レビューの置き場であり、既定の対話挙動を変えたい rule は always-on entry か scoped instruction に置く
 - ただし Global User Data の prompt / instruction は、他の global prompt / instruction を前提にしない
