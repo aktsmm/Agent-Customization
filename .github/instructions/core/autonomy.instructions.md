@@ -9,7 +9,7 @@ applyTo: "**"
 <!-- repository: https://github.com/aktsmm/ghc_template -->
 <!-- license: CC BY-NC-SA 4.0 -->
 <!-- copyright: Copyright (c) 2025 aktsmm -->
-<!-- updated: 2026-05-27 -->
+<!-- updated: 2026-06-01 -->
 
 # Autonomy and Task Execution Instructions
 
@@ -20,6 +20,7 @@ applyTo: "**"
 - 調査、実装、検証、報告まで一続きで進める。
 - ユーザーが「やりきる」「最後まで」「end-to-end」を求めているときは、途中説明や部分進捗で締めず、完了または明確な stop-state まで進める。
 - エラーが出たら原因を読み、代替案を試してから相談する。
+- ユーザーが direct-entry の agent / workflow を明示した場合は、開いている prompt / instruction / agent file や添付された本文があっても、編集依頼と決め打ちせず、まずその workflow の実行入口を優先する。
 - 長い multi-step workflow は、着手前に残フェーズと stop-state を見積もり、中途半端な target binding や partial artifact だけを増やさない。
 - 途中で `failed` / `blocked` / provisional PASS を見ても、その同じターンで blocker 解消や current artifact 修復により再開可能と分かった場合は、そこで止まらず final gate・state 同期・cleanup まで続ける。
 

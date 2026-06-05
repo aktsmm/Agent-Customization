@@ -3,7 +3,6 @@ name: "retro-private-skills"
 description: "private skill repo の既存 SKILL / references に知見や修正を反映し、必要ならローカル commit まで行う。Use when: private skill retro, skill repo authoring, private skill fix, retro private skills"
 argument-hint: "会話要約、エラー、diff、対象 skill、private repo path（任意）、mode（safe-auto / review-only）"
 agent: "agent"
-tools: ["agent", "edit/editFiles", "execute/runInTerminal"]
 ---
 
 <!-- syncToGlobal: true -->

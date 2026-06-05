@@ -6,8 +6,10 @@ argument-hint: "対象、重点観点、モード（例: current workspace / all
 
 <!-- syncToGlobal: true -->
 <!-- author: aktsmm -->
+<!-- repository: https://github.com/aktsmm/ghc_template -->
 <!-- license: CC BY-NC-SA 4.0 -->
-<!-- updated: 2026-05-31 -->
+<!-- copyright: Copyright (c) 2025 aktsmm -->
+<!-- updated: 2026-06-03 -->
 
 # refine product 100
 
@@ -34,9 +36,9 @@ argument-hint: "対象、重点観点、モード（例: current workspace / all
 | `plan only` | 計画だけ。編集しない |
 | `review only` | 指摘だけ。編集しない |
 | `confirm` | 計画と GATE を出してから編集 |
-| `standard` | high-confidence gap を 1 サイクル閉じ + Sweep。追加 gap は最大 1 件、残りは Next Steps |
-| `auto` | 確認なしに安全な `Fix now` を閉じる。最大 3 cycle で区切り、残りは Ledger / Handoff に渡す |
-| `quick` | P0/P1 と検証だけ。Sweep / Docs / Cleanup は「なし」で省略可 |
+| `standard` | high-confidence gap を 1 サイクル閉じ + Sweep。見つけた `Fix now` は同じ run で閉じ、追加探索は最大 1 軸まで |
+| `auto` | 確認なしに安全な `Fix now` を閉じる。最大 3 cycle。継続不能な残件は `Guard now` / `Block` に再分類し、未分類の `Fix now` を残さない |
+| `quick` | P0/P1 と検証だけ。P0/P1 の `Fix now` は残さず、Sweep / Docs / Cleanup は「なし」で省略可 |
 | `release` | `standard` 相当の品質 gate 後、明示された配布対象だけ Release Addendum へ進む |
 
 ### Release Intent
@@ -56,7 +58,9 @@ argument-hint: "対象、重点観点、モード（例: current workspace / all
 | `Guard now` | 本修正は不可だが test / static guard / docs / checklist でリスク低減可能 | 最低 1 つの成果物を追加し、残理由を書く |
 | `Block` | 破壊的、外部公開、本番データ、仕様判断、権限不足 | 不足入力、試した代替、次の確認を明記 |
 
-Retry は同一原因 3 回まで。超えたら `Block` に再分類する。
+Retry は同一原因 3 回まで。超えたら、試した代替と失敗理由を添えて `Block` に再分類する。
+
+既存の test / lint / build 失敗は、依頼範囲との関係で分類する。依頼範囲内なら `Fix now`、無関係なら `Guard now` として証跡を残し、対象範囲の修正を続ける。原因不明で安全に進めない場合だけ `Block` にする。
 
 ## State Intake / Run Ledger
 
@@ -83,17 +87,17 @@ Priority: P0 = 主要機能破壊・データ損失・情報露出 / P1 = 導線
 ## Fix Cycle
 
 1. Context: entry points、検証手段、プロジェクト固有 instruction、前回 ledger を読む。
-2. Health Check: 現状の test / lint / build / diagnostics が通るか確認。失敗時はスクリプト自体の壊れも疑う。
+2. Health Check: 現状の test / lint / build / diagnostics が通るか確認。失敗時は baseline failure と修正由来 failure を分け、スクリプト自体の壊れも疑う。
 3. Review: Review Rubric で gap を出し、`Fix now / Guard now / Block` に分類。
 4. Implement: 最小差分で修正。既存設計・命名・テストパターンに合わせる。
 5. Sweep: 同根原因を全文検索し、まとめて直す。1 件で満足しない。
 6. Test / Guard: 回帰テスト、静的ガード、契約テスト、dry-run、surface snapshot などを追加。
 7. Verify: diagnostics → lint → typecheck → test → build。stdout だけでなく artifact / state / process / exit code でも確認。
-8. Coverage: `standard` は追加 1 件まで、`auto` は最大 3 cycle まで全観点を再スイープ。
+8. Coverage: `standard` は追加 1 軸まで、`auto` は最大 3 cycle まで全観点を再スイープ。どの mode でも発見済み `Fix now` は未処理で残さない。
 9. Docs / Cleanup: README / Quick Start / help / error message / CHANGELOG / 用語を同期し、一時資材・dead code・不要 terminal を片付ける。
 10. Repeat or Stop: `Fix now` が残るなら継続。残すなら `Guard now` / `Block` の条件を満たす。
 
-`auto` で 3 cycle 後も `Fix now` が残る場合は current run を閉じ、Run Ledger と Handoff Packet で次 run に渡す。
+`auto` で 3 cycle 後も未解決項目が残る場合は、安全条件を再評価し、`Guard now` / `Block` に再分類してから current run を閉じる。再分類できない `Fix now` が残る場合は未完了として明記し、完了宣言しない。
 
 Subagent は、大規模 repo / 複数観点 Sweep / 長いログ解析で read-only 調査に限定して使う。使わない場合は理由を最終報告に残す。
 
@@ -268,6 +272,6 @@ Do Not: {触らない範囲 / 未確認前提 / 公開・削除禁止など}
 - `plan only` / `review only` 指定。
 - `confirm` mode の GATE でユーザーが終了を選んだ。
 - `Fix now` が 0 件で、`Guard now` / `Block` の代替と次確認が記録済み。
-- `auto` で 3 cycle 後も `Fix now` が残り、Run Ledger と Handoff Packet で継続可能にした。
+- `auto` で 3 cycle 後も残件があり、すべて `Guard now` / `Block` に再分類し、Run Ledger と Handoff Packet で継続可能にした。
 - 同一原因の再試行が 3 回超過。
 - 安全上ユーザー確認が必要で、非破壊の Guard now を試した。

@@ -3,7 +3,6 @@ name: "sync-public-skills"
 description: "private skill repo の確定済み commit を remote private へ push し、必要なら isolated path で public repo へ同期する。Use when: private skill publish, private to public skill sync, sync public skills"
 argument-hint: "対象 skill 名、private repo path（任意）、mode（safe-auto / review-only）"
 agent: "agent"
-tools: ["agent", "execute/runInTerminal"]
 ---
 
 <!-- syncToGlobal: true -->

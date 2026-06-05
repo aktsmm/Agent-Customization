@@ -3,7 +3,6 @@ name: "Refine Product 50"
 description: "日常コードレビュー向け軽量リファインプロンプト。Use when: refine product 50, code review, レビュー, 軽量修正。プロジェクトルールと任意の Learnings を参照し、既定では確認ゲート後のユーザー承認に基づいて最小修正・同根 Sweep・検証まで行う"
 argument-hint: "対象ファイル/差分/PR、重点観点、モード（plan only / review only / confirm / auto）"
 agent: "agent"
-tools: ["agent", "edit/editFiles", "execute/runInTerminal"]
 ---
 
 <!-- syncToGlobal: true -->

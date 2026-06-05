@@ -1,6 +1,6 @@
 ---
-description: "Copilot CLI と VS Code GitHub Copilot Chat の instructions / prompts / skills 読み込み場所と設定の運用ルール"
-applyTo: "**/*.prompt.md,**/*.instructions.md,**/*.agent.md,**/SKILL.md,**/copilot-instructions.md,**/AGENTS.md"
+description: "Copilot CLI と VS Code GitHub Copilot Chat の instructions / prompts / skills / toolsets 読み込み場所と設定の運用ルール"
+applyTo: "**/*.prompt.md,**/*.instructions.md,**/*.agent.md,**/*.toolsets.jsonc,**/SKILL.md,**/copilot-instructions.md,**/AGENTS.md"
 ---
 
 <!-- syncToGlobal: true -->
@@ -50,6 +50,12 @@ applyTo: "**/*.prompt.md,**/*.instructions.md,**/*.agent.md,**/SKILL.md,**/copil
 | `.github/agents/*.agent.md` | `@agent名` など | エージェント定義 |
 | `$HOME/.copilot/skills/*/SKILL.md` | `skill` ツール | ユーザースキル |
 | `.github/skills/*/SKILL.md` | `skill` ツール | プロジェクトスキル |
+
+## Toolsets と Agent Tools
+
+- `.agent.md` の YAML `tools:` は `vscode/installExtension` のような namespace/toolName 形式を使う
+- `*.toolsets.jsonc` の `"tools"` は toolset 側の短い ID / category 名（例: `execute`, `read`, `microsoft_docs_search`）を使う
+- agent frontmatter の tools 一覧を `*.toolsets.jsonc` にそのまま移植しない。schema warning が `problems` に出ないこともあるため、既存例とエディタ上の警告も確認する
 
 ## 入口 file の役割
 

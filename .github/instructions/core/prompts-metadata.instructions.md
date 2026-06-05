@@ -118,5 +118,11 @@ name: skill-name
 description: "What it does. Use when [trigger conditions]."
 argument-hint: "対象ファイル、URL、依頼内容など"
 user-invocable: true
+license: CC BY-NC-SA 4.0
+metadata:
+  author: yamapan (https://github.com/aktsmm)
 ---
 ```
+
+- `license` と `metadata.author` は自作 skill では必須。fork 元がある場合は元のライセンスを書く
+- skill フォルダに `LICENSE.txt` も配置する（lint gate で強制される）
