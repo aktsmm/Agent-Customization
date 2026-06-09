@@ -9,7 +9,7 @@ applyTo: "**"
 <!-- repository: https://github.com/aktsmm/ghc_template -->
 <!-- license: CC BY-NC-SA 4.0 -->
 <!-- copyright: Copyright (c) 2025 aktsmm -->
-<!-- updated: 2026-05-30 -->
+<!-- updated: 2026-06-09 -->
 
 # Terminal Command Execution Instructions
 
@@ -73,6 +73,7 @@ applyTo: "**"
 - 環境変数永続化や単発の OS 設定変更は、shared shell より one-shot `pwsh -NoProfile -Command` を優先してよい。
 - 既存の VS Code terminal では User スコープ環境変数が現在の Process に未反映のことがある。`$env:` に無ければ未設定と断定せず、必要なら `[System.Environment]::GetEnvironmentVariable('<NAME>','User')` も確認する。
 - token 依存 CLI で Process と User の環境変数が食い違うときは、手順書で「環境変数を更新してから再実行」と繰り返すより、repo 側に Process 値を先に検証し、失効・不一致なら User 環境変数へ自動 fallback する wrapper script / npm script を追加する方を優先する。例: `VSCE_PAT` を使う `vsce verify-pat` / `vsce publish`。
+- Azure CLI で `az account set` が対象 subscription を見失っても、対象 tenant の ARM token が取れる場合は、追加ログインより `az account get-access-token --tenant <tenantId>` + REST 経路を優先する。token 本体は保存・表示しない。
 - wrapper が無い既存 workflow を一時的に回す場合でも、stale な Process 値を前提にしない。同じコマンド実行内で `[System.Environment]::GetEnvironmentVariable('<NAME>','User')` を読み直して明示引数や `$env:` に渡す。
 - `$env:$name` は構文エラーになる（`:` の後に変数参照は不可）。名前を変数で動的にアクセスするには `(Get-Item "Env:$name" -ErrorAction SilentlyContinue).Value` か `[System.Environment]::GetEnvironmentVariable($name, 'Process')` を使う。
 - CLI が無出力で終了しても成功とみなさず、想定 artifact の存在・更新時刻・機械可読フィールドを確認する。stdout だけで完了判定しない。

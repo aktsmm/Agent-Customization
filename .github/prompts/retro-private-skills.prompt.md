@@ -36,6 +36,7 @@ agent: "agent"
 - 反映先は private repo の `.github/skills/<skill>/` に限定する
 - secret / 認証情報 / 個人情報 / 顧客情報 / ローカル絶対パス / 端末固有値 / `/memories/**` は反映しない
 - workspace / repository の `.github/**`、`AGENTS.md`、User Data、`~/.copilot/skills` に置くべき内容は scope 不一致として停止する
+- Skill に戻す内容は、その skill の目的に直接効く汎用 workflow / Gotchas / 検証観点に限定する。workspace 固有の顧客名、案件名、ファイル構造、運用ルールは抽象化できる場合だけ残し、抽象化できなければ `retro-workspace` へ handoff する
 - actionable な知見なし、private repo 未解決、または gate 失敗時は理由と代替案を示して停止する
 
 ## Edit Rules
@@ -44,6 +45,7 @@ agent: "agent"
 - 新規ファイルより既存 skill への統合を優先し、`削除 -> 統合 / 圧縮 -> 分離 -> 追加` の順で検討する
 - 冗長説明は圧縮するが、非自明な判断基準や手順は消さない
 - `SKILL.md` が太る場合も、まず既存文の置換や圧縮を優先し、それでも重い場合だけ `references/*` を使う
+- `SKILL.md` は一般論の手順書ではなく入口として扱う。追加するなら、モデルが既に知っている自明な手順より、実作業で踏んだ Gotchas、完了判定、参照すべき scripts / references の所在を優先する
 - 同じ Learning / Evidence / Impact を言い換えて繰り返さず、1 論点 1 塊でまとめる
 
 ## 実行手順
