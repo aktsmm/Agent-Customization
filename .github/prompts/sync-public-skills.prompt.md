@@ -47,6 +47,7 @@ private skill repo の確定済み skill を remote private / EMU private / publ
 - EMU sync を実行する場合は、EMU repo の visibility が `PRIVATE` または `INTERNAL` であることを確認する。`PUBLIC` なら停止する
 - EMU repo が user-owned private の場合、EMU 全員に自動公開されない。全員利用を求める場合は organization-owned `internal` repo が必要で、作成可否を確認する
 - EMU sync 先にも secret / 顧客情報 / 個人メール / 具体 TPID / ローカル絶対パスを入れない。例は placeholder にする
+- `gh repo view` / `gh api repos/...` で pull/push 権限が確認できるのに `git clone` が `Repository not found` になる場合は、repo 不在ではなく Git credential transport の不一致として扱う。visibility / permissions を再確認し、clone に固執せず Contents / Git Data API で tarball 取得、blob/tree/commit/ref 更新してよい
 
 ## Sync Strategy
 
@@ -65,7 +66,7 @@ private skill repo の確定済み skill を remote private / EMU private / publ
 3. safe path を選ぶ
 	- 直接実行: 漏れ込みが無い場合は `Sync-AndPush.ps1 -Message "sync: <skill summary>" -SkipDevPush`
 	- isolated 実行: current HEAD の一時 clean source を使い、public repo の `<primary>/` だけを mirror する
-	- EMU 実行: private-only skill を EMU private repo の該当 path へ mirror し、public repo に同 skill が出ていないことを確認する
+	- EMU 実行: private-only skill を EMU private repo の該当 path へ mirror し、public repo に同 skill が出ていないことを確認する。Git transport が使えない場合は GitHub API 経路で単一 commit にまとめる
 4. private repo の current branch を remote private へ push し、public repo と EMU repo で想定した skill のみが更新されたことを確認する
 
 ## Report

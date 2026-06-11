@@ -54,6 +54,7 @@ applyTo: "**"
 
 - private repo で `Could not resolve to a Repository` や scope 不足が出たら、repo 名や remote を疑う前に `gh auth status` で active credential を確認する。
 - `gh` を複数アカウントで使っている環境では、release 作成や release asset 操作の前に `gh auth status` で **active account** を確認する。対象 repo の owner ではない account が active だと、`gh release create` が `workflow scope may be required` などの分かりにくい権限エラーで失敗することがある。
+- `gh repo view` や `gh api repos/<owner>/<repo>` は成功するのに `git clone` / `git push` が `Repository not found` になる場合は、Git transport が別 credential を使っている可能性を疑う。`gh auth setup-git` や `gh api` の permissions で切り分け、小さな同期なら Git Data API 経路へ切り替えてよい。
 - `GITHUB_TOKEN` / `GH_TOKEN` が設定されていると、keyring に保存された高権限認証より優先されることがある。
 - そのシェルだけ保存済み認証を使いたい場合は、`$env:GITHUB_TOKEN=$null; $env:GH_TOKEN=$null` を設定してから `gh` を再実行してよい。
 - private repo の PR/Issue 確認で認証が怪しいときは、`gh pr list -R <owner>/<repo> ...` のように `-R` を明示して切り分けてよい。
