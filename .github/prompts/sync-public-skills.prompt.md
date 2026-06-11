@@ -1,7 +1,7 @@
 ---
 name: "sync-public-skills"
-description: "private skill repo の確定済み commit を remote private へ push し、必要なら isolated path で public repo へ同期する。Use when: private skill publish, private to public skill sync, sync public skills"
-argument-hint: "対象 skill 名、private repo path（任意）、mode（safe-auto / review-only）"
+description: "private skill repo の確定済み commit を remote private / EMU private / public repo へ反映する。Use when: private skill publish, private to public skill sync, EMU internal skill sync, sync public skills"
+argument-hint: "対象 skill 名、private repo path（任意）、mode（safe-auto / review-only）、EMU同期要否"
 agent: "agent"
 ---
 
@@ -13,11 +13,12 @@ agent: "agent"
 
 # sync public skills
 
-private skill repo の確定済み skill を remote private / public repo へ反映する。通常は broad sync script を使い、それが unsafe なときだけ `primary-only` で狭く同期する。SKILL 本文の authoring は行わない。
+private skill repo の確定済み skill を remote private / EMU private / public repo へ反映する。通常は broad sync script を使い、それが unsafe なときだけ `primary-only` で狭く同期する。SKILL 本文の authoring は行わない。
 
 ## When to Use
 
 - 使う: private skill repo にある確定済み skill を remote private / public repo へ反映したいとき
+- 使う: private-only / MS 社内向け skill の更新差分を EMU private repo に反映したいとき
 - 使う: 対象 skill は clean だが、別 skill の未コミット差分のせいで broad sync が止まりやすいとき
 - 使わない: SKILL 本文の統合、置換、圧縮、学びの抽出。先に `retro-private-skills` を使う
 - 使わない: 新規 skill の設計や scaffold。別 workflow に分ける
@@ -31,11 +32,21 @@ private skill repo の確定済み skill を remote private / public repo へ反
 
 - source of truth は private skill repo の `.github/skills/<skill>/`
 - `SYNC_PUBLIC_SKILLS_PRIVATE_REPO` / `SYNC_PUBLIC_SKILLS_PUBLIC_REPO` / `SYNC_PUBLIC_SKILLS_SCRIPT` は Process scope 優先、無ければ User scope で解決する
+- EMU private sync 先は `SYNC_INTERNAL_SKILLS_EMU_REPO` を Process scope 優先、無ければ User scope で解決する。未設定なら repo URL / owner/name を確認する
 - `.skill-meta.json` は local-only metadata として、dirty 判定、stage、push、public diff から除外する
 - shared file として `.github/skills/README.md` と `.github/skills/assets/**` を別扱いする
+- `ExcludeSkills` / private-only / internal-only / MS 社内向け skill は public sync から除外し、EMU private sync の候補として扱う
 - sync-only 実行中に README / assets / index / SKILL 本文の編集はしない
 - branch / remote ambiguity、unexpected deletion、public safety audit failure、content authoring 必要時は停止する
 - 手動コピーで public repo を直接触らず、script か一時 script variant で完結させる
+
+## EMU Private Sync Gate
+
+- private-only / MS 社内向け skill に更新差分がある場合は、public sync とは別に「EMU 側にも反映するか」を確認する
+- ユーザーが `all` を指定しても、public sync と EMU private sync を混同しない。public へ出してよい skill と EMU 限定 skill を分けて監査する
+- EMU sync を実行する場合は、EMU repo の visibility が `PRIVATE` または `INTERNAL` であることを確認する。`PUBLIC` なら停止する
+- EMU repo が user-owned private の場合、EMU 全員に自動公開されない。全員利用を求める場合は organization-owned `internal` repo が必要で、作成可否を確認する
+- EMU sync 先にも secret / 顧客情報 / 個人メール / 具体 TPID / ローカル絶対パスを入れない。例は placeholder にする
 
 ## Sync Strategy
 
@@ -49,12 +60,13 @@ private skill repo の確定済み skill を remote private / public repo へ反
 
 ## Workflow
 
-1. private repo、public repo、sync script を解決し、`primary`、branch / remote、local commits、dirty 状態を確認する
-2. `primary` の readiness を監査し、`shared-dirty` と `unselected-dirty` が public sync に漏れるかを判定する
+1. private repo、public repo、sync script、必要なら EMU repo を解決し、`primary`、branch / remote、local commits、dirty 状態を確認する
+2. `primary` の readiness を監査し、`shared-dirty`、`private-only-dirty`、`unselected-dirty` が public / EMU sync に漏れるかを判定する
 3. safe path を選ぶ
 	- 直接実行: 漏れ込みが無い場合は `Sync-AndPush.ps1 -Message "sync: <skill summary>" -SkipDevPush`
 	- isolated 実行: current HEAD の一時 clean source を使い、public repo の `<primary>/` だけを mirror する
-4. private repo の current branch を remote private へ push し、public repo で `primary` のみが想定通り更新されたことを確認する
+	- EMU 実行: private-only skill を EMU private repo の該当 path へ mirror し、public repo に同 skill が出ていないことを確認する
+4. private repo の current branch を remote private へ push し、public repo と EMU repo で想定した skill のみが更新されたことを確認する
 
 ## Report
 
@@ -63,6 +75,7 @@ private skill repo の確定済み skill を remote private / public repo へ反
 - Path Chosen
 - Audit
 - Private Sync
+- EMU Private Sync
 - Public Sync
 - Verify
 - Not Done
