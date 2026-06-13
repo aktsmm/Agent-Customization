@@ -34,8 +34,7 @@ VS Code 環境でよく参照する保存先と配置場所のメモ。「どこ
 
 ## Notes
 
-- GitHub CLI 認証トラブルの切り分けは `git-operations.instructions.md` を参照する。
-- `rg` の導入、UTF-8、Web 検索 fallback などのターミナル運用は `terminal.instructions.md` を参照する。
+- GitHub CLI 認証トラブル、PowerShell 運用、Web 検索 fallback の詳細は扱わない。
 
 ## Workspace Tasks Rule
 
