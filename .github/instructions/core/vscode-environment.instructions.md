@@ -35,10 +35,3 @@ VS Code 環境でよく参照する保存先と配置場所のメモ。「どこ
 ## Notes
 
 - GitHub CLI 認証トラブル、PowerShell 運用、Web 検索 fallback の詳細は扱わない。
-
-## Workspace Tasks Rule
-
-- `.vscode/tasks.json` の `command` や `args` にはローカル絶対パス（例: `d:/...`）を直書きしない。
-- ワークスペース配下を参照するパスは `${workspaceFolder}` を優先する。
-- PowerShell の `Set-Location` でも固定パスではなく `Set-Location '${workspaceFolder}'` を使う。
-- 例外が必要な場合は、理由をタスクの `label` か近傍コメントで明示する。
