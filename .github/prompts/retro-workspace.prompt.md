@@ -41,6 +41,7 @@ argument-hint: "エラーログ、diff、会話要約、またはインシデン
 ## Edit Rules
 
 - 新規ファイルより既存への統合を優先し、`削除 → 統合 → 分離 → 追加` の順で検討する
+- 圧縮は AI が判断できる最小情報を主目的にし、人間向け可読性は二次とする
 - 冗長説明は圧縮するが、根拠 URL と非自明手順は残す
 - 同じ Learning / Evidence / Impact を言い換えて繰り返さず、1 論点 1 塊でまとめる
 - `AGENTS.md` と `.github/copilot-instructions.md` のような入口ファイルは役割過多を先に疑う

@@ -16,35 +16,19 @@ Python プロジェクトでは**必ず仮想環境を使用**してください
 
 ## 基本ルール
 
-- パッケージ管理は `uv venv` + `uv pip` を使う（pip 直は NG）
-- ワークスペースごとに `.venv` を作成
-- LFS ファイルは `git lfs pull` してから使用
+- パッケージ管理は [uv](https://docs.astral.sh/uv/)（`uv venv` + `uv pip`）を優先する（pip 直は NG）。uv は pip 互換コマンドと `uv.lock` で再現性を担保する
+- uv が無い場合のみ標準 `venv` + `pip` を使う
+- ワークスペースごとに `.venv` を作成する
+- LFS ファイルは `git lfs pull` してから使用する
 
----
-
-## 推奨: uv
-
-[uv](https://docs.astral.sh/uv/) は pip より 10〜100 倍高速な Rust 製パッケージマネージャー。pip / venv / pyenv を 1 つに統合し、pip 互換コマンド（`uv pip install`）と `uv.lock` で再現性を担保する。
+基本コマンド:
 
 ```powershell
-# インストール
-powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
-
-# Python & 仮想環境
-uv python install 3.12
-uv venv --python 3.12
-
-# パッケージ
-uv pip install requests pandas
+uv venv .venv --python 3.12        # uv（推奨）
+python -m venv .venv               # 代替: 標準 venv
 ```
 
-## 代替: venv（標準）
-
-```powershell
-python -m venv .venv
-.\.venv\Scripts\Activate.ps1
-pip install -r requirements.txt
-```
+有効化せず直接実行する場合は `.venv\Scripts\python.exe script.py` のようにフルパスで呼ぶ。
 
 ---
 
@@ -92,36 +76,13 @@ uv venv .venv --python 3.12
 uv pip install pandas openpyxl
 ```
 
-### Failed to inspect Python interpreter
+### Failed to inspect Python interpreter / No Python at ...
 
-古い `.venv` が壊れている場合に発生。
-
-```
-error: Failed to inspect Python interpreter from virtual environment at `.venv\Scripts\python.exe`
-```
-
-**対処**: 仮想環境を再作成
+壊れた `.venv` や Python パス変更で発生。対処は再作成。
 
 ```powershell
 Remove-Item .venv -Recurse -Force
 uv venv .venv --python 3.12
-```
-
-### No Python at ...
-
-Python のパスが変わった場合に発生。
-
-**対処**: `uv venv` で再作成
-
----
-
-## 仮想環境なしで直接実行
-
-有効化せずに Python スクリプトを実行:
-
-```powershell
-.venv\Scripts\python.exe -c "import pandas; print(pandas.__version__)"
-.venv\Scripts\python.exe script.py
 ```
 
 ---
@@ -139,3 +100,13 @@ Python のパスが変わった場合に発生。
 - **Initializer パターン**: 大きなデータ (DataFrame 等) は `ProcessPoolExecutor(initializer=fn, initargs=(data,))` でワーカーのグローバル変数に 1 回だけセット。タスクはパラメータのみ送受信
 - **Slim IPC**: ワーカーは最小限の集計値 dict のみ返す。巨大オブジェクト (dataclass リスト, numpy 配列) は confirmed 結果のみ main process で再実行して取得
 - **進捗表示**: `as_completed()` ループで N 件ごとに elapsed / rate / ETA を stderr に出力
+
+---
+
+## Out of Scope Here
+
+- uv / pyenv の導入手順（uv 公式: https://docs.astral.sh/uv/ を参照）
+- パッケージマネージャーの詳細比較
+- 長いセットアップ tutorial
+
+それらは uv 公式 docs や repo の onboarding 手順に分ける。

@@ -22,7 +22,7 @@ applyTo: "**"
 - 成果物に絶対パスを埋め込まない（相対パスで扱う）。
 - `gh issue comment --body` などへ変数を渡すときは、変数定義と実行を同一ターミナル実行で行う。
 - Git hook は `.sample` のままでは実行されない。クローン再現性が必要な場合は、repo 管理下（例: `hooks/pre-commit`）に実体を置き、README で `.git/hooks/` へのコピー手順を案内する。
-- 公開同期、repo visibility、`.github` / `.vscode` の公開判断は `git-publish-policy.instructions.md` を参照する。
+- 公開同期、repo visibility、`.github` / `.vscode` の公開判断は、実行前に対象と公開範囲を確認する。
 
 ## Release Sanity
 

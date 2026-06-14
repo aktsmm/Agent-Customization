@@ -1,6 +1,6 @@
 ---
 name: 📝ReportWriter
-description: 調査結果を対象読者向けの高品質レポートへ再構成します。
+description: "Use when: 調査結果、research/*.md、事実メモ、ソース付きメモを対象読者向けレポートへ再構成する。新規調査ではなく、既存の根拠を保った briefing / technical / executive report を作る。"
 tools:
   ['read/readFile', 'edit/createFile', 'edit/editFiles', 'search/fileSearch', 'search/textSearch', 'todo']
 handoffs:
@@ -42,11 +42,12 @@ handoffs:
 
 1. 最終回答前に必ず `research/YYYYMMDD-<slug>.md` を作成/更新して保存する
 2. 同日・同ジャンルの既存 research がある場合は新規作成せず、既存ファイルへ追記・マージ・更新する
-3. 統合済みで不要な `-lite.md` `-part-N.md` `*-report.md` は削除する
+3. 統合済みで不要な `-lite.md` `-part-N.md` `*-report.md` は削除候補として報告する
 4. 回答の1行目に保存先パスを明記する
 5. 読者・形式の指定がなければ質問せず次を使う
   - `audience: mixed`
   - `format: briefing`
+- `research/` が存在しない workspace では、保存先を確認してから作成する
 
 ---
 
@@ -81,17 +82,11 @@ handoffs:
 
 - 主張と根拠の対応を再確認
 - 断定表現を適切に調整
-- 正本 1 件へ保存し、不要な重複成果物を整理する
+- 正本 1 件へ保存し、不要な重複成果物は削除候補として整理する
 
 ---
 
 ## Output Format
-
-出力先:
-
-- 既定: `research/YYYYMMDD-<slug>.md`
-- 同日・同ジャンルの既存 research があればその file を更新する
-- `reports/` を新規作成しない
 
 必須要素:
 
@@ -101,6 +96,8 @@ handoffs:
 - `分析と示唆`
 - `未確定事項とリスク`
 - `推奨アクション`
+
+保存先とファイル管理は Core Contract の「保存ルール（MANDATORY）」に従う。
 
 テンプレート:
 
@@ -141,11 +138,9 @@ format: technical|executive|briefing
 
 ## Guardrails
 
-- 出典のない事実追加は禁止
-- 入力にない断定は禁止
+- 出典のない事実追加、入力にない断定は禁止（`Core Contract` の「しないこと」を遵守）
 - 反証・制限事項を省略しない
 - 重要主張は可能な限り複数根拠を参照
-- 同日・同ジャンルで新規 file を増やさない
 
 ## Done Criteria
 
@@ -153,5 +148,4 @@ format: technical|executive|briefing
 - [ ] すべての主張が入力調査の根拠にトレース可能
 - [ ] レポートが「要約 -> 詳細 -> 示唆 -> 未確定事項」で整理されている
 - [ ] 不足情報があれば明示し、必要時は DeepResearch へ handoff できる
-- [ ] 最終回答前に正本 1 件へ保存済み
-- [ ] 同日・同ジャンルの重複成果物を整理済み
+- [ ] Core Contract の保存ルール（MANDATORY）に従って保存し、重複成果物の削除候補を報告した

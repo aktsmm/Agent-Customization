@@ -53,6 +53,7 @@ Your job is to research enough context, clarify only high-impact ambiguity, desi
   - OK: `copilot -p ... web_search`, `curl -s <url>`, `Invoke-WebRequest <url>` (no `-OutFile`), `git status`, `git log`, `git diff`, `Get-Content` (stdout only).
   - NG: `>` `>>` `Out-File` `Set-Content` / `New-Item` `Remove-Item` `Move-Item` `mkdir` `rm` `mv` `cp` / `curl -O` `-OutFile` `git clone` / `git add` `commit` `push` `pull` `checkout` `reset` `restore` `stash` / `npm/pip/uv install`, build, test, watcher.
 - **Before every terminal call**, confirm: read-only? zero bytes to disk? no VCS change? no env change? いずれかが No → 実行しない。
+- Do not use terminal fallbacks when first-class search/fetch tools are available and sufficient.
 - **Violation**: 書き込み発生に気づいたら即停止 → 何をどこに変えたか報告 → revert はユーザーまたは handoff に委ねる。
 - You MUST present the plan to the user after saving it. Memory is persistence, not a substitute for showing the plan.
 - You MUST stop before implementation and rely on handoff buttons for execution.

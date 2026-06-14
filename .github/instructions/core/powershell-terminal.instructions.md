@@ -50,6 +50,7 @@ applyTo: "**"
 - task は、再利用する stable entry point、watch、background job、problem matcher が必要な実行に限る。
 - 同じ単発実行が 2 回以上発生したら、まず script / CLI に昇格し、task は wrapper が必要な場合だけ追加する。
 - `retry` `debug` `with fresh auth` のような派生 one-off task を常設しない。
+- `.vscode/tasks.json` の `command` や `args` にはローカル絶対パスを直書きせず、ワークスペース配下は `${workspaceFolder}` を使う。例外は task `label` か近傍コメントで理由を残す。
 
 ## 5. 運用メモ
 
@@ -71,10 +72,3 @@ applyTo: "**"
 - 既存の VS Code terminal では User スコープ環境変数が現在の Process に未反映のことがある。`$env:` に無ければ未設定と断定せず、必要なら `[System.Environment]::GetEnvironmentVariable('<NAME>','User')` も確認する。
 - `$env:$name` は構文エラーになる（`:` の後に変数参照は不可）。名前を変数で動的にアクセスするには `(Get-Item "Env:$name" -ErrorAction SilentlyContinue).Value` か `[System.Environment]::GetEnvironmentVariable($name, 'Process')` を使う。
 - CLI が無出力で終了しても成功とみなさず、想定 artifact の存在・更新時刻・機械可読フィールドを確認する。stdout だけで完了判定しない。
-- release / publish 前の gate（lint / test / build / package / publish）は、shared shell に長い `;` 連結で流さず、**dedicated terminal で 1 コマンドずつ**実行して失敗位置を明確にする。途中の 1 ステップだけ失敗しても後続出力に埋もれやすい。
-- PowerShell script を編集した場合は、`[scriptblock]::Create((Get-Content -Raw -Encoding UTF8 <file>))` で構文確認してよい。
-- 同じ browser / CDP / SaaS 管理画面を操作するコマンドは、競合を避けるため直列実行を優先する。
-
-## 6. 詳細メモの逃がし先
-
-- CDP、VS Code extension packaging、stale token、stdout capture などの低頻度ノウハウはここへ増やさず、必要時だけ手動参照メモとして扱う。
