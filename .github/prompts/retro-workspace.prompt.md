@@ -49,6 +49,10 @@ argument-hint: "エラーログ、diff、会話要約、またはインシデン
 
 ## 実行手順
 
+### 0. Pre-Flight Inventory
+
+知見抽出に入る前に、サブエージェントで反映先候補を inventory する。どの `.instructions.md` / `tasks.json` / `scripts/` / `AGENTS.md` が受け皿になりそうか、適用される scope gate は何かを先に見る。これで scope を早めに定め、複数ファイルへの分散反映や既存資産との重複を防ぐ。
+
 ### 1. 知見抽出
 
 - 設計原則、workflow、context、automation 改善、繰り返し指示の既定化を優先して拾う

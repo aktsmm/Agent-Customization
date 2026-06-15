@@ -63,7 +63,7 @@ applyTo: "**"
 - スクリプトや CLI の変更系操作は、既定を read-only / dry-run にし、破壊的変更や外部反映は `--apply` などの明示フラグを必須にする。
 - 不要になった async terminal や timeout 後に裏で残った terminal は作業完了前に閉じる。対象は自分がそのターンで起動した dedicated / ad hoc terminal を優先し、共有 `pwsh`・editor terminal・拡張機能管理の terminal は不要と断定できない限り閉じない。
 - terminal を残す場合は、残す理由と停止方法を最終報告に明記する。
-- 共有 shell が `>>` 継続待ちや引用崩れで不安定になったら、回復確認は 1 回までに留め、復旧しなければ clean shell、短い runner script、task、または one-shot `pwsh -NoProfile -Command` に切り替える。
+- 共有 shell が `>>` 継続待ちや引用崩れで不安定になったら、回復確認は 1 回までに留め、復旧しなければ clean shell、短い runner script、task、または one-shot `pwsh -NoProfile -Command` に切り替える。`>>` 状態は同じ shell の次コマンドにも引き継がれ、構文が正しい単発 1 行でも `>>` のままになる。その 1 行自体の構文を疑わず、前コマンドからの継続状態とみなして clean shell へ切り替える。
 - Windows 環境で高速な全文検索が必要な場合は、`Select-String` より `ripgrep` (`rg`) を優先してよい。
 - `rg` 未導入なら `winget install --id BurntSushi.ripgrep.MSVC --scope user --accept-source-agreements --accept-package-agreements` で導入してよい。
 - 長い quoted 引数列、複数行文字列、here-string、長文 Markdown/JSON/issue body など引用崩れしやすい内容は terminal に直打ちせず、runner script か `--body-file` のように一時ファイル経由で渡す。`>>` 継続待ちに入ると復旧より clean shell への切替の方が速い。

@@ -31,6 +31,18 @@ applyTo: "**/*.prompt.md,**/*.instructions.md,**/*.agent.md,**/*.toolsets.jsonc,
 - 読み込み経路は Chat Diagnostics か `Chat: Configure Instructions` の tooltip で確認する
 - `chat.instructionsFilesLocations` が `false` の場所は、Docs に載っていても自動ロードされない
 
+## instructions 添付を制御する設定
+
+| 設定 | 既定 | 役割 |
+| --- | --- | --- |
+| `chat.includeApplyingInstructions` | true | `applyTo` 一致の instruction を system prompt に添付する |
+| `chat.includeReferencedInstructions` | true | instruction / agent 中の Markdown link 参照先を**再帰添付**する |
+
+- `chat.includeReferencedInstructions: true` は、エージェント起動時にリンク到達閉包（agent / instruction / skill 本文）を丸ごと system prompt へ展開する。catalog（`AGENTS.md` → `README.md` など）への hub リンクが多いと、起動時だけ system prompt が桁違いに膨張し、実タスク指示が希釈されて汎用応答に退行する
+- 症状: 通常チャットは正常なのに `@agent` 起動時だけ指示を無視して「何を進めますか」型に落ちる。Markdown link を辿る挙動なので skills や個別ファイルの量を削っても直らない
+- 切り分け: `debug-logs/<session>/system_prompt_0.json` のサイズと `<attachment filePath` 数を、通常チャットとエージェント起動で比較する。エージェント側だけ数倍なら再帰添付が原因
+- 対処: `chat.includeReferencedInstructions: false`。ファイルを書き換えず Markdown link を残したまま起動時の自動先読みだけ止める。必要なファイルはエージェントが都度 `read_file` で読める。前提として必須ルールは `applyTo` で scoped した instruction 本体に残し、リンク先は補助的深掘りに限定する
+
 ## Copilot CLI で自動ロードされる主な file
 
 | ファイル | スコープ | 備考 |
