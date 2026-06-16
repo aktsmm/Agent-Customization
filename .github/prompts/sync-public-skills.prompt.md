@@ -30,7 +30,7 @@ private skill repo の確定済み skill を remote private / EMU private / publ
 
 ## Gates
 
-- source of truth は private skill repo の `.github/skills/<skill>/`
+- source of truth は private skill repo の `.github/skills/<skill>/`（native skill）と `copilot-skills/{skills,m-skills}/`（`.copilot` 由来ミラー）
 - `SYNC_PUBLIC_SKILLS_PRIVATE_REPO` / `SYNC_PUBLIC_SKILLS_PUBLIC_REPO` / `SYNC_PUBLIC_SKILLS_SCRIPT` は Process scope 優先、無ければ User scope で解決する
 - EMU private sync 先は `SYNC_INTERNAL_SKILLS_EMU_REPO` を Process scope 優先、無ければ User scope で解決する。未設定なら repo URL / owner/name を確認する
 - `.skill-meta.json` は local-only metadata として、dirty 判定、stage、push、public diff から除外する
@@ -49,6 +49,16 @@ private skill repo の確定済み skill を remote private / EMU private / publ
 - EMU sync 先にも secret / 顧客情報 / 個人メール / 具体 TPID / ローカル絶対パスを入れない。例は placeholder にする
 - `gh repo view` / `gh api repos/...` で pull/push 権限が確認できるのに `git clone` が `Repository not found` になる場合は、repo 不在ではなく Git credential transport の不一致として扱う。visibility / permissions を再確認し、clone に固執せず Contents / Git Data API で tarball 取得、blob/tree/commit/ref 更新してよい
 
+## Copilot-Skills Public Audit Gate
+
+`copilot-skills/`（`.copilot` 由来ミラー）を public へ出す前に、skill 単位で 3 観点を監査し、除外対象を `Sync-AndPush.ps1 -ExcludeCopilotSkills` に渡す。判断は毎回ここで行い、script にハードコードしない。
+
+- ①ライセンス: 第三者 Proprietary は除外する。Anthropic / Microsoft Scout ビルトイン（`docx` / `pptx` / `xlsx` 等、LICENSE.txt が複製・派生・サービス外保持を禁止）は public 不可。LICENSE 不明（`expense-report` / `receipt-ocr` / `loop` / `excalidraw` 等）は安全側で除外。Apache 2.0 等の再配布可能ライセンス（`web-artifacts-builder` 等）は LICENSE / NOTICE を保持して公開可
+- ②DUP: 同名 skill が private repo `.github/skills/<skill>/` にある場合は、そちらを正として copilot-skills 側を public から除外する（二重公開防止）
+- ③機密: ユーザー名、ローカル絶対パス、Tenant ID、顧客名、個人メールを含む skill は、一般化できないなら除外する。一般化済みの自作 skill（`export-session-log` / `m365-copilot-research` / `retro-private-skills` / `permission-max` 等）は公開可
+- 既定ブラックリスト例: `docx,pptx,xlsx,expense-report,receipt-ocr,loop,excalidraw`（①②）＋ `.github/skills` と重複する skill（②）。新規 skill が増えたら上 3 観点で再判定してリストを更新する
+- ブラックリストは `ExcludeSkills` 方式の踏襲。script は受け取った名前を機械的に除外するだけで、公開可否の判断はしない
+
 ## Sync Strategy
 
 - 今回同期する明示 skill を `primary` とする
@@ -62,9 +72,9 @@ private skill repo の確定済み skill を remote private / EMU private / publ
 ## Workflow
 
 1. private repo、public repo、sync script、必要なら EMU repo を解決し、`primary`、branch / remote、local commits、dirty 状態を確認する
-2. `primary` の readiness を監査し、`shared-dirty`、`private-only-dirty`、`unselected-dirty` が public / EMU sync に漏れるかを判定する
+2. `primary` の readiness を監査し、`shared-dirty`、`private-only-dirty`、`unselected-dirty` が public / EMU sync に漏れるかを判定する。`copilot-skills/` を含む場合は Copilot-Skills Public Audit Gate の 3 観点でブラックリストを確定する
 3. safe path を選ぶ
-	- 直接実行: 漏れ込みが無い場合は `Sync-AndPush.ps1 -Message "sync: <skill summary>" -SkipDevPush`
+	- 直接実行: 漏れ込みが無い場合は `Sync-AndPush.ps1 -Message "sync: <skill summary>" -SkipDevPush -ExcludeCopilotSkills <監査で確定した除外名>`
 	- isolated 実行: current HEAD の一時 clean source を使い、public repo の `<primary>/` だけを mirror する
 	- EMU 実行: private-only skill を EMU private repo の該当 path へ mirror し、public repo に同 skill が出ていないことを確認する。Git transport が使えない場合は GitHub API 経路で単一 commit にまとめる
 4. private repo の current branch を remote private へ push し、public repo と EMU repo で想定した skill のみが更新されたことを確認する

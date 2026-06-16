@@ -19,7 +19,8 @@ agent: "agent"
 
 - 使う: private repo の既存 skill に残すべき手順、判断基準、失敗回避策を見つけたとき
 - 使う: private repo の `SKILL.md` / `references/*` を小さく直して確定したいとき
-- 使わない: workspace の `.github/skills/**`、public repo への同期、User Data、`~/.copilot/skills`、SKILL 以外の `.github/**` や `AGENTS.md`
+- 使う: private の `copilot-skills/` にミラーされた `.copilot` 由来 skill への学び統合（編集先は元の `~/.copilot/skills|m-skills/<name>/`）
+- 使わない: workspace の `.github/skills/**`、public repo への同期、User Data、SKILL 以外の `.github/**` や `AGENTS.md`
 
 ## 入力
 
@@ -33,11 +34,22 @@ agent: "agent"
 
 ## Scope Gate
 
-- 反映先は private repo の `.github/skills/<skill>/` に限定する
+- 反映先は private repo の `.github/skills/<skill>/`、または `.copilot` 由来 skill の元 `~/.copilot/skills|m-skills/<skill>/` に限定する
 - secret / 認証情報 / 個人情報 / 顧客情報 / ローカル絶対パス / 端末固有値 / `/memories/**` は反映しない
-- workspace / repository の `.github/**`、`AGENTS.md`、User Data、`~/.copilot/skills` に置くべき内容は scope 不一致として停止する
+- workspace / repository の `.github/**`、`AGENTS.md`、User Data に置くべき内容は scope 不一致として停止する
+- `.copilot` 由来 skill への学びは、private の `copilot-skills/` コピーではなく元の `~/.copilot/skills|m-skills/<name>/` を編集する。`copilot-skills/` 直下は同期で上書きされるため直接編集しない
 - Skill に戻す内容は、その skill の目的に直接効く汎用 workflow / Gotchas / 検証観点に限定する。workspace 固有の顧客名、案件名、ファイル構造、運用ルールは抽象化できる場合だけ残し、抽象化できなければ `retro-workspace` へ handoff する
 - actionable な知見なし、private repo 未解決、または gate 失敗時は理由と代替案を示して停止する
+
+## Intake 前段（任意）
+
+intake は `~/.copilot/skills` と `~/.copilot/m-skills` を private repo の `copilot-skills/{skills,m-skills}/` へ機械的にミラーする前段。retro 育成本体とは別操作で、ユーザーが明示的に「取り込む / intake / 最新化」を求めたときだけ走る。retro 単発の既定は育成のみで、intake は実行しない（未育成の生コピー混入を防ぐ）。
+
+- intake あり育成あり: 「`.copilot` から取り込んで育てて」→ intake → 通常の retro 育成
+- intake のみ: 「取り込むだけ」→ intake を実行し育成はスキップ
+- 既定（retro 単発）: intake skip、育成のみ
+
+実行は private repo の `scripts/Sync-CopilotSkillsToPrivateRepo.ps1`（旧 `sync-copilot-skills` skill から移設）。出自別に `copilot-skills/skills/` と `copilot-skills/m-skills/` へ分離コピーし README を自動生成する。この機械的ミラーだけは `copilot-skills/` へ書き込むが、学びの統合（authoring）は引き続き元の `~/.copilot/skills|m-skills/<name>/` を編集し、`copilot-skills/` 直下は直接編集しない。
 
 ## Edit Rules
 
