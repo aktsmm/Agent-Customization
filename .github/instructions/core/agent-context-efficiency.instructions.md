@@ -31,6 +31,7 @@ applyTo: "**"
 - 独立した read-only 調査は並列化する。
 - 長い生ログではなく、関連エラー、周辺、終了状態、次アクションを残す。
 - shell 構文や出力制御はローカルの terminal rule に従う。
+- セッション中に編集ツール / MCP / 取得ツールが無効化される場合がある。同じツールを 2 回試して失敗したら、代替ルートへ切り替える（例: `create_file` 不可 → terminal 経由でファイル生成、Playwright MCP 不可 → Python + CDP、`get_terminal_output` 不可 → ログをファイル出力して `read_file`）。粘らずに別ルートへ移す。
 
 ## Loop
 
