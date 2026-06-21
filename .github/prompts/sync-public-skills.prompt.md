@@ -27,6 +27,16 @@ private skill repo の確定済み skill を remote private / EMU private / GIM 
 
 - 既定は `safe-auto`
 - `review-only` / `dry-run` / `プレビュー` が明示された場合は、候補、監査、予定差分、commit message を提示して停止する
+- `all` が指定された場合は、`primary` だけでなく **private repo 内の未コミット skill 差分も対象**にする。未コミットのまま残さず、skill 単位でコミットしてから sync する（後述 All Mode）
+
+## All Mode（`all` 指定時の dirty 取り込み）
+
+- 対象は **skill content のみ**: private repo の `.github/skills/<skill>/**` と `copilot-skills/{skills,m-skills}/<skill>/**`。`.skill-meta.json` と shared file（README / assets）は従来どおり除外する
+- skill 以外の dirty（scripts、設定、無関係ファイル、`/memories/**`）は **コミットしない**。混在していれば、そのファイルは stage せず Not Done に列挙する
+- 各 dirty skill を **skill 単位で個別コミット**する（`feat|fix|docs(<skill>): ...`）。複数 skill を 1 コミットに混ぜない
+- コミット後も sync 先の判定は skill ごとに行う。public-safe な skill だけ public へ、internal-only / private-only は EMU/GIM へ振り分け、public へ漏らさない
+- secret / 顧客名 / 個人メール / 具体 TPID / ローカル絶対パスを含む skill は、コミットはしてよいが public sync からは除外する。一般化できないものは EMU/GIM 側も停止して確認する
+- 大規模削除、意味変更、scope 不明な差分が混ざる skill は、その skill だけ自動コミットせず確認で停止する
 
 ## Gates
 
@@ -79,6 +89,7 @@ MS 社内向け skill を enterprise 全員に「緩く公開」するための 
 - 今回同期する明示 skill を `primary` とする
 - 対象 skill が明示されている場合は、その skill の readiness と漏れ込みだけを先に確認する
 - `primary` が clean かつ commit 済みなら、unselected dirty があっても即停止しない
+- `all` 指定時は unselected dirty を放置せず、All Mode の手順で skill 単位にコミットしてから sync する
 - unselected dirty が public sync に漏れ得る場合は、main repo でそのまま実行せず isolated path を使う
 - isolated path では、current HEAD の一時 clean worktree か同等の clean source を使い、public repo の `<primary>/` だけを更新する
 - `primary-only` では他 skill directory の削除、shared file 更新、broad script の一括削除ロジックを使わない
@@ -88,6 +99,7 @@ MS 社内向け skill を enterprise 全員に「緩く公開」するための 
 
 1. private repo、public repo、sync script、必要なら EMU repo を解決し、`primary`、branch / remote、local commits、dirty 状態を確認する
 2. `primary` の readiness を監査し、`shared-dirty`、`private-only-dirty`、`unselected-dirty` が public / EMU sync に漏れるかを判定する。`copilot-skills/` を含む場合は Copilot-Skills Public Audit Gate の 3 観点でブラックリストを確定する
+2.5. `all` 指定時は、All Mode に従い未コミットの skill 差分を skill 単位でコミットする（skill 以外の dirty は除外し Not Done に回す）。コミット後に各 skill の public/EMU/GIM 振り分けを監査する
 3. safe path を選ぶ
 	- 直接実行: 漏れ込みが無い場合は `Sync-AndPush.ps1 -Message "sync: <skill summary>" -SkipDevPush -ExcludeCopilotSkills <監査で確定した除外名>`
 	- isolated 実行: current HEAD の一時 clean source を使い、public repo の `<primary>/` だけを mirror する

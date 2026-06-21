@@ -66,8 +66,7 @@ applyTo: "**"
 - 共有 shell が `>>` 継続待ちや引用崩れで不安定になったら、回復確認は 1 回までに留め、復旧しなければ clean shell、短い runner script、task、または one-shot `pwsh -NoProfile -Command` に切り替える。`>>` 状態は同じ shell の次コマンドにも引き継がれ、構文が正しい単発 1 行でも `>>` のままになる。その 1 行自体の構文を疑わず、前コマンドからの継続状態とみなして clean shell へ切り替える。
 - Windows 環境で高速な全文検索が必要な場合は、`Select-String` より `ripgrep` (`rg`) を優先してよい。
 - `rg` 未導入なら `winget install --id BurntSushi.ripgrep.MSVC --scope user --accept-source-agreements --accept-package-agreements` で導入してよい。
-- 長い quoted 引数列、複数行文字列、here-string、長文 Markdown/JSON/issue body など引用崩れしやすい内容は terminal に直打ちせず、runner script か `--body-file` のように一時ファイル経由で渡す。`>>` 継続待ちに入ると復旧より clean shell への切替の方が速い。
-- 共有 shell に長い配列リテラル、複数行の `@(...)`、長い `Copy-Item` 群、複雑な `foreach` をそのまま流すと `>>` 継続待ちに入りやすい。複数ファイルを扱うときは、短い単発コマンドに分けるか、dry-run 既定の helper script に寄せる。
+- `>>` 継続待ちを誘発しやすい内容（複数行・引用多め・here-string・配列リテラル・複数行 `@(...)`・複雑な `foreach`・長い `Copy-Item` 群・長文 Markdown/JSON/issue body）は shared shell に直打ちしない。短い単発コマンドに分割できないものは、既定で `tmp/*.ps1` / `tmp/*.py` runner か `--body-file` 経由に寄せる（`>>` に入ると復旧より clean shell 切替の方が速い）。
 - 環境変数永続化や単発の OS 設定変更は、shared shell より one-shot `pwsh -NoProfile -Command` を優先してよい。
 - 既存の VS Code terminal では User スコープ環境変数が現在の Process に未反映のことがある。`$env:` に無ければ未設定と断定せず、必要なら `[System.Environment]::GetEnvironmentVariable('<NAME>','User')` も確認する。
 - `$env:$name` は構文エラーになる（`:` の後に変数参照は不可）。名前を変数で動的にアクセスするには `(Get-Item "Env:$name" -ErrorAction SilentlyContinue).Value` か `[System.Environment]::GetEnvironmentVariable($name, 'Process')` を使う。
