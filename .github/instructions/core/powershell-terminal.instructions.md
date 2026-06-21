@@ -29,6 +29,7 @@ applyTo: "**"
 - 連結は `;` を使う（`&&` は使わない）。
 - 出力破棄は `/dev/null` ではなく `$null` を使う。
 - 文字列・変数展開・パイプラインは PowerShell の流儀に合わせる。
+- `foreach (...) { ... } | Format-Table` のように statement form 直後へ pipe しない。結果を変数に受けてから pipe するか、pipeline-native な `ForEach-Object` を使う（`An empty pipe element is not allowed` 回避）。
 - `python -c "..."` の複数行は禁止（here-string `>>` に入りターミナルが復帰不能になる）。1 行で済む簡易チェック以外は `.py` ファイルに書いて実行する。
 - PowerShell `@"..."@` here-strings は `{...}` をサブ式として解釈する。Python f-string (`f"{var}"`)、JS テンプレートリテラル、regex `\d{1,2}` を含むソースの書き出しには使えない。複数行スクリプトの作成はファイル編集ツールを優先し、terminal 経由なら単一行の `[System.IO.File]::WriteAllBytes` + Base64（here-string で包まない）か、既存 `.py` を `replace_string_in_file` で編集する。
 

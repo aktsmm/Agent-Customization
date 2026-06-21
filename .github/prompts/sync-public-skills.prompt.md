@@ -32,6 +32,7 @@ private skill repo の確定済み skill を remote private / EMU private / GIM 
 ## All Mode（`all` 指定時の dirty 取り込み）
 
 - 対象は **skill content のみ**: private repo の `.github/skills/<skill>/**` と `copilot-skills/{skills,m-skills}/<skill>/**`。`.skill-meta.json` と shared file（README / assets）は従来どおり除外する
+- `.skill-meta.json` が未追跡で dirty に出た場合は local-only metadata とみなし、stage せず削除してよい。tracked の場合は自動削除せず Gate 停止する
 - skill 以外の dirty（scripts、設定、無関係ファイル、`/memories/**`）は **コミットしない**。混在していれば、そのファイルは stage せず Not Done に列挙する
 - 各 dirty skill を **skill 単位で個別コミット**する（`feat|fix|docs(<skill>): ...`）。複数 skill を 1 コミットに混ぜない
 - コミット後も sync 先の判定は skill ごとに行う。public-safe な skill だけ public へ、internal-only / private-only は EMU/GIM へ振り分け、public へ漏らさない
@@ -45,7 +46,7 @@ private skill repo の確定済み skill を remote private / EMU private / GIM 
 - EMU private sync 先は `SYNC_INTERNAL_SKILLS_EMU_REPO` を Process scope 優先、無ければ User scope で解決する。未設定なら repo URL / owner/name を確認する
 - GIM internal 集約先は `SYNC_INTERNAL_SKILLS_GIM_REPO`（既定 `gim-home/yamapan-skills`、org-owned `internal`）を Process scope 優先、無ければ User scope で解決する
 - `.skill-meta.json` は local-only metadata として、dirty 判定、stage、push、public diff から除外する
-- shared file として `.github/skills/README.md` と `.github/skills/assets/**` を別扱いする
+- shared file として `.github/skills/README.md`、`.github/skills/assets/**`、自動生成 index の `.github/skills/LICENSE` を別扱いする。broad sync 後に `LICENSE` だけが generated drift として残った場合は内容を確認し、意図どおりなら skill commit とは別に sync/index commit へ分ける
 - `ExcludeSkills` / private-only / internal-only / MS 社内向け skill は public sync から除外し、EMU private sync の候補として扱う
 - sync-only 実行中に README / assets / index / SKILL 本文の編集はしない
 - branch / remote ambiguity、unexpected deletion、public safety audit failure、content authoring 必要時は停止する
