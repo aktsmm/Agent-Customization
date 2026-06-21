@@ -72,3 +72,4 @@ applyTo: "**"
 - 既存の VS Code terminal では User スコープ環境変数が現在の Process に未反映のことがある。`$env:` に無ければ未設定と断定せず、必要なら `[System.Environment]::GetEnvironmentVariable('<NAME>','User')` も確認する。
 - `$env:$name` は構文エラーになる（`:` の後に変数参照は不可）。名前を変数で動的にアクセスするには `(Get-Item "Env:$name" -ErrorAction SilentlyContinue).Value` か `[System.Environment]::GetEnvironmentVariable($name, 'Process')` を使う。
 - CLI が無出力で終了しても成功とみなさず、想定 artifact の存在・更新時刻・機械可読フィールドを確認する。stdout だけで完了判定しない。
+- 共有 shell の stdout は、無出力だけでなく、**もっともらしい偽の成功行や実在しない URL / ID を返すことがある**。`SUCCESS` 等の文字列や URL を本文や成果物へ反映する前に、ディスク上の実ログ（ファイル出力）を `read_file` で確認し、URL なら別経路（認証済みブラウザ等）で実在を検証する。端末出力に現れた値をそのまま信用しない。
