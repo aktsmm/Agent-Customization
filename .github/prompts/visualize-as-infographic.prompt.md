@@ -36,7 +36,7 @@ agent: "agent"
 
 1. HTML を作る。`html,body` に**ポスター実寸の width/height** を指定し `overflow:hidden`。
 2. `file://` は Playwright でブロックされる → 出力フォルダで `python -m http.server <port>` を起動して配信する。
-3. ブラウザの viewport をポスター実寸に `browser_resize` し、各 HTML を開いて **`fullPage` でスクショ**する（要素単位 ref はズレやすい。viewport=実寸 + fullPage が安定）。
+3. ブラウザの viewport をポスター実寸に `browser_resize` し、各 HTML を開いて **`fullPage` でスクショ**する（要素単位 ref はズレやすい。viewport=実寸 + fullPage が安定）。ブラウザ操作 MCP が無効化されている場合は、Python Playwright (`sync_api`) で代替する: `new_page(viewport={w,h}, device_scale_factor=2)` → `page.goto("http://localhost:<port>/x.html", wait_until="networkidle")` → `fullPage` スクショ。uv 管理 venv は `uv pip install playwright --python .venv\Scripts\python.exe` 後に `python -m playwright install chromium`。`run_in_terminal` が `cd` を落とすことがあるので URL とスクリプトは絶対パスで渡す。
 4. フォント描画のため撮影前に 1〜1.5 秒待つ。
 5. 生成 PNG は `view_image` で**必ず目視確認**し、見切れ・崩れがあれば実寸かレイアウトを直して撮り直す。
 6. 完了後: HTTP サーバーを停止し、ワークスペース直下に出た PNG は出力フォルダへ移動。編集元 HTML は残す。
