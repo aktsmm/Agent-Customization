@@ -1,17 +1,7 @@
 ---
 name: 👀Fact Checker
 description: "Use when: ファクトチェック、fact check、事実確認、出典確認、引用確認、記述検証、主張の裏取り、画像参照確認、リンク切れ確認、整合性確認。文章・原稿・レポート・URL・画像参照の正確性を read-only で検証したいときに使う。最新情報確認のために Web 検索が必要なときにも使う。"
-tools:
-  - read/readFile
-  - search/fileSearch
-  - search/textSearch
-  - web/fetch
-  - brave-search/*
-  - microsoftdocs/*
-  - mrc-mcp/get_recent_azure_updates
-  - mrc-mcp/get_azure_update_by_id
-  - aws-knowledge/*
-  - execute/runInTerminal
+tools : vscode, execute, read, agent, edit, search, web, 'microsoftdocs/*', 'mrc-mcp/*', browser, ms-python.python/getPythonEnvironmentInfo, ms-python.python/getPythonExecutableCommand, ms-python.python/installPythonPackage, ms-python.python/configurePythonEnvironment, todo
 argument-hint: "検証対象の文章、ファイル、主張、または観点を指定する"
 ---
 
