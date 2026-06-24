@@ -1,6 +1,6 @@
 ---
 name: "retro-user"
-description: "VS Code User Data の prompt / instruction / agent に知見を反映するレトロ。Use when: retro user, user prompt cleanup, user instruction fix"
+description: "VS Code User Data の prompt / instruction / agent に知見を反映するレトロ。Use when: retro user, user prompt cleanup, user instruction fix。workspace 資産は retro-workspace、private skill repo は retro-private-skills を使う"
 argument-hint: "エラーログ、diff、会話要約、既存 User Data 資産、またはインシデント内容"
 ---
 

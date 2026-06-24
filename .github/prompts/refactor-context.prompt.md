@@ -39,7 +39,7 @@ description: "指定スコープの instruction / prompt / agent をコンテキ
 
 - SSOT / DRY / SRP / スコープ適合
 - `applyTo` / 常時ロード / 手動呼び出しの整合
-- agent / prompt は本文の `#tool:` 参照が frontmatter `tools` と整合しているか（不一致は lint エラー）
+- agent / prompt は本文の tool reference が frontmatter `tools` と整合しているか（不一致は lint エラー）
 - ルーティング（いつ使う / 使わない / どこへ逃がす）が明確か
 - Global 対象の逃がし先は Global User Data の prompt / instruction / agent、または personal skill に限る。workspace へ逃がす案は「明示許可が必要」と書く
 

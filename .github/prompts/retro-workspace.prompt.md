@@ -1,6 +1,6 @@
 ---
 name: "retro-workspace"
-description: "workspace / repository の設計資産や automation 資産へ知見を反映するレトロ。Use when: retro workspace, workspace prompt cleanup, repo automation fix"
+description: "workspace / repository の設計資産や automation 資産へ知見を反映するレトロ。Use when: retro workspace, workspace prompt cleanup, repo automation fix。User Data は retro-user、private skill repo は retro-private-skills を使う"
 argument-hint: "エラーログ、diff、会話要約、またはインシデント内容"
 ---
 

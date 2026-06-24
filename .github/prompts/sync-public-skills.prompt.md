@@ -31,13 +31,19 @@ private skill repo の確定済み skill を remote private / EMU private / GIM 
 
 ## All Mode（`all` 指定時の dirty 取り込み）
 
-- 対象は **skill content のみ**: private repo の `.github/skills/<skill>/**` と `copilot-skills/{skills,m-skills}/<skill>/**`。`.skill-meta.json` と shared file（README / assets）は従来どおり除外する
-- `.skill-meta.json` が未追跡で dirty に出た場合は local-only metadata とみなし、stage せず削除してよい。tracked の場合は自動削除せず Gate 停止する
-- skill 以外の dirty（scripts、設定、無関係ファイル、`/memories/**`）は **コミットしない**。混在していれば、そのファイルは stage せず Not Done に列挙する
-- 各 dirty skill を **skill 単位で個別コミット**する（`feat|fix|docs(<skill>): ...`）。複数 skill を 1 コミットに混ぜない
-- コミット後も sync 先の判定は skill ごとに行う。public-safe な skill だけ public へ、internal-only / private-only は EMU/GIM へ振り分け、public へ漏らさない
-- secret / 顧客名 / 個人メール / 具体 TPID / ローカル絶対パスを含む skill は、コミットはしてよいが public sync からは除外する。一般化できないものは EMU/GIM 側も停止して確認する
-- 大規模削除、意味変更、scope 不明な差分が混ざる skill は、その skill だけ自動コミットせず確認で停止する
+All Mode は dirty を次の分類で扱う。
+
+| 対象 | 動作 | 理由 / 注意 |
+| --- | --- | --- |
+| skill content dirty | skill 単位で stage / 個別コミットする（`feat|fix|docs(<skill>): ...`） | 対象は private repo の `.github/skills/<skill>/**` と `copilot-skills/{skills,m-skills}/<skill>/**`。複数 skill を 1 コミットに混ぜない |
+| `.skill-meta.json` untracked | stage せず削除可 | local-only metadata |
+| `.skill-meta.json` tracked | Gate 停止 | tracked file は自動削除しない |
+| shared file（README / assets） | 従来どおり All Mode の dirty skill intake から除外 | skill content と混ぜない |
+| skill 以外の dirty（scripts、設定、無関係ファイル、`/memories/**`） | stage せず Not Done に列挙 | mixed commit 防止 |
+| public-safe skill | commit 後に public sync 候補 | skill ごとに sync 先を判定する |
+| internal-only / private-only skill | commit 後に EMU/GIM 候補、public から除外 | public へ漏らさない |
+| secret / 顧客名 / 個人メール / 具体 TPID / ローカル絶対パスを含む skill | commit は可、public sync から除外。一般化できないものは EMU/GIM も確認停止 | 漏えい防止 |
+| 大規模削除 / 意味変更 / scope 不明な差分 | その skill だけ自動コミットせず確認停止 | 安全判断が必要 |
 
 ## Gates
 

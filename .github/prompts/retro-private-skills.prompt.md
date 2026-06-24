@@ -1,6 +1,6 @@
 ---
 name: "retro-private-skills"
-description: "VS Code workspace の `.github/skills` skill を private skill repo へ取り込み・育成し、既存 SKILL / references への知見反映、safe-auto の local commit、条件付き push まで行う。Use when: private skill retro, skill repo authoring, private skill fix, workspace skill intake, retro private skills"
+description: "VS Code workspace `.github/skills` から private skill repo へ intake・育成する prompt 版。CLI / Scout の `~/.copilot/skills|m-skills` intake は SKILL 版を使う。Use when: private skill retro, skill repo authoring, private skill fix, workspace skill intake, retro private skills。User Data は retro-user、通常の workspace 資産は retro-workspace を使う"
 argument-hint: "会話要約、エラー、diff、対象 skill、workspace skill path、private repo path（任意）、mode（safe-auto / review-only）"
 agent: "agent"
 ---
@@ -36,8 +36,12 @@ agent: "agent"
 - local commit 後に private repo が origin より 3 commits 以上 ahead なら、明示指示がなくても `git push` まで行う。push 前に remote が private repo であること、working tree が clean であること、push 対象が今回までの local commits だけであることを確認する
 - ahead が 1〜2 commits の場合は push しない。public sync、release、tag、force push は明示指示があるときだけ行う
 - dirty primary skill changes は authoring / intake material として扱う。safe-auto では対象 skill の変更だけを stage / commit し、無関係 dirty は触らない
-- public / internal / EMU sync は行わない。反映先へ配る必要がある場合は、完了報告で `/sync-public-skills <primary>` へ hand off する
+- public / internal / EMU sync は行わない。反映先へ配る必要がある場合は、`Next Step / Handoff` に従う
 - scope 曖昧、大規模削除、意味変更、public/private 境界の変更、secret / 個人情報 / 環境固有値の扱いに迷う場合だけ確認で停止する
+
+## Next Step / Handoff
+
+public / EMU / GIM へ反映する必要がある場合は、育成と local commit 完了後に `/sync-public-skills <skill-name>` へ hand off する。retro 中に public sync は実行しない。
 
 ## Scope Gate
 

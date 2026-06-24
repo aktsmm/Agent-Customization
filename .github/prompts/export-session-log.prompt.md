@@ -1,6 +1,6 @@
 ---
 name: "export-session-log"
-description: "セッション内容を「作業ログ・ブログネタ」向けに構造化して出力"
+description: "Work timeline: セッション内容を作業ログ・ブログネタ向けに構造化して出力。Use when: timeline, 作業ログ, ブログ下書き。対話再現は export-copilot-session-dialogue、再利用知見は export-knowledge を使う"
 ---
 
 <!-- syncToGlobal: true -->
@@ -15,10 +15,13 @@ description: "セッション内容を「作業ログ・ブログネタ」向け
 
 ## 出力パス
 
-- **通常**: `/output_sessions/YYYYMMDD-NN--{topic}.md`
-- **ブログ**: `D:\11_My_Personal_Blog\drafts_topic\YYYYMMDD-NN--{topic}.md`
+出力先の優先順は、ユーザー指定 > 環境変数 > workspace/local > personal default > 確認。
+
+- **通常**: `$env:EXPORT_SESSION_LOG_DIR/YYYYMMDD-NN--{topic}.md`。未設定なら `/output_sessions/YYYYMMDD-NN--{topic}.md`
+- **ブログ**: `$env:EXPORT_SESSION_BLOG_DIR/YYYYMMDD-NN--{topic}.md`。未設定なら personal default `D:\11_My_Personal_Blog\drafts_topic\YYYYMMDD-NN--{topic}.md`
   - トリガー: `ブログ`, `blog`, `記事`, `article`, `post`, `Zenn`, `Qiita`, `はてな`
 - **NN**: 同日の連番（01, 02, 03...）。出力先に同日ファイルが既にあれば次の番号を採番する
+- 出力先 root が存在しない場合は fallback を試し、全て無ければ作成前に確認する
 
 ## 出力フォーマット
 

@@ -1,6 +1,6 @@
 ---
 name: "export-knowledge"
-description: "セッション中の「知見」を構造化してドメイン別（microsoft / copilot など）に振り分けて出力"
+description: "Reusable learnings: セッション中の再利用知見を構造化し、ドメイン別（microsoft / copilot など）に振り分けて出力。Use when: knowledge, lessons learned, 知見化。作業ログは export-session-log、対話再現は export-copilot-session-dialogue を使う"
 ---
 
 <!-- syncToGlobal: true -->
@@ -23,19 +23,27 @@ description: "セッション中の「知見」を構造化してドメイン別
 
 ## Domain Routing
 
-| ドメイン      | キーワード                                                                                                        | 出力先                                               |
-| ------------- | ----------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------- |
-| **microsoft** | Azure, M365, Entra ID, Intune, Defender, Power Platform, Windows Server, SQL Server, Dynamics 365, Copilot Studio | `D:\03_github\Ag-MS_QA\MS_Knowledge\{category}\`     |
-| **copilot**   | GitHub Copilot, MCP, Agent, Prompt, VS Code 拡張, VS Code, Workflow, Skills, Context Engineering                  | `D:\03.5_GHC_Research\_output-knowledge\{category}\` |
+出力先の優先順は、ユーザー指定 > 環境変数 > workspace/local > personal default > 確認。
+
+| ドメイン | キーワード |
+| --- | --- |
+| **microsoft** | Azure, M365, Entra ID, Intune, Defender, Power Platform, Windows Server, SQL Server, Dynamics 365, Copilot Studio |
+| **copilot** | GitHub Copilot, MCP, Agent, Prompt, VS Code 拡張, VS Code, Workflow, Skills, Context Engineering |
+
+| ドメイン | 環境変数 | personal default |
+| --- | --- | --- |
+| **microsoft** | `$env:EXPORT_KNOWLEDGE_MICROSOFT_DIR\{category}\` | `D:\03_github\Ag-MS_QA\MS_Knowledge\{category}\` |
+| **copilot** | `$env:EXPORT_KNOWLEDGE_COPILOT_DIR\{category}\` | `D:\03.5_GHC_Research\_output-knowledge\{category}\` |
 
 - 判定に迷う場合はユーザーに確認
 - 1セッションで両ドメインの知見がある場合は、それぞれ個別にエクスポート
+- 出力先 root が存在しない場合は fallback を試し、全て無ければ作成前に確認する
 
 ### 出力先の上書き
 
 | 条件                        | 出力先                                      |
 | --------------------------- | ------------------------------------------- |
-| デフォルト                  | 上記ドメイン別の固定パス                    |
+| デフォルト                  | 上記ドメイン別の環境変数。未設定なら personal default |
 | 「workspace」「ローカル」等 | `{workspace}/_output-knowledge/{category}/` |
 | パス指定あり                | 指定パス                                    |
 

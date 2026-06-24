@@ -1,6 +1,6 @@
 ---
 name: "export-copilot-session-dialogue"
-description: "セッション中の「対話フロー・使用ツール・手順」を構造化して出力"
+description: "Interaction flow: セッション中の対話フロー・使用ツール・手順を構造化して出力。Use when: dialogue, tool flow, handoff, 手順再現。作業ログは export-session-log、再利用知見は export-knowledge を使う"
 ---
 
 <!-- syncToGlobal: true -->
@@ -21,10 +21,14 @@ description: "セッション中の「対話フロー・使用ツール・手順
 
 ## 出力先
 
-- デフォルト: `D:\03.5_GHC_Research\_output-session-dialogue\`
-- 上記が無ければ: `C:\03_GITHUB_output-session-dialogue\`
+出力先の優先順は、ユーザー指定 > 環境変数 > workspace/local > personal default > 確認。
+
+- デフォルト: `$env:EXPORT_SESSION_DIALOGUE_DIR`
+- fallback: `$env:EXPORT_SESSION_DIALOGUE_FALLBACK_DIR`
 - `workspace` / `ローカル` 指定時: `{workspace}/_output-session-dialogue/`
+- personal default: `D:\03.5_GHC_Research\_output-session-dialogue\`、fallback `C:\03_GITHUB_output-session-dialogue\`
 - ファイル名: `YYYYMMDD-NN--{topic-slug}.md`（同日連番）
+- 出力先 root が存在しない場合は fallback を試し、全て無ければ作成前に確認する
 
 ## Extraction Checklist
 
