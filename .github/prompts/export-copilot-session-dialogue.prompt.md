@@ -5,7 +5,7 @@ description: "Interaction flow: セッション中の対話フロー・使用ツ
 
 <!-- syncToGlobal: true -->
 <!-- author: aktsmm -->
-<!-- repository: https://github.com/aktsmm/ghc_template -->
+<!-- repository: https://github.com/aktsmm/Agent-Customization -->
 <!-- license: CC BY-NC-SA 4.0 -->
 <!-- copyright: Copyright (c) 2025 aktsmm -->
 

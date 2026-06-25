@@ -6,7 +6,7 @@ argument-hint: "対象パス、all / FIX / review-only、重点観点"
 
 <!-- syncToGlobal: true -->
 <!-- author: aktsmm -->
-<!-- repository: https://github.com/aktsmm/ghc_template -->
+<!-- repository: https://github.com/aktsmm/Agent-Customization -->
 <!-- license: CC BY-NC-SA 4.0 -->
 <!-- copyright: Copyright (c) 2025 aktsmm -->
 

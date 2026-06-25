@@ -5,7 +5,7 @@ description: コードを分析し、テストを段階的に生成・実行
 
 <!-- syncToGlobal: true -->
 <!-- author: aktsmm -->
-<!-- repository: https://github.com/aktsmm/ghc_template -->
+<!-- repository: https://github.com/aktsmm/Agent-Customization -->
 <!-- license: CC BY-NC-SA 4.0 -->
 <!-- copyright: Copyright (c) 2025 aktsmm -->
 

@@ -7,7 +7,7 @@ agent: "agent"
 
 <!-- syncToGlobal: true -->
 <!-- author: aktsmm -->
-<!-- repository: https://github.com/aktsmm/ghc_template -->
+<!-- repository: https://github.com/aktsmm/Agent-Customization -->
 <!-- license: CC BY-NC-SA 4.0 -->
 <!-- copyright: Copyright (c) 2025 aktsmm -->
 
@@ -104,6 +104,18 @@ All Mode は dirty を次の分類で扱う。
 - isolated path では、current HEAD の一時 clean worktree か同等の clean source を使い、public repo の `<primary>/` だけを更新する
 - `primary-only` では他 skill directory の削除、shared file 更新、broad script の一括削除ロジックを使わない。public / internal diff が selected primary destination path だけであることを検証する
 - `primary` 以外が public diff に現れる、または一時環境を安全に準備できない場合だけ停止する
+
+## New Skill Classification Gate (incident 2026-06-24 再発防止)
+
+private repo に未分類の skill（`$KnownPublicSkills` / `$DefaultInternalSkills` / `$HardDeniedSkills` のどこにもない folder）がある状態で sync を走らせない。`Sync-AndPush.ps1` は Step 0.5 で `Invoke-NewSkillGate` を実行し、未分類 skill を検出したら `exit 2` で強制停止する。
+
+ユーザーはその skill を以下のいずれかに分類してから再実行する:
+
+- **public-safe**: `$KnownPublicSkills` に追記する。追記前に Copilot-Skills Public Audit Gate の 3 観点（license / DUP / secret）を通す
+- **internal-only**: `$DefaultInternalSkills` に追記する。`$HardDeniedSkills` へは自動マージされ、GIM/EMU 同期対象になる
+- **public-denied**: `$HardDeniedSkills` に追記する。internal にも出さない skill。
+
+例外したいときだけ、認識した上で `-AllowUnknownSkills` を付けて public-safe として同期させる。面倒だからでは使わず、ケースごとに分類を保存する。
 
 ## Workflow
 

@@ -2,11 +2,11 @@
 name: 😎workflow-designer
 description: "Use when: agent workflow、create agent、workflow architecture、instructions / prompts / agents / skills の設計・レビュー・改善。配置妥当性、SSOT、常時ロード肥大化、サブエージェント評価を確認する。"
 tools:
-  [vscode/memory, vscode/resolveMemoryFileUri, vscode/askQuestions, vscode/toolSearch, read/readFile, read/viewImage, read/skill, read/problems, read/getNotebookSummary, read/readNotebookCellOutput, read/terminalSelection, read/terminalLastCommand, read/getTaskOutput, agent/runSubagent, edit/createDirectory, edit/createFile, edit/editFiles, edit/editNotebook, edit/rename, search/codebase, search/fileSearch, search/listDirectory, search/textSearch, search/usages, web/fetch, web/githubRepo, web/githubTextSearch, microsoftdocs/microsoft_docs_search, microsoftdocs/microsoft_docs_fetch, microsoftdocs/microsoft_code_sample_search, todo]
+  [vscode/memory, vscode/resolveMemoryFileUri, vscode/askQuestions, vscode/toolSearch, execute/runNotebookCell, execute/getTerminalOutput, execute/killTerminal, execute/sendToTerminal, execute/runTask, execute/createAndRunTask, execute/runInTerminal, execute/runTests, execute/testFailure, read/getNotebookSummary, read/problems, read/readFile, read/viewImage, read/readNotebookCellOutput, read/skill, read/terminalSelection, read/terminalLastCommand, read/getTaskOutput, agent/runSubagent, edit/createDirectory, edit/createFile, edit/editFiles, edit/editNotebook, edit/rename, search/codebase, search/fileSearch, search/listDirectory, search/textSearch, search/usages, web/fetch, web/githubRepo, web/githubTextSearch, microsoftdocs/microsoft_code_sample_search, microsoftdocs/microsoft_docs_fetch, microsoftdocs/microsoft_docs_search, todo]
 ---
 
 <!-- author: aktsmm
-     repository: https://github.com/aktsmm/ghc_template
+     repository: https://github.com/aktsmm/Agent-Customization
      license: CC BY-NC-SA 4.0
      copyright: Copyright (c) 2025 aktsmm -->
 <!-- syncToGlobal: true -->

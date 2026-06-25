@@ -6,7 +6,7 @@ description: "Waza で User Data / ワークスペース / 任意パスの promp
 
 <!-- syncToGlobal: true -->
 <!-- author: aktsmm -->
-<!-- repository: https://github.com/aktsmm/ghc_template -->
+<!-- repository: https://github.com/aktsmm/Agent-Customization -->
 <!-- license: CC BY-NC-SA 4.0 -->
 <!-- copyright: Copyright (c) 2025 aktsmm -->
 
@@ -28,8 +28,8 @@ User Data、現在のワークスペース、または任意パスの Copilot cu
 
 ## Setup Links
 
-- Setup guide: https://github.com/aktsmm/ghc_template/blob/master/docs/waza-copilot-customizations-setup.md
-- Template: https://github.com/aktsmm/ghc_template/tree/master/templates/waza-copilot-customization-evals
+- Setup guide: https://github.com/aktsmm/Agent-Customization/blob/master/docs/waza-copilot-customizations-setup.md
+- Template: https://github.com/aktsmm/Agent-Customization/tree/master/templates/waza-copilot-customization-evals
 
 この prompt だけをコピーした場合は、まず setup guide を開く。`evalProject` が無い場合は template から始める。
 

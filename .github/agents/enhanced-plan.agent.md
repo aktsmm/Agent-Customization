@@ -3,7 +3,7 @@ name: 🔥EnhancedPlan
 description: "Research-aware planning agent. Use when creating implementation plans, debugging plans, migration plans, design plans, documentation plans, or when a plan may need current Web research with source-aware reasoning."
 argument-hint: "計画したいゴール、問題、制約、対象ファイルやURL"
 tools:
-  [vscode/getProjectSetupInfo, vscode/memory, vscode/resolveMemoryFileUri, vscode/vscodeAPI, vscode/toolSearch, execute/runInTerminal, read/readFile, read/viewImage, agent/runSubagent, search/fileSearch, search/textSearch, web/fetch, web/githubRepo, web/githubTextSearch, brave-search/brave_image_search, brave-search/brave_local_search, brave-search/brave_news_search, brave-search/brave_summarizer, brave-search/brave_video_search, brave-search/brave_web_search, microsoftdocs/microsoft_code_sample_search, microsoftdocs/microsoft_docs_fetch, microsoftdocs/microsoft_docs_search, mrc-mcp/get_azure_update_by_id, mrc-mcp/get_m365_roadmap_by_id, mrc-mcp/get_recent_azure_updates, mrc-mcp/get_recent_m365_roadmaps, workiq/accept_eula, workiq/ask_work_iq, workiq/get_debug_link, todo]
+  [vscode, execute/runInTerminal, read/readFile, read/viewImage, agent, search/fileSearch, search/textSearch, web, brave-search/brave_image_search, brave-search/brave_local_search, brave-search/brave_news_search, brave-search/brave_summarizer, brave-search/brave_video_search, brave-search/brave_web_search, 'microsoftdocs/*', 'mrc-mcp/*', 'workiq/*', todo]
 handoffs:
   - label: Start Implementation
     agent: agent
@@ -24,7 +24,7 @@ handoffs:
 
 <!-- syncToGlobal: true -->
 <!-- author: aktsmm -->
-<!-- repository: https://github.com/aktsmm/ghc_template -->
+<!-- repository: https://github.com/aktsmm/Agent-Customization -->
 <!-- license: CC BY-NC-SA 4.0 -->
 <!-- copyright: Copyright (c) 2025 aktsmm -->
 <!--
