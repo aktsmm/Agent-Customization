@@ -109,18 +109,20 @@ MS 社内向け skill を enterprise 全員に「緩く公開」するための 
 
 private repo に未分類の skill（`$KnownPublicSkills` / `$DefaultInternalSkills` / `$HardDeniedSkills` のどこにもない folder）がある状態で sync を走らせない。`Sync-AndPush.ps1` は Step 0.5 で `Invoke-NewSkillGate` を実行し、未分類 skill を検出したら `exit 2` で強制停止する。
 
+Agent は script の `exit 2` を待たず、sync 実行前に private repo の `.github/skills/` を既知 3 集合と照合する。未分類 skill を見つけたら、内容から推測して分類せず、必ずユーザーに `public-safe` / `internal-only` / `public-denied` / `今回は同期しない` を確認する。
+
 ユーザーはその skill を以下のいずれかに分類してから再実行する:
 
 - **public-safe**: `$KnownPublicSkills` に追記する。追記前に Copilot-Skills Public Audit Gate の 3 観点（license / DUP / secret）を通す
 - **internal-only**: `$DefaultInternalSkills` に追記する。`$HardDeniedSkills` へは自動マージされ、GIM/EMU 同期対象になる
 - **public-denied**: `$HardDeniedSkills` に追記する。internal にも出さない skill。
 
-例外したいときだけ、認識した上で `-AllowUnknownSkills` を付けて public-safe として同期させる。面倒だからでは使わず、ケースごとに分類を保存する。
+例外したいときだけ、ユーザーが明示承認した上で `-AllowUnknownSkills` を付けて public-safe として同期させる。面倒だからでは使わず、ケースごとに分類を保存する。
 
 ## Workflow
 
 1. private repo、public repo、sync script、必要なら EMU repo を解決し、`primary`、branch / remote、ahead/behind、dirty 状態を確認する
-2. `primary` の readiness と source/destination content diff を確認し、`shared-dirty`、`private-only-dirty`、`unselected-dirty` が public / EMU sync に漏れるかを判定する。broad sync で `copilot-skills/` を含む場合だけ Copilot-Skills Public Audit Gate の 3 観点でブラックリストを確定する
+2. `primary` の readiness と source/destination content diff を確認し、未分類 skill があれば先にユーザーへ分類確認する。`shared-dirty`、`private-only-dirty`、`unselected-dirty` が public / EMU sync に漏れるかを判定する。broad sync で `copilot-skills/` を含む場合だけ Copilot-Skills Public Audit Gate の 3 観点でブラックリストを確定する
 2.5. `all` 指定時は、All Mode に従い未コミットの skill 差分を skill 単位でコミットする（skill 以外の dirty は除外し Not Done に回す）。コミット後に各 skill の public/EMU/GIM 振り分けを監査する
 3. safe path を選ぶ
 	- 直接実行: 漏れ込みが無い場合は `Sync-AndPush.ps1 -Message "sync: <skill summary>" -SkipDevPush -ExcludeCopilotSkills <監査で確定した除外名>`

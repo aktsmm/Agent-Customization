@@ -43,6 +43,7 @@ applyTo: "**"
 ## Destructive Operations
 
 - `git filter-repo` / `git rebase -i` / `git reset --hard` 前に未コミット変更を必ず確定する。
+- `git restore <file>` / `git checkout -- <file>` は、そのファイル内の無関係な未コミット変更も巻き戻す。restore 後は対象ファイルの diff を再確認し、巻き戻したくない変更（例: 別作業の編集）が消えていないか確認する。
 - `git stash` だけに依存しない。
 - 大量の `git status` 出力に対しては、`git add -A` 前に「自分が触ったもの」「別ツール由来（skill 同期、formatter、別 IDE）」「未追跡の一時ファイル」を分類してユーザーに確認する。混在 dirty を一括で commit すると、後で範囲を分離するのが困難になる。
 
