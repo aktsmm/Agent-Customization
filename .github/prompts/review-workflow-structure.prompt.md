@@ -50,7 +50,7 @@ rubric SSOT が無い場合、または最終 sanity check では、次だけを
 - Primitive / SRP: prompt / instruction / skill / agent / hook の選択が最小で、1 agent が 1 責務か。
 - Frontmatter / Placement: `.prompt.md` / `.instructions.md` / `.agent.md` の supported fields、`applyTo` 過大、`.github/agents/` 直下配置を確認する。
 - Deterministic Offload: extract / count / validate / diff / format / parse / lint が LLM loop に混ざっていないか。
-- Link Integrity: 相対 Markdown link が実在するか。可能なら機械的に検査する。
+- Link Integrity: 相対 Markdown link が実在するか。機械検査では code span / fenced code 内の記法例、`URL` / `url` / `image-url` などの placeholder target を除外する。
 - Context Compression / Preservation: 冗長な再掲を削りつつ、ユーザー固有事実、運用メタコメント、根拠、必要な Example を誤削除しないか。
 - Runtime Classification: 各 finding を `runtime-affected` / `review-only` に分け、casual input forced routing の有無を確認する。
 
@@ -71,7 +71,7 @@ rubric SSOT が無い場合、または最終 sanity check では、次だけを
 
 1. Scope Gate を通す。
 2. 必要な rubric / entry / target files だけ読む。
-3. frontmatter、agent placement、relative links を可能な範囲で機械検査する。
+3. frontmatter、agent placement、relative links を可能な範囲で機械検査する。relative link 検査は code span / fenced code と placeholder target を false positive として除外する。
 4. finding を優先度順に出し、`削除 / 統合 / 分離 / 移動 / 追加 / 維持` に分類する。
 5. `fix` 指定時は低リスク修正を適用し、同じ観点で再レビューする。最大 3 回で止め、残件があれば理由を報告する。
 6. 追加提案には、削除 / 統合 / 移動で解けない理由を添える。
