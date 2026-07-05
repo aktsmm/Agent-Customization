@@ -51,6 +51,7 @@ applyTo: "**"
 
 - 日本語を含むファイルは `UTF-8`（PowerShell では `Get-Content -Raw -Encoding UTF8`）で扱う。
 - GitHub API 向け JSON は BOM なし UTF-8 を使う。
+- `git show <rev>:<binary-path>` を PowerShell 7 でファイルに保存するときは、`Out-File -Encoding byte` が廃止されているので使わない。`cmd /c "git show <rev>:<path> > `"$tmp`""` にリダイレクトするか、`git cat-file -p <rev>:<path>` を `[System.IO.File]::WriteAllBytes` と組み合わせて raw のまま書き出す。パイプで PowerShell に通すと text 変換されて binary が壊れる。
 
 ## gh CLI
 
