@@ -5,7 +5,7 @@ tools:
   [execute/runInTerminal, read/readFile, agent/runSubagent, edit/createFile, edit/editFiles, search/codebase, search/fileSearch, search/textSearch, web/fetch, brave-search/brave_image_search, brave-search/brave_llm_context, brave-search/brave_local_search, brave-search/brave_news_search, brave-search/brave_place_search, brave-search/brave_summarizer, brave-search/brave_video_search, brave-search/brave_web_search, microsoftdocs/microsoft_code_sample_search, microsoftdocs/microsoft_docs_fetch, microsoftdocs/microsoft_docs_search, workiq/accept_eula, workiq/ask_work_iq, workiq/get_debug_link, todo]
 handoffs:
   - label: "Report: 調査結果をレポート化"
-    agent: agent
+    agent: "📝ReportWriter"
     prompt: |
       上記の調査結果を、読み手に伝わる構造化レポートに再構成してください。
       必須要件:
@@ -29,7 +29,7 @@ handoffs:
     prompt: "調査レポートを読み、さらなる調査のための3-5つの関連トピックを提案してください。"
     send: true
   - label: "Fact Check: 主要主張を検証"
-    agent: agent
+    agent: "👀Fact Checker"
     prompt: "調査レポート内の主要な主張について、出典の妥当性と正確性を検証してください。"
     send: true
 ---

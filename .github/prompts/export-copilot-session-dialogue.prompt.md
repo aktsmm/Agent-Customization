@@ -21,14 +21,13 @@ description: "Interaction flow: セッション中の対話フロー・使用ツ
 
 ## 出力先
 
-出力先の優先順は、ユーザー指定 > 環境変数 > workspace/local > personal default > 確認。
+出力先の優先順は、ユーザー指定 > 環境変数 > workspace/local > 確認。
 
 - デフォルト: `$env:EXPORT_SESSION_DIALOGUE_DIR`
 - fallback: `$env:EXPORT_SESSION_DIALOGUE_FALLBACK_DIR`
 - `workspace` / `ローカル` 指定時: `{workspace}/_output-session-dialogue/`
-- personal default: `D:\03.5_GHC_Research\_output-session-dialogue\`、fallback `C:\03_GITHUB_output-session-dialogue\`
 - ファイル名: `YYYYMMDD-NN--{topic-slug}.md`（同日連番）
-- 出力先 root が存在しない場合は fallback を試し、全て無ければ作成前に確認する
+- 環境変数の path が未設定または存在しない場合は fallback、明示された workspace/local の順に試し、解決できなければ作成前に確認する
 
 ## Extraction Checklist
 

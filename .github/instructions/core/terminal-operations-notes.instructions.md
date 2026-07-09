@@ -22,13 +22,22 @@ description: "ターミナル操作の低頻度トラブルシュートメモ。
 
 - `run_in_terminal` の sync 実行が `Command produced no output` を返したり、async 実行が prompt 復帰前に idle した場合も、直ちに失敗扱いにせず expected artifact を先に確認する。artifact が生成済みなら render/capture 問題として扱い、未生成なら dedicated terminal や短い follow-up command で観測を補強する。
 - 長い `npm` / `node` / test suite で stdout capture が不安定な場合は、`cmd /c "... && echo OK"` や `Write-Output "name-exit=$LASTEXITCODE"` のような success marker を付け、末尾の marker か exit code を正本にする。`> $null` や `Select-Object -Last N` を使う場合も marker か exit code の確認を省略しない。
+- 共有 shell の stdout が成功行や URL を返しても、重要な結果は実 artifact、Git object、認証済み画面など別経路で裏取りする。
 - PowerShell script を編集した後は、`[scriptblock]::Create((Get-Content -Raw -Encoding UTF8 <file>))` で構文確認してから実行する。
+- PowerPoint / Excel / VS Code で開かれた Office ファイルを解析するときは、ロックフリーな一時コピーを作り、解析後に削除する。成果物の上書きが必要なら版番を上げる。
+
+## Copilot Debug Logs
+
+- Copilot の想定外挙動（instruction 未適用、tool 誤選択、workflow 停止など）を調査するときは、対象 session の debug log を確認する。
+- debug log では `tool_call` と `agent_response` を分けて読む。`agent_response` には pending tool call が現れることがあり、実行済み `tool_call` と混同しやすい。
+- user / memory / assistant text に tool 名が出ただけでは実行済みとみなさない。実際の実行有無は `tool_call` entry と結果で確認する。
 
 ## Credentials and Environment
 
 - token 依存 CLI で Process と User の環境変数が食い違うときは、手順書で「環境変数を更新してから再実行」と繰り返すより、repo 側に Process 値を先に検証し、失効・不一致なら User 環境変数へ自動 fallback する wrapper script / npm script を追加する方を優先する。例: `VSCE_PAT` を使う `vsce verify-pat` / `vsce publish`。
 - Azure CLI で `az account set` が対象 subscription を見失っても、対象 tenant の ARM token が取れる場合は、追加ログインより `az account get-access-token --tenant <tenantId>` + REST 経路を優先する。token 本体は保存・表示しない。
 - wrapper が無い既存 workflow を一時的に回す場合でも、stale な Process 値を前提にしない。同じコマンド実行内で `[System.Environment]::GetEnvironmentVariable('<NAME>','User')` を読み直して明示引数や `$env:` に渡す。
+- 環境変数名を変数で受ける場合は `$env:$name` を使わず、`(Get-Item "Env:$name" -ErrorAction SilentlyContinue).Value` か `GetEnvironmentVariable` を使う。
 
 ## Extension Publish (VSCE / CWS)
 
@@ -42,10 +51,11 @@ description: "ターミナル操作の低頻度トラブルシュートメモ。
 ### VSCE 固有
 
 - `vsce verify-pat` が PASS でも `vsce publish` が `PAT expired` で落ちる場合、Azure DevOps PAT の Expiration が発行当日 (`Custom defined` 既定) の定番ケースを疑う。`1 year` に伸ばし、`Marketplace > Manage` スコープを含めて再発行する。
-- VS Code 起動済みシェルでは `$env:VSCE_PAT` は起動時 env を継ぐ。User scope を更新しただけでは Process に反映されず、`[System.Environment]::GetEnvironmentVariable('VSCE_PAT','User')` で読み直して `-p $pat` に渡すと通る。
+- VS Code 起動済みシェルでは `$env:VSCE_PAT` は起動時 env を継ぐ。User scope を更新した後も古い非空の Process 値が残ることがあるため、verify / publish 前に同じコマンド内で `$env:VSCE_PAT = [Environment]::GetEnvironmentVariable('VSCE_PAT','User')` と明示上書きし、`npx @vscode/vsce verify-pat <publisher> -p $env:VSCE_PAT` を通してから publish する。
 - VSIX 生成は拡張 directory へ移動してから `vsce package --out <file.vsix>` で出力する。`--packagePath` や末尾引数で directory を渡す運用は失敗しやすい。
 - VS Code 拡張の local 修正版を実機確認するとき、`Developer: Reload Window` だけでは workspace の未インストール変更は読まれず、既に入っている Marketplace / VSIX 版を再読込するだけのことがある。`code --install-extension <generated.vsix> --force` で入れ直してから reload するか、Extension Development Host (`F5`) を使う。
 - `vsce publish` 直後は `vsce show --json` や Marketplace page のバージョン表示が stale なことがある。publish 成功出力、remote tag、GitHub Release、Marketplace page の更新時刻など別経路の証跡を先に確認し、stale 表示だけで再 publish や追加 version bump しない。
+- GitHub Actions の publish 失敗が `vX.Y.Z already exists` の場合は、認証は通過済みで Marketplace の duplicate version に到達している可能性が高い。PAT failure と断定せず、Marketplace / GitHub Release / package version / tag を照合して version bump または idempotent skip の判断に切り替える。
 
 ### CWS 固有
 

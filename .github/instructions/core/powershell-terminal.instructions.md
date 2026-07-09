@@ -18,26 +18,22 @@ applyTo: "**"
 ## 1. 実行前チェック
 
 - 最初に `Get-Location` で現在地を確認する。
-- 想定ディレクトリと違う場合は `Set-Location` で移動してから実行する。
-- 複数リポジトリ環境では、対象 repo であることを確認する。
+- 想定ディレクトリと違う場合は `Set-Location` で移動し、複数リポジトリ環境では対象 repo であることを確認する。
 - ファイル操作前は `Test-Path` などで対象の存在を確認する。
 
 ## 2. PowerShell 構文を使う
 
 - コマンドは PowerShell 互換で書く（Bash 構文を混ぜない）。
-- Bash heredoc (`<<EOF` / `<<'PATCH'`) や patch 本文を terminal に送らない。PowerShell ではリダイレクトとして崩れて `>>` 継続待ちに入りやすいため、ファイル編集ツールか短い単発コマンドへ切り替える。
-- 連結は `;` を使う（`&&` は使わない）。
-- 出力破棄は `/dev/null` ではなく `$null` を使う。
+- Bash heredoc (`<<EOF` / `<<'PATCH'`) や patch 本文を terminal に送らず、ファイル編集ツールか短い単発コマンドを使う。
+- 連結は `;`（`&&` は使わない）、出力破棄は `$null`（`/dev/null` は使わない）を使う。
 - 文字列・変数展開・パイプラインは PowerShell の流儀に合わせる。
 - `foreach (...) { ... } | Format-Table` のように statement form 直後へ pipe しない。結果を変数に受けてから pipe するか、pipeline-native な `ForEach-Object` を使う（`An empty pipe element is not allowed` 回避）。
-- `python -c "..."` の複数行は禁止（here-string `>>` に入りターミナルが復帰不能になる）。1 行で済む簡易チェック以外は `.py` ファイルに書いて実行する。
-- PowerShell `@"..."@` here-strings は `{...}` をサブ式として解釈する。Python f-string (`f"{var}"`)、JS テンプレートリテラル、regex `\d{1,2}` を含むソースの書き出しには使えない。複数行スクリプトの作成はファイル編集ツールを優先し、terminal 経由なら単一行の `[System.IO.File]::WriteAllBytes` + Base64（here-string で包まない）か、既存 `.py` を `replace_string_in_file` で編集する。
+- `python -c "..."` に複数行コードを埋め込まない。1行で済まなければスクリプトファイルと編集ツールを使う。
 
 ## 3. 安全運用
 
 - 削除や移動などの破壊的操作は、対象パスを明示して実行する。
-- ワイルドカード削除は最小限にし、広すぎる対象は避ける。
-- repo ルートで `Remove-Item *.json` / `*.txt` のような拡張子ワイルドカードを使うと、`package.json` など tracked ファイルを巻き込んで消す。一時ファイルは `tmp/` 配下か明示名で削除する。tracked を誤削除したら `git restore <file>` で復元する。
+- ワイルドカード削除は最小限にする。repo ルートの `Remove-Item *.json` / `*.txt` は tracked file を巻き込むため、一時ファイルは `tmp/` 配下か明示名で削除する。
 - ブラウザの user data / profile directory を削除する前に、それが既定プロファイルか、一時 `--user-data-dir` かを確認する。既定プロファイル削除は通常禁止し、一時プロファイルだけを対象にする。
 - `git reset --hard` など不可逆操作の前に、変更確定またはバックアップを行う。
 
@@ -50,7 +46,7 @@ applyTo: "**"
 
 - 単発の調査、デバッグ、認証依存、環境変数依存、出力追跡が必要な実行は terminal を優先する。
 - task は、再利用する stable entry point、watch、background job、problem matcher が必要な実行に限る。
-- 同じ単発実行が 2 回以上発生したら、まず script / CLI に昇格し、task は wrapper が必要な場合だけ追加する。
+- 同じ単発実行が 2 回以上発生したら script / CLI への昇格を検討し、task が必要なら既存の generic process task や input 付き task を優先する。
 - `retry` `debug` `with fresh auth` のような派生 one-off task を常設しない。
 - `.vscode/tasks.json` の `command` や `args` にはローカル絶対パスを直書きせず、ワークスペース配下は `${workspaceFolder}` を使う。例外は task `label` か近傍コメントで理由を残す。
 
@@ -60,17 +56,7 @@ applyTo: "**"
 - `gh` や類似 CLI で `--json number,title,url` のようなカンマ区切り引数や、空白を含む検索式を渡すときは、PowerShell で必ず 1 つの文字列として引用する。分解されると別引数扱いになり、検索失敗や `accepts 1 arg(s)` 系エラーになりやすい。
 - 日本語を含むファイルや JSON を扱うときは UTF-8 を維持する。
 - スクリプトや CLI を実行する前に、対象 script / 実行ファイルの存在を確認する。不在時は実行せず、read/grep などの代替検証へ切り替える。
-- VS Code task は再利用する task の registry として扱い、日付入り・対象固定の one-off task を常設しない。単発実行は terminal か一時 script を優先し、残すなら入力付きの generic task に寄せる。
-- 一時 task を使った場合は、完了前に `.vscode/tasks.json` の一時 task と一時スクリプトを削除し、残った task terminal の扱いを最終報告に書く。
+- VS Code task は再利用する registry とし、日付入り・対象固定の one-off task を常設しない。一時 task と一時スクリプトは完了前に削除する。
 - スクリプトや CLI の変更系操作は、既定を read-only / dry-run にし、破壊的変更や外部反映は `--apply` などの明示フラグを必須にする。
-- 不要になった async terminal や timeout 後に裏で残った terminal は作業完了前に閉じる。対象は自分がそのターンで起動した dedicated / ad hoc terminal を優先し、共有 `pwsh`・editor terminal・拡張機能管理の terminal は不要と断定できない限り閉じない。
-- terminal を残す場合は、残す理由と停止方法を最終報告に明記する。
-- 共有 shell が `>>` 継続待ちや引用崩れで不安定になったら、回復確認は 1 回までに留め、復旧しなければ clean shell、短い runner script、task、または one-shot `pwsh -NoProfile -Command` に切り替える。`>>` 状態は同じ shell の次コマンドにも引き継がれ、構文が正しい単発 1 行でも `>>` のままになる。その 1 行自体の構文を疑わず、前コマンドからの継続状態とみなして clean shell へ切り替える。
-- Windows 環境で高速な全文検索が必要な場合は、`Select-String` より `ripgrep` (`rg`) を優先してよい。
-- `rg` 未導入なら `winget install --id BurntSushi.ripgrep.MSVC --scope user --accept-source-agreements --accept-package-agreements` で導入してよい。
-- `>>` 継続待ちを誘発しやすい内容（複数行・引用多め・here-string・配列リテラル・複数行 `@(...)`・複雑な `foreach`・長い `Copy-Item` 群・長文 Markdown/JSON/issue body）は shared shell に直打ちしない。短い単発コマンドに分割できないものは、既定で `tmp/*.ps1` / `tmp/*.py` runner か `--body-file` 経由に寄せる（`>>` に入ると復旧より clean shell 切替の方が速い）。
-- 環境変数永続化や単発の OS 設定変更は、shared shell より one-shot `pwsh -NoProfile -Command` を優先してよい。
-- 既存の VS Code terminal では User スコープ環境変数が現在の Process に未反映のことがある。`$env:` に無ければ未設定と断定せず、必要なら `[System.Environment]::GetEnvironmentVariable('<NAME>','User')` も確認する。
-- `$env:$name` は構文エラーになる（`:` の後に変数参照は不可）。名前を変数で動的にアクセスするには `(Get-Item "Env:$name" -ErrorAction SilentlyContinue).Value` か `[System.Environment]::GetEnvironmentVariable($name, 'Process')` を使う。
-- CLI が無出力で終了しても成功とみなさず、想定 artifact の存在・更新時刻・機械可読フィールドを確認する。stdout だけで完了判定しない。
-- 共有 shell の stdout は、無出力だけでなく、**もっともらしい偽の成功行や実在しない URL / ID を返すことがある**。`SUCCESS` 等の文字列や URL を本文や成果物へ反映する前に、ディスク上の実ログ（ファイル出力）を `read_file` で確認し、URL なら別経路（認証済みブラウザ等）で実在を検証する。端末出力に現れた値をそのまま信用しない。
+- 不要な async / timeout terminal は作業完了前に閉じ、共有 terminal は不要と断定できる場合だけ対象にする。残す場合は理由と停止方法を報告する。
+- 低頻度の shell 復旧、credential、publish、CDP、Office ロックは、該当タスクで専用の手動参照 instruction を使う。

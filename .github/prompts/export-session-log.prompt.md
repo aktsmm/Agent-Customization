@@ -15,13 +15,13 @@ description: "Work timeline: セッション内容を作業ログ・ブログネ
 
 ## 出力パス
 
-出力先の優先順は、ユーザー指定 > 環境変数 > workspace/local > personal default > 確認。
+出力先の優先順は、ユーザー指定 > 環境変数 > workspace/local > 確認。
 
-- **通常**: `$env:EXPORT_SESSION_LOG_DIR/YYYYMMDD-NN--{topic}.md`。未設定なら `/output_sessions/YYYYMMDD-NN--{topic}.md`
-- **ブログ**: `$env:EXPORT_SESSION_BLOG_DIR/YYYYMMDD-NN--{topic}.md`。未設定なら personal default `D:\11_My_Personal_Blog\drafts_topic\YYYYMMDD-NN--{topic}.md`
+- **通常**: `$env:EXPORT_SESSION_LOG_DIR/YYYYMMDD-NN--{topic}.md`。未設定なら `{workspace}/output_sessions/YYYYMMDD-NN--{topic}.md`。workspace が無ければ確認する
+- **ブログ**: `$env:EXPORT_SESSION_BLOG_DIR/YYYYMMDD-NN--{topic}.md`。未設定なら workspace に `drafts_topic/` が存在する場合だけ `{workspace}/drafts_topic/YYYYMMDD-NN--{topic}.md` を使い、それ以外は確認する
   - トリガー: `ブログ`, `blog`, `記事`, `article`, `post`, `Zenn`, `Qiita`, `はてな`
 - **NN**: 同日の連番（01, 02, 03...）。出力先に同日ファイルが既にあれば次の番号を採番する
-- 出力先 root が存在しない場合は fallback を試し、全て無ければ作成前に確認する
+- 出力先 root を環境変数または既存 workspace から解決できなければ、作成前に確認する
 
 ## 出力フォーマット
 
