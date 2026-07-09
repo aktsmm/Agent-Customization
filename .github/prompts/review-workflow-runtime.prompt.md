@@ -26,9 +26,10 @@ argument-hint: "対象パス、all / FIX / review-only、重点観点"
 ## Default Behavior
 
 - 既定スコープは `referenced-only`: 対象 workflow 資産から明示参照された scripts / hooks / validators / CLIs だけを追う
-- `all` / `徹底的` / `deep` が指定された場合は、参照された script と同じ workflow folder / scripts folder の近接ファイルも確認する
+- `all` / `徹底的` / `deep`（大文字小文字を区別しない）が指定された場合は、参照された script と同じ workflow folder / scripts folder の近接ファイルも確認する
 - 既定の修正モードは `safe-auto-fix`: 低リスク修正は実施してよい
-- `review-only` が指定された場合は変更しない
+- `review-only` / `read-only` が指定された場合は変更せず、`fix` と競合した場合も read-only を優先する
+- `rubberduck` / `rubber duck` は名前付き agent ではなく、各前提を言語化して根拠で反証するレビュー手法として扱う。利用可能な評価サブエージェントにこの手法を明示して委譲し、登録済み `RubberDuck` agent の存在は要求しない
 - destructive operation、外部反映、認証・secret、履歴改変、広範囲 refactor は実行前に確認する
 
 ## Reference Sources
@@ -44,11 +45,13 @@ argument-hint: "対象パス、all / FIX / review-only、重点観点"
 
 ## Context Gate
 
-1. 対象 workflow 資産を特定する。
-2. Markdown links、backtick path、code block、CLI examples、script 名から参照 script / hook / validator を抽出する。
-3. 抽出した path が実在するか確認する。
-4. script が存在しない場合は `missing script contract` として報告する。
-5. script が見つからない workflow は、workflow logic review のみ実施し、script coverage が無いことを明記する。
+1. 対象 workflow 資産と、read / search / validation / subagent / edit に必要な capability を特定する。
+2. 必須 capability が無い場合は変更せず、未確認対象と再開条件を伴う `INCOMPLETE` とする。
+3. Markdown links、backtick path、code block、CLI examples、script 名から参照 script / hook / validator を抽出する。
+4. 抽出した path が実在するか確認する。
+5. script が存在しない場合は `missing script contract` として報告する。
+6. script が見つからない workflow は、workflow logic review のみ実施し、script coverage が無いことを明記する。
+7. Rubber Duck 指定時はサブレビューの path、行、件数、重複、欠落の主張を実ファイルで照合してから採用する。サブエージェントが利用できない場合は fallback review を行い、総合判定を `INCOMPLETE` とする。
 
 ## Review Checks
 
@@ -96,7 +99,10 @@ argument-hint: "対象パス、all / FIX / review-only、重点観点"
 - Python: 構文確認、該当テスト、`--help`、安全な dry-run
 - PowerShell: `[scriptblock]::Create((Get-Content -Raw -Encoding UTF8 <file>))`
 - Node: package scripts、typecheck、lint、dry-run 相当
-- 実行できない場合は、理由と代替確認を明記する
+- 各検査を `PASS` / `FAIL` / `NOT_RUN` で記録し、実行できない場合は理由と代替確認を明記する
+- deterministic な検査を限定 read や目視で代替した場合、その項目を `PASS` に昇格させない
+- 必須検査が `NOT_RUN`、必須ファイルが read 不可、または coverage が不足する場合は修正を止め、総合判定を `INCOMPLETE` とする
+- 一時 validator、IR、log を作った場合は検証後に削除する
 
 ## Safe-Auto-Fix Policy
 
@@ -109,6 +115,8 @@ argument-hint: "対象パス、all / FIX / review-only、重点観点"
 - 長い処理を読みやすい小関数へ切り出すリファクタ（テストまたは構文確認で検証できる場合）
 - read-only validation のための一時 script 作成と作業後 cleanup
 - 小さな guard / validation 追加で、外部副作用や既存 CLI contract を変えないもの
+
+低リスク修正と同じ検査の再実行は最大 3 回で止める。解消しない場合は `NEEDS_IMPROVEMENT` として残件と再開条件を報告する。
 
 確認してから行うもの。
 
@@ -144,7 +152,7 @@ argument-hint: "対象パス、all / FIX / review-only、重点観点"
 
 ### Recommendation
 
-- {総合評価と次アクション}
+- {総合評価 `PASS` / `NEEDS_IMPROVEMENT` / `INCOMPLETE` と次アクション}
 
 ## Completion Criteria
 
@@ -154,5 +162,6 @@ argument-hint: "対象パス、all / FIX / review-only、重点観点"
 - script output と workflow input の整合性を確認した
 - 冗長処理、重複ロジック、不要な連続手順を確認した
 - dry-run / apply / verify / cleanup の境界を確認した
+- Rubber Duck 指定時は評価サブエージェントを実行し、その主張を実ファイルで照合した。利用不可時は `INCOMPLETE` として報告した
 - safe-auto-fix の範囲内で必要な修正を行った、または review-only として停止した
 - 検証結果と未確認リスクを報告した
