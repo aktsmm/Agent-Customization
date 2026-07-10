@@ -1,7 +1,7 @@
 ---
 name: "sync-public-skills"
 description: "private skill repo の確定済み commit を remote private / EMU private / GIM internal / public repo へ反映する。Use when: private skill publish, private to public skill sync, EMU internal skill sync, GIM internal skill sync, sync public skills"
-argument-hint: "対象 skill 名、private repo path（任意）、mode（safe-auto / review-only）、EMU/GIM同期要否"
+argument-hint: "対象 skill 名、mode（safe-auto / review-only / dry-run / all）、EMU/GIM同期要否"
 agent: "agent"
 ---
 
@@ -31,7 +31,7 @@ private skill repo の確定済み skill を remote private / EMU private / GIM 
 
 ## All Mode（`all` 指定時の dirty 取り込み）
 
-All Mode は dirty を次の分類で扱う。
+All Mode は先に private repo の `scripts/Commit-DirtySkills.ps1` をdry-runし、対象とNot Doneを確認する。意味・scopeが明確なskillだけ `-Apply`で個別commitしてから、cleanな同期scriptへ渡す。
 
 | 対象 | 動作 | 理由 / 注意 |
 | --- | --- | --- |
@@ -47,6 +47,7 @@ All Mode は dirty を次の分類で扱う。
 
 ## Gates
 
+- public / internal / denied / copilot-public / copilot-deniedの分類SSOTはprivate repoの `scripts/skill-distribution.json`。prompt本文やscriptへ現在の一覧を重複定義しない
 - source of truth は private skill repo の `.github/skills/<skill>/`（native skill）と `copilot-skills/{skills,m-skills}/`（`.copilot` 由来ミラー）
 - `dirty` は sync 必要性ではなく、未確定 authoring の gate として扱う。通常 sync の要否は private source path と public / internal / EMU destination path の content diff で判定する
 - primary が明示されている場合、既定の確認範囲は primary とその同期経路に限定する。全 skill 棚卸し、全 duplicate、全 copilot-skills license audit は `all` / `broad` / `audit` / `棚卸し` が明示された場合だけ行う
@@ -62,7 +63,7 @@ All Mode は dirty を次の分類で扱う。
 
 ## EMU Private Sync Gate
 
-- EMU private sync の既定セット（SSOT）は GIM internal と同じ `InternalSkills` を使う。現行既定: `c360-operations`, `d365-expense-sorter`, `m365-copilot-research`, `esxp-labor-entry`
+- EMU private sync の既定セットは `skill-distribution.json` の `internalSkills` を使い、GIMと共有する
 
 - private-only / MS 社内向け skill に更新差分がある場合は、public sync とは別に「EMU 側にも反映するか」を確認する
 - ユーザーが `all` を指定しても、public sync と EMU private sync を混同しない。public へ出してよい skill と EMU 限定 skill を分けて監査する
@@ -70,12 +71,13 @@ All Mode は dirty を次の分類で扱う。
 - EMU repo が user-owned private の場合、EMU 全員に自動公開されない。全員利用を求める場合は organization-owned `internal` repo が必要で、作成可否を確認する
 - EMU sync 先にも secret / 顧客情報 / 個人メール / 具体 TPID / ローカル絶対パスを入れない。例は placeholder にする
 - `gh repo view` / `gh api repos/...` で pull/push 権限が確認できるのに `git clone` が `Repository not found` になる場合は、repo 不在ではなく Git credential transport の不一致として扱う。visibility / permissions を再確認し、clone に固執せず Contents / Git Data API で tarball 取得、blob/tree/commit/ref 更新してよい
+- internal同期はconfigの全集合をfull mirrorする。subset指定は未選択Skillを削除し得るため停止する
 
 ## GIM Internal Sync Gate
 
 MS 社内向け skill を enterprise 全員に「緩く公開」するための org-owned `internal` repo（既定 `gim-home/yamapan-skills`）への集約ゲート。`Sync-InternalSkills.ps1` が実装を担うが、「どれを internal へ出すか」の判断は毎回ここで行う。
 
-- internal 集約対象の既定セット（SSOT）: `c360-operations`, `d365-expense-sorter`, `m365-copilot-research`, `esxp-labor-entry`。新規 skill は下 3 観点で再判定して追加する
+- internal集約対象とaudience mapは `skill-distribution.json` の `internalSkills` をSSOTとする。新規skillは下3観点で再判定してconfigへ追加する
 - 判定 3 観点: ①社内専用（public 不可だが社内なら有益） ②対象ロールまたは全社員に有益 ③匿名化済み（顧客実名 / TPID 実値 / 個人メール / ローカル絶対パスなし）
 - internal 集約先の visibility が `INTERNAL` または `PRIVATE` であることを確認する。`PUBLIC` なら停止する
 - internal skill は public sync の `ExcludeSkills` / `ExcludeCopilotSkills` に残し、public へ漏れないことを確認する（internal リストと public 除外リストは別管理）
@@ -90,8 +92,7 @@ MS 社内向け skill を enterprise 全員に「緩く公開」するための 
 - ①ライセンス: 第三者 Proprietary は除外する。Anthropic / Microsoft Scout ビルトイン（`docx` / `pptx` / `xlsx` 等、LICENSE.txt が複製・派生・サービス外保持を禁止）は public 不可。LICENSE 不明（`expense-report` / `receipt-ocr` / `loop` / `excalidraw` 等）は安全側で除外。Apache 2.0 等の再配布可能ライセンス（`web-artifacts-builder` 等）は LICENSE / NOTICE を保持して公開可
 - ②DUP: 同名 skill が private repo `.github/skills/<skill>/` にある場合は、そちらを正として copilot-skills 側を public から除外する（二重公開防止）
 - ③機密: ユーザー名、ローカル絶対パス、Tenant ID、顧客名、個人メールを含む skill は、一般化できないなら除外する。一般化済みの自作 skill（`export-session-log` / `m365-copilot-research` / `retro-private-skills` / `permission-max` 等）は公開可
-- 既定ブラックリスト例: `docx,pptx,xlsx,expense-report,receipt-ocr,loop,excalidraw`（①②）＋ `.github/skills` と重複する skill（②）。新規 skill が増えたら上 3 観点で再判定してリストを更新する
-- ブラックリストは `ExcludeSkills` 方式の踏襲。script は受け取った名前を機械的に除外するだけで、公開可否の判断はしない
+- 監査結果は `publicCopilotSkills` / `deniedCopilotSkills`へ保存する。allowlist未登録Skillは `-IncludeCopilotSkills` でも公開しない
 
 ## Sync Strategy
 
@@ -107,29 +108,29 @@ MS 社内向け skill を enterprise 全員に「緩く公開」するための 
 
 ## New Skill Classification Gate (incident 2026-06-24 再発防止)
 
-private repo に未分類の skill（`$KnownPublicSkills` / `$DefaultInternalSkills` / `$HardDeniedSkills` のどこにもない folder）がある状態で sync を走らせない。`Sync-AndPush.ps1` は Step 0.5 で `Invoke-NewSkillGate` を実行し、未分類 skill を検出したら `exit 2` で強制停止する。
+private repo に `skill-distribution.json` のpublic / internal / deniedのどこにもないskillがある状態でsyncを走らせない。`Sync-AndPush.ps1`は未分類skillを検出したら強制停止する。
 
 Agent は script の `exit 2` を待たず、sync 実行前に private repo の `.github/skills/` を既知 3 集合と照合する。未分類 skill を見つけたら、内容から推測して分類せず、必ずユーザーに `public-safe` / `internal-only` / `public-denied` / `今回は同期しない` を確認する。
 
 ユーザーはその skill を以下のいずれかに分類してから再実行する:
 
-- **public-safe**: `$KnownPublicSkills` に追記する。追記前に Copilot-Skills Public Audit Gate の 3 観点（license / DUP / secret）を通す
-- **internal-only**: `$DefaultInternalSkills` に追記する。`$HardDeniedSkills` へは自動マージされ、GIM/EMU 同期対象になる
-- **public-denied**: `$HardDeniedSkills` に追記する。internal にも出さない skill。
+- **public-safe**: configの `publicSkills` に追記する。追記前にlicense / DUP / secret auditを通す
+- **internal-only**: configの `internalSkills` にname / audience / internalOnlyを追記する。public denylistへ自動統合される
+- **public-denied**: configの `deniedSkills` に追記する。internalにも出さない
 
-例外したいときだけ、ユーザーが明示承認した上で `-AllowUnknownSkills` を付けて public-safe として同期させる。面倒だからでは使わず、ケースごとに分類を保存する。
+`-AllowUnknownSkills` は後方互換の引数名として残っていてもoverrideには使わない。分類をconfigへ保存するまで同期を停止する。
 
 ## Workflow
 
 1. private repo、public repo、sync script、必要なら EMU repo を解決し、`primary`、branch / remote、ahead/behind、dirty 状態を確認する
 2. `primary` の readiness と source/destination content diff を確認し、未分類 skill があれば先にユーザーへ分類確認する。`shared-dirty`、`private-only-dirty`、`unselected-dirty` が public / EMU sync に漏れるかを判定する。broad sync で `copilot-skills/` を含む場合だけ Copilot-Skills Public Audit Gate の 3 観点でブラックリストを確定する
-2.5. `all` 指定時は、All Mode に従い未コミットの skill 差分を skill 単位でコミットする（skill 以外の dirty は除外し Not Done に回す）。コミット後に各 skill の public/EMU/GIM 振り分けを監査する
+2.5. `all` 指定時は `Commit-DirtySkills.ps1` のdry-run→`-Apply`でskill単位にcommitする。skill以外のdirtyはNot Doneに残し、同期scriptへ渡さない
 3. safe path を選ぶ
 	- 直接実行: 漏れ込みが無い場合は `Sync-AndPush.ps1 -Message "sync: <skill summary>" -SkipDevPush -ExcludeCopilotSkills <監査で確定した除外名>`
 	- isolated 実行: current HEAD の一時 clean source を使い、public repo の `<primary>/` だけを mirror する
 	- EMU 実行: private-only skill を EMU private repo の該当 path へ mirror し、public repo に同 skill が出ていないことを確認する。`Sync-AndPush.ps1 -SyncEmu [-EmuDryRun]` を使う。Git transport が使えない場合は GitHub API 経路で単一 commit にまとめる
 	- GIM internal 実行: MS 社内向け skill を org-owned `internal` repo（`gim-home/yamapan-skills`）へ集約する場合は `Sync-AndPush.ps1 -SyncInternal [-InternalDryRun]` を使う。README は自動再生成される
-4. private repo の current branch を remote private へ push し、public repo / EMU repo / GIM internal repo で想定した skill のみが更新されたことを確認する。`all` のときは public-safe skill は public へ、default internal set は EMU/GIM にも流す
+4. private repo のcurrent branchをremote privateへpushし、publicはlocal mirror hashとremote到達、EMU/GIMはremote treeのpath集合とblob SHAを確認する。Missing / Mismatch / Extraが0になるまで完了扱いにしない
 
 ## Report
 
