@@ -9,17 +9,18 @@ applyTo: "**/*.py,**/pyproject.toml,**/requirements*.txt"
 <!-- repository: https://github.com/aktsmm/Agent-Customization -->
 <!-- license: CC BY-NC-SA 4.0 -->
 <!-- copyright: Copyright (c) 2025 aktsmm -->
+<!-- updated: 2026-07-13 -->
 
 # Python Environment Instructions
 
-Python プロジェクトでは**必ず仮想環境を使用**してください。グローバル環境への直接インストールは禁止です。
-
 ## 基本ルール
 
-- パッケージ管理は [uv](https://docs.astral.sh/uv/)（`uv venv` + `uv pip`）を優先する（pip 直は NG）。uv は pip 互換コマンドと `uv.lock` で再現性を担保する
-- uv が無い場合のみ標準 `venv` + `pip` を使う
-- ワークスペースごとに `.venv` を作成する
-- LFS ファイルは `git lfs pull` してから使用する
+- Python プロジェクトでは仮想環境を必須とし、グローバル環境や `pip install --user` へ直接インストールしない。
+- 既存の `.venv`、`pyproject.toml`、`uv.lock`、`requirements*.txt` と repo の実行手順を先に確認し、既存の管理方式を尊重する。
+- 新規環境は `uv venv` + `uv pip` を優先し、uv がない場合だけ標準 `venv` + `pip` を使う。
+- 依存を追加・変更したら、repo が採用する `pyproject.toml`、lock file、または `requirements*.txt` に記録する。
+- terminal 間で activation が共有されない場合は、`.venv\Scripts\python.exe` を直接呼ぶ。
+- `py_compile` などが生成した `__pycache__/` や `*.pyc` を差分へ残さない。
 
 基本コマンド:
 
@@ -28,78 +29,23 @@ uv venv .venv --python 3.12        # uv（推奨）
 python -m venv .venv               # 代替: 標準 venv
 ```
 
-有効化せず直接実行する場合は `.venv\Scripts\python.exe script.py` のようにフルパスで呼ぶ。
-
----
-
-## エージェントへの指示
-
-1. **仮想環境を先に作成** — `uv venv` または `python -m venv .venv`
-2. **有効化を確認** — `python -c "import sys; print(sys.executable)"` でパスをチェック
-3. **依存関係を記録** — `requirements.txt` または `pyproject.toml` を更新
-4. **グローバル禁止** — `pip install --user` も NG
-5. **検証後の掃除** — `py_compile` などで生成した `__pycache__/` や `*.pyc` を差分へ残さない
-
----
-
 ## よくあるエラーと対処
 
-### Windows PowerShell で `UnicodeEncodeError: 'cp932' codec can't encode character '\xa5'`
-
-Python CLI が `¥` などの非ASCII文字を `print` するとき、PowerShell の標準出力エンコーディングが cp932 だと落ちる。
-
-**対処**: スクリプト冒頭で stdout を UTF-8 ラッパに差し替える。
-
-```python
-import io, sys
-if hasattr(sys.stdout, "buffer"):
-    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8", line_buffering=True)
-```
-
-コンソール表示が `ﾂ･` 等に化けても**ファイル本体は正常**なケースが多い。デバッグ時は出力ファイルを別エディタで開いて確認する。
-
-### externally-managed-environment エラー
-
-uv 管理の Python に直接 `pip install` しようとすると発生。
-
-```
-error: externally-managed-environment
-× This environment is externally managed
-╰─> This Python installation is managed by uv and should not be modified.
-```
-
-**対処**: 仮想環境を作成してからインストール
-
-```powershell
-uv venv .venv --python 3.12
-.venv\Scripts\activate
-uv pip install pandas openpyxl
-```
-
-### Failed to inspect Python interpreter / No Python at ...
-
-壊れた `.venv` や Python パス変更で発生。対処は再作成。
-
-```powershell
-Remove-Item .venv -Recurse -Force
-uv venv .venv --python 3.12
-```
-
----
+- `UnicodeEncodeError` や文字化けが出たら、PowerShell / subprocess の UTF-8 設定と出力ファイル本体を確認し、表示だけの問題か切り分ける。
+- `externally-managed-environment` が出たら system Python を変更せず、仮想環境を作成して依存を導入する。
+- interpreter path が無効なら、削除前に対象が workspace の `.venv` であることを確認してから再作成する。
 
 ## ProcessPoolExecutor 並列化パターン（Windows 対応）
 
 ### 必須ルール
 
-- **Windows は spawn**: worker 関数・initializer はモジュールレベル定義。ローカル関数/lambda は pickle 不可
-- **`if __name__ == "__main__"` ガード必須**: spawn がモジュールを再 import するため
-- **外部 API (yfinance 等) は main process のみ**: ワーカーからのネットワーク呼び出しはレート制限・認証問題の原因
+- Windows は spawn のため、worker 関数と initializer はモジュールレベルに定義し、`if __name__ == "__main__"` ガードを置く。
+- 認証やレート制限のある外部 API は main process で取得し、worker へ必要データだけ渡す。
 
 ### パフォーマンス設計
 
-- **Initializer パターン**: 大きなデータ (DataFrame 等) は `ProcessPoolExecutor(initializer=fn, initargs=(data,))` でワーカーのグローバル変数に 1 回だけセット。タスクはパラメータのみ送受信
-- **Slim IPC**: ワーカーは最小限の集計値 dict のみ返す。巨大オブジェクト (dataclass リスト, numpy 配列) は confirmed 結果のみ main process で再実行して取得
-- **進捗表示**: `as_completed()` ループで N 件ごとに elapsed / rate / ETA を stderr に出力
+- 大きな共有データは initializer で一度だけ渡し、タスク引数と戻り値を小さく保つ。
+- 進捗が必要なら `as_completed()` で完了数、経過時間、rate、ETA を間引いて出す。
 
 ---
 

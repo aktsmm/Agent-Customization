@@ -27,6 +27,7 @@ private skill repo の確定済み skill を remote private / EMU private / GIM 
 
 - 既定は `safe-auto`
 - `review-only` / `dry-run` / `プレビュー` が明示された場合は、候補、監査、予定差分、commit message を提示して停止する
+- 対象 skill 名が明示された場合は `primary-only` とし、実行前に `Mode / Selected Skills / 選択外の public diff` を表示する。対象が曖昧なら `broad` か `primary-only` を確認し、会話の流れだけで primary を推測しない
 - `all` が指定された場合は、`primary` だけでなく **private repo 内の未コミット skill 差分も対象**にする。未コミットのまま残さず、skill 単位でコミットしてから sync する（後述 All Mode）
 
 ## All Mode（`all` 指定時の dirty 取り込み）
@@ -97,6 +98,7 @@ MS 社内向け skill を enterprise 全員に「緩く公開」するための 
 ## Sync Strategy
 
 - 今回同期する明示 skill を `primary` とする
+- primary-only は `Sync-AndPush.ps1 -PrimarySkills <skill-name...>` を使う。一時コピー script を作らない
 - 対象 skill が明示されている場合は、その skill の readiness、source/destination diff、漏れ込みだけを先に確認する。既定は `primary-only` とする
 - `primary` が clean かつ commit 済みなら、unselected dirty があっても即停止しない。dirty が primary path にある場合は未確定 authoring とみなし、`all` 指定がない限り `retro-private-skills` へ戻す
 - private repo が clean で ahead の場合は、sync 前に remote private へ push してよい。private repo が clean かつ remote と同期済みでも、destination と content diff があれば sync 対象にする
@@ -126,8 +128,8 @@ Agent は script の `exit 2` を待たず、sync 実行前に private repo の 
 2. `primary` の readiness と source/destination content diff を確認し、未分類 skill があれば先にユーザーへ分類確認する。`shared-dirty`、`private-only-dirty`、`unselected-dirty` が public / EMU sync に漏れるかを判定する。broad sync で `copilot-skills/` を含む場合だけ Copilot-Skills Public Audit Gate の 3 観点でブラックリストを確定する
 2.5. `all` 指定時は `Commit-DirtySkills.ps1` のdry-run→`-Apply`でskill単位にcommitする。skill以外のdirtyはNot Doneに残し、同期scriptへ渡さない
 3. safe path を選ぶ
-	- 直接実行: 漏れ込みが無い場合は `Sync-AndPush.ps1 -Message "sync: <skill summary>" -SkipDevPush -ExcludeCopilotSkills <監査で確定した除外名>`
-	- isolated 実行: current HEAD の一時 clean source を使い、public repo の `<primary>/` だけを mirror する
+	- primary-only 実行: `Sync-AndPush.ps1 -PrimarySkills <skill-name...> -Message "sync: <skill summary>" -SkipDevPush`。選択外 skill、README、LICENSE index、assets、copilot-skills を変更しない
+	- broad 実行: `Sync-AndPush.ps1 -Message "sync: <summary>" -SkipDevPush -ExcludeCopilotSkills <監査で確定した除外名>`。public-safe 全体と shared files を mirror する
 	- EMU 実行: private-only skill を EMU private repo の該当 path へ mirror し、public repo に同 skill が出ていないことを確認する。`Sync-AndPush.ps1 -SyncEmu [-EmuDryRun]` を使う。Git transport が使えない場合は GitHub API 経路で単一 commit にまとめる
 	- GIM internal 実行: MS 社内向け skill を org-owned `internal` repo（`gim-home/yamapan-skills`）へ集約する場合は `Sync-AndPush.ps1 -SyncInternal [-InternalDryRun]` を使う。README は自動再生成される
 4. private repo のcurrent branchをremote privateへpushし、publicはlocal mirror hashとremote到達、EMU/GIMはremote treeのpath集合とblob SHAを確認する。Missing / Mismatch / Extraが0になるまで完了扱いにしない

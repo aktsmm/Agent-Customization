@@ -8,6 +8,7 @@ applyTo: "**/*.prompt.md,**/*.instructions.md,**/*.agent.md,**/*.toolsets.jsonc,
 <!-- repository: https://github.com/aktsmm/Agent-Customization -->
 <!-- license: CC BY-NC-SA 4.0 -->
 <!-- copyright: Copyright (c) 2025 aktsmm -->
+<!-- updated: 2026-07-13 -->
 
 # Copilot CLI / VS Code インストラクション読み込みルール
 
@@ -43,6 +44,11 @@ applyTo: "**/*.prompt.md,**/*.instructions.md,**/*.agent.md,**/*.toolsets.jsonc,
 - 切り分け: `debug-logs/<session>/system_prompt_0.json` のサイズと `<attachment filePath` 数を、通常チャットとエージェント起動で比較する。エージェント側だけ数倍なら再帰添付が原因
 - 対処: `chat.includeReferencedInstructions: false`。ファイルを書き換えず Markdown link を残したまま起動時の自動先読みだけ止める。必要なファイルはエージェントが都度 `read_file` で読める。前提として必須ルールは `applyTo` で scoped した instruction 本体に残し、リンク先は補助的深掘りに限定する
 
+## Instruction Priority
+
+- VS Code Chat で異なる instruction scope が競合する場合は、Personal > Repository > Organization の順で優先する。
+- 複数の instruction file が同時に適用される場合、個別ファイル間の適用順序は保証されない。競合する命令を順序依存で解決しない。
+
 ## Copilot CLI で自動ロードされる主な file
 
 | ファイル | スコープ | 備考 |
@@ -69,15 +75,6 @@ applyTo: "**/*.prompt.md,**/*.instructions.md,**/*.agent.md,**/*.toolsets.jsonc,
 - `*.toolsets.jsonc` の `"tools"` は toolset 側の短い ID / category 名（例: `execute`, `read`, `microsoft_docs_search`）を使う
 - agent frontmatter の tools 一覧を `*.toolsets.jsonc` にそのまま移植しない。schema warning が `problems` に出ないこともあるため、既存例とエディタ上の警告も確認する
 
-## 入口 file の役割
-
-| ファイル | 役割 |
-| --- | --- |
-| `.github/copilot-instructions.md` | repo-wide の短い原則、routing、少数の guardrails |
-| `AGENTS.md` | agent / workflow の薄い registry と入口 |
-
-入口 file を詳細索引や長い workflow 手順の置き場にしない。詳細は scoped instruction、agent、skill、docs 側へ逃がす。
-
 ## 配置の判断基準
 
 | 内容 | 配置先 |
@@ -88,10 +85,14 @@ applyTo: "**/*.prompt.md,**/*.instructions.md,**/*.agent.md,**/*.toolsets.jsonc,
 | 特定ファイル群に効く rule | `.github/instructions/**/*.instructions.md` |
 | 特定 workflow / task | `.github/agents/` または `.github/skills/` |
 
-## 公式 Docs
+## References
+
+Verified: 2026-07-13。URL は人間による仕様更新の確認用であり、実行に必要なルールは本文を正本とする。
 
 - VS Code custom instructions: https://code.visualstudio.com/docs/copilot/customization/custom-instructions
 - VS Code prompt files: https://code.visualstudio.com/docs/copilot/customization/prompt-files
 - VS Code Agent Skills: https://code.visualstudio.com/docs/copilot/customization/agent-skills
 - GitHub Copilot CLI custom instructions: https://docs.github.com/en/copilot/how-tos/copilot-cli/customize-copilot/add-custom-instructions
 - GitHub repository custom instructions: https://docs.github.com/copilot/customizing-copilot/adding-custom-instructions-for-github-copilot
+- GitHub custom instruction support matrix: https://docs.github.com/en/copilot/reference/custom-instructions-support
+- GitHub Copilot Code Review guidance: https://docs.github.com/en/copilot/tutorials/customize-code-review

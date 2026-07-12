@@ -1,12 +1,12 @@
 ---
 description: "Git の公開同期ポリシー（repo visibility、.github/.vscode の公開判断、公開済み時の対応）"
-applyTo: "**"
 ---
 <!-- syncToGlobal: true -->
 <!-- author: aktsmm -->
 <!-- repository: https://github.com/aktsmm/Agent-Customization -->
 <!-- license: CC BY-NC-SA 4.0 -->
 <!-- copyright: Copyright (c) 2025 aktsmm -->
+<!-- updated: 2026-07-13 -->
 
 # Git Publish Policy
 

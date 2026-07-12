@@ -9,6 +9,7 @@ applyTo: "**"
 <!-- repository: https://github.com/aktsmm/Agent-Customization -->
 <!-- license: CC BY-NC-SA 4.0 -->
 <!-- copyright: Copyright (c) 2025 aktsmm -->
+<!-- updated: 2026-07-13 -->
 
 # Git Operations Instructions
 
@@ -22,7 +23,7 @@ applyTo: "**"
 - 成果物に絶対パスを埋め込まない（相対パスで扱う）。
 - `gh issue comment --body` などへ変数を渡すときは、変数定義と実行を同一ターミナル実行で行う。
 - Git hook は `.sample` のままでは実行されない。クローン再現性が必要な場合は、repo 管理下（例: `hooks/pre-commit`）に実体を置き、README で `.git/hooks/` へのコピー手順を案内する。
-- 公開同期、repo visibility、`.github` / `.vscode` の公開判断は、実行前に対象と公開範囲を確認する。
+- 公開同期、repo visibility、`.github` / `.vscode` の公開判断は、実行前に対象と公開範囲を確認し、必要時は `git-publish-policy.instructions.md` を参照する。
 
 ## Release Sanity
 
@@ -30,7 +31,6 @@ applyTo: "**"
 - release tag を作る前に、その tag が指す commit と現在の HEAD を比較する。既存 tag が HEAD より古いなら tag の付け替えではなく version bump で進める。
 - package publish では ignore 設定や packer の想定を信じ切らず、実 tarball の中身を列挙して runtime artifact だけが入っていることを確認する。
 - npm package の `files` を使う repo では、必要な runtime artifact を include pattern で明示し、sourcemap などの開発資材が混入しないことを pack 後に確認する。
-- `vsce publish` の直後は `vsce show --json` や Marketplace の version 表示が stale なことがある。publish 成功出力、remote tag、GitHub Release、Marketplace page の更新時刻など別経路の証跡を先に確認し、stale 表示だけで再 publish や追加 version bump をしない。
 
 ## Conventional Commits
 
@@ -55,13 +55,8 @@ applyTo: "**"
 
 ## gh CLI
 
-- private repo で `Could not resolve to a Repository` や scope 不足が出たら、repo 名や remote を疑う前に `gh auth status` で active credential を確認する。
-- `gh` を複数アカウントで使っている環境では、release 作成や release asset 操作の前に `gh auth status` で **active account** を確認する。対象 repo の owner ではない account が active だと、`gh release create` が `workflow scope may be required` などの分かりにくい権限エラーで失敗することがある。
-- `gh repo view` や `gh api repos/<owner>/<repo>` は成功するのに `git clone` / `git push` が `Repository not found` になる場合は、Git transport が別 credential を使っている可能性を疑う。`gh auth setup-git` や `gh api` の permissions で切り分け、小さな同期なら Git Data API 経路へ切り替えてよい。
-- `GITHUB_TOKEN` / `GH_TOKEN` が設定されていると、keyring に保存された高権限認証より優先されることがある。
-- そのシェルだけ保存済み認証を使いたい場合は、`$env:GITHUB_TOKEN=$null; $env:GH_TOKEN=$null` を設定してから `gh` を再実行してよい。
-- private repo の PR/Issue 確認で認証が怪しいときは、`gh pr list -R <owner>/<repo> ...` のように `-R` を明示して切り分けてよい。
-- `gh api` / `gh issue comment` 等で `EOF` エラーが出た場合は、そのままリトライで解決することが多い（一時的な接続問題）。
-- Issue コメント削除（`gh api -X DELETE`）が失敗した場合は、`gh issue comment --edit-last --body "(deleted)"` で内容を差し替えてからリトライする。
+- private repo、release、PR/Issue 操作で権限エラーが出たら、repo 名を疑う前に `gh auth status` で active account と credential を確認する。
+- `GITHUB_TOKEN` / `GH_TOKEN` が keyring 認証を上書きしている場合は、そのシェルだけ両変数を `$null` にして再確認してよい。
+- GitHub API は成功するのに clone / push が失敗する場合は、Git transport の credential を切り分ける。PR/Issue 確認では `-R <owner>/<repo>` を明示してよい。
 - 長いマークダウンを `--body` で直接渡すとシェルの問題が起きやすいので、`--body-file` でファイル経由で渡す。
 

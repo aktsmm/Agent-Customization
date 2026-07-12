@@ -8,6 +8,7 @@ applyTo: "**/*.prompt.md,**/*.instructions.md,**/*.agent.md,**/SKILL.md,**/copil
 <!-- repository: https://github.com/aktsmm/Agent-Customization -->
 <!-- license: CC BY-NC-SA 4.0 -->
 <!-- copyright: Copyright (c) 2025 aktsmm -->
+<!-- updated: 2026-07-13 -->
 
 # Customization Authoring Instructions
 
@@ -52,7 +53,7 @@ Customization 資産を編集するときの量、粒度、自己完結性のル
 ## Do Not Write
 
 - 抽象的な品質要求: `be more accurate` / `don't miss any issues`。
-- 外部 URL を参照させるだけの指示。必要な内容は本文に書く。
+- Copilot Code Review で外部 URL の規則を参照させるだけの指示。実行に必要な規則は本文に書き、URL は人間による更新確認にだけ使う。
 - 装飾・好みの出力スタイル強制。検証可能な出力形式は除く。
 - PR ブロック等の挙動変更要求。
 - linter / formatter / 設定で済むルール。
@@ -82,20 +83,9 @@ Customization 資産を編集するときの量、粒度、自己完結性のル
 
 `*.prompt.md` / `*.agent.md` / `SKILL.md` は手動呼び出し型だが、冗長さは判断精度と保守性を下げる。
 
-残す要素:
-
-- `description` / `name` / `frontmatter`: semantic match と発火判定。
-- `When to Use` / `When NOT to Use`: トリガー。
-- 判断ルール、スコープ、モード分岐、明示的な禁止事項。
-
-圧縮する要素:
-
-- `description` と重複する前置き。
-- 同じ概念の別見出しでの再掲。
-- 冗長な接続詞や細かすぎる手順番号。
-- 3 個以上ある表。言い換えでないか疑う。
-
-粒度は「2 週間後の自分が見て分かる」最小限にする。
+- 残す: semantic match 用 metadata、トリガー、判断ルール、スコープ、モード分岐、禁止事項。
+- 圧縮する: metadata と重複する前置き、同じ概念の再掲、細かすぎる手順番号、言い換え中心の表。
+- 粒度は「2 週間後の自分が見て判断できる」最小限にする。
 
 ## Change Order
 
@@ -107,20 +97,8 @@ Customization 資産を編集するときの量、粒度、自己完結性のル
 4. 参照化: 低頻度の深い detail だけを外へ逃がす必要があるか。
 5. 追加: ここで初めて追記を検討する。
 
-## Instability Triage
+## Operational Limits and Guidance
 
-casual chat や通常応答が不安定になったら、まず always-on の入口ファイルを疑う。
-
-1. `.github/copilot-instructions.md` の過積載
-2. 入口ファイルと `.github/instructions/**` の重複
-3. 入口ファイル内の Markdown 参照リンクによる実質的な肥大化
-4. `AGENTS.md` と `.agent.md` の役割不整合
-
-入口ファイルを rename / disable した瞬間に casual chat が正常化したら、over-scoped 確定のサイン。
-
-## Hard Limits
-
-- Copilot code review は instruction 先頭 **4,000 文字** しか読まない（Chat / cloud agent は対象外）
-- 1 ファイル上限の目安は **~1,000 行**、実用は数十〜数百行
-- 優先度: Personal > Repository > Organization。同名概念が複数階層にあると衝突する
-- 競合命令は片方を消すか参照に置換する
+- Copilot Code Review 用の単一 instruction file は、約 1,000 行以下を推奨する。これは hard limit ではなく、超えると応答品質が低下する可能性があるという GitHub Docs の現行ガイダンスである。
+- 実用上は数十〜数百行を目安とし、長さより責務の集中、具体性、競合の有無を優先して判断する。
+- 競合命令は片方を削除するか、責務を分けて一方を参照用の情報にする。
