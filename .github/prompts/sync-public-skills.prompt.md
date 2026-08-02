@@ -86,14 +86,13 @@ MS 社内向け skill を enterprise 全員に「緩く公開」するための 
 - push 前に機密スキャン（grep）を必須とし、ヒットがあれば停止する（誤検知確認済みのみ `-AllowSensitive`）
 - EMU アカウント切替は script が finally で `aktsmm` へ復帰する。実行後に active アカウントを確認する
 
-## Copilot-Skills Public Audit Gate
+## Copilot-Skills Private Inventory Gate
 
-`copilot-skills/`（`.copilot` 由来ミラー）を broad sync で public へ出す前に、skill 単位で 3 観点を監査し、除外対象を `Sync-AndPush.ps1 -ExcludeCopilotSkills` に渡す。primary-only では primary の分類と漏れ込み確認だけを行い、対象外 skill の公開可否を毎回再判定しない。判断は必要時にここで行い、script にハードコードしない。
+`copilot-skills/`（`.copilot` 由来ミラー）は private inventory とし、license に関係なく public へ同期しない。`publicCopilotSkills` は空を維持し、inventory 全件を `deniedCopilotSkills` に分類する。`-IncludeCopilotSkills` / `-IncludeCopilotMSkills` は使わない。
 
-- ①ライセンス: 第三者 Proprietary は除外する。Anthropic / Microsoft Scout ビルトイン（`docx` / `pptx` / `xlsx` 等、LICENSE.txt が複製・派生・サービス外保持を禁止）は public 不可。LICENSE 不明（`expense-report` / `receipt-ocr` / `loop` / `excalidraw` 等）は安全側で除外。Apache 2.0 等の再配布可能ライセンス（`web-artifacts-builder` 等）は LICENSE / NOTICE を保持して公開可
-- ②DUP: 同名 skill が private repo `.github/skills/<skill>/` にある場合は、そちらを正として copilot-skills 側を public から除外する（二重公開防止）
-- ③機密: ユーザー名、ローカル絶対パス、Tenant ID、顧客名、個人メールを含む skill は、一般化できないなら除外する。一般化済みの自作 skill（`export-session-log` / `m365-copilot-research` / `retro-private-skills` / `permission-max` 等）は公開可
-- 監査結果は `publicCopilotSkills` / `deniedCopilotSkills`へ保存する。allowlist未登録Skillは `-IncludeCopilotSkills` でも公開しない
+- 新しい inventory を検出したら `deniedCopilotSkills` へ保存するまで sync を停止する
+- 同名 native skill が必要なら `.github/skills/<skill>/` へ別途 authoring し、native skill の public safety audit を通す。mirror の生コピーは公開しない
+- public repo に `copilot-skills/` が存在したら broad sync で削除し、remote treeでも不在を確認する
 
 ## Sync Strategy
 
@@ -129,7 +128,7 @@ Agent は script の `exit 2` を待たず、sync 実行前に private repo の 
 2.5. `all` 指定時は `Commit-DirtySkills.ps1` のdry-run→`-Apply`でskill単位にcommitする。skill以外のdirtyはNot Doneに残し、同期scriptへ渡さない
 3. safe path を選ぶ
 	- primary-only 実行: `Sync-AndPush.ps1 -PrimarySkills <skill-name...> -Message "sync: <skill summary>" -SkipDevPush`。選択外 skill、README、LICENSE index、assets、copilot-skills を変更しない
-	- broad 実行: `Sync-AndPush.ps1 -Message "sync: <summary>" -SkipDevPush -ExcludeCopilotSkills <監査で確定した除外名>`。public-safe 全体と shared files を mirror する
+	- broad 実行: `Sync-AndPush.ps1 -Message "sync: <summary>" -SkipDevPush`。public-safe native 全体と shared files を mirror し、public の `copilot-skills/` は削除する
 	- EMU 実行: private-only skill を EMU private repo の該当 path へ mirror し、public repo に同 skill が出ていないことを確認する。`Sync-AndPush.ps1 -SyncEmu [-EmuDryRun]` を使う。Git transport が使えない場合は GitHub API 経路で単一 commit にまとめる
 	- GIM internal 実行: MS 社内向け skill を org-owned `internal` repo（`gim-home/yamapan-skills`）へ集約する場合は `Sync-AndPush.ps1 -SyncInternal [-InternalDryRun]` を使う。README は自動再生成される
 4. private repo のcurrent branchをremote privateへpushし、publicはlocal mirror hashとremote到達、EMU/GIMはremote treeのpath集合とblob SHAを確認する。Missing / Mismatch / Extraが0になるまで完了扱いにしない

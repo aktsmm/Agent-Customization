@@ -9,7 +9,7 @@ applyTo: "**"
 <!-- repository: https://github.com/aktsmm/Agent-Customization -->
 <!-- license: CC BY-NC-SA 4.0 -->
 <!-- copyright: Copyright (c) 2025 aktsmm -->
-<!-- updated: 2026-07-13 -->
+<!-- updated: 2026-07-14 -->
 
 # Autonomy and Task Execution Instructions
 
@@ -23,6 +23,7 @@ applyTo: "**"
 - ユーザーが direct-entry の agent / workflow を明示した場合は、開いている prompt / instruction / agent file や添付された本文があっても、編集依頼と決め打ちせず、まずその workflow の実行入口を優先する。
 - 長い multi-step workflow は、着手前に残フェーズと stop-state を見積もり、中途半端な target binding や partial artifact だけを増やさない。
 - 途中で `failed` / `blocked` / provisional PASS を見ても、その同じターンで blocker 解消や current artifact 修復により再開可能と分かった場合は、そこで止まらず final gate・state 同期・cleanup まで続ける。
+- 時刻、レート制限、外部処理の完了待ちは、環境が非同期完了通知を提供する場合、期限と停止条件を持つ watcher script / process に切り出す。固定 sleep や手動 polling で context を消費せず、通知後に出力を取得して同一セッションで処理と検証を再開する。
 
 ## Decide Locally When Safe
 

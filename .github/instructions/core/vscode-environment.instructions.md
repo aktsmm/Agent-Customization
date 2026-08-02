@@ -16,10 +16,10 @@ VS Code 環境でよく参照する保存先と配置場所のメモ。「どこ
 
 ### チャット画像の保存先
 
-- GitHub Copilot Chat に貼り付けた画像は以下に保存される:
+- GitHub Copilot Chat に貼り付けた画像は、以下を最優先の保存先として扱う:
   - `%APPDATA%\Code\User\workspaceStorage\vscode-chat-images\`
 - ファイル名形式: `image-{timestamp}.png`
-- チャットで画像を参照する際はこのパスを使用する
+- チャットで画像を参照・取り込むときは、まずこの場所を確認し、添付時刻に近いファイルを候補にする。候補が複数なら寸法や画像内容で照合する。Screenpresso は、ユーザーが同ツールで撮影したと示した場合、またはこの場所に一致候補がない場合だけ確認する。
 - 必要に応じて、ワークスペース内に用途に合ったファイル名でコピーして使用してよい
 
 ### グローバル Prompts / Agents / Instructions

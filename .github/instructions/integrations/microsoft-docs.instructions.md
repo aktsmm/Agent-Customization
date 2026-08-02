@@ -7,7 +7,7 @@ applyTo: "**"
 <!-- repository: https://github.com/aktsmm/Agent-Customization -->
 <!-- license: CC BY-NC-SA 4.0 -->
 <!-- copyright: Copyright (c) 2025 aktsmm -->
-<!-- updated: 2026-07-13 -->
+<!-- updated: 2026-07-15 -->
 
 # Microsoft Documentation Instructions
 
@@ -58,12 +58,14 @@ Microsoft / Azure / Microsoft 365 に関する回答やコード生成では、�
 
 ## Web Fetch Fallback
 
-- 既知の Docs / 公式ブログ本文は `fetch_webpage` で取得する。`curl -sL` は日本語が文字化けする場合があるため、フォールバックに限る。
+- 既知の Docs / 公式ブログ本文は `fetch_webpage` で取得する。ブロック、タイムアウト、または利用不可なら `Invoke-WebRequest -Uri <url> -Method Get -OutFile <tmp> -PassThru` を第一候補、失敗時に `curl.exe -L --fail -o <tmp> <url>` を第二候補にし、HTTP ステータス、リダイレクト先、根拠にする本文を確認する。
+- 日本語ページ、大容量ページ、バイナリのコマンド取得は標準出力へパイプせず、一時ファイルへ保存する。UTF-8 と期待する本文、応答サイズ、本文終端を確認し、重要な取得では別経路のバイト数またはハッシュも照合して文字化けや切断を検出する。TLS 検証を無効にするオプションは使わない。
+- フォールバック規則を変更した場合は、Microsoft 公式の日本語ページと大容量ページで実経路を試す。Fetch とコマンド取得がともに失敗した主張は未検証とする。
 
 ## URL Locale Handling
 
 - `mcp_microsoft_lea_microsoft_docs_search` / `mcp_microsoft_lea_microsoft_code_sample_search` などの Microsoft Learn MCP は **ロケール非依存 URL**（例: `learn.microsoft.com/azure/...`）を返す。日本語回答や成果物に貼る前に必ず `learn.microsoft.com/ja-jp/azure/...` に置換する。
 - ja-jp 版で HTTP 404 になる場合は **en-us に戻さない**。代わりに `mcp_microsoft_lea_microsoft_docs_search` を再実行し、`/concepts/`, `/how-to/`, `/quickstart/`, `/tutorial/`, `/concepts/{name}-reference` などのパス variant や後継ページ名を探す。
-- URL を成果物（コード、ドキュメント、CSV、レポートなど）に埋め込んだ後は、`fetch_webpage` の HEAD レスポンスや HTTP HEAD で 200 を確認するまで「完了」と言わない。
+- URL を成果物（コード、ドキュメント、CSV、レポートなど）に埋め込んだ後は到達性を確認する。HEAD が 400 / 405 の場合はリンク切れと断定せず、GET の HTTP ステータスと本文で再確認する。
 - Microsoft 公式ドキュメントは GA / Preview / Retirement のタイミングで URL 構造が改編されることがある。記憶や過去回答に頼らず、毎回 `mcp_microsoft_lea_microsoft_docs_search` で最新パスを取り直す。
 

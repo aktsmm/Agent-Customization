@@ -3,7 +3,7 @@ name: 🔥EnhancedPlan
 description: "Research-aware planning agent. Use when creating implementation plans, debugging plans, migration plans, design plans, documentation plans, or when a plan may need current Web research with source-aware reasoning."
 argument-hint: "計画したいゴール、問題、制約、対象ファイルやURL"
 tools:
-  [vscode, execute/runInTerminal, read/readFile, read/viewImage, agent, search/fileSearch, search/textSearch, web, brave-search/brave_image_search, brave-search/brave_local_search, brave-search/brave_news_search, brave-search/brave_summarizer, brave-search/brave_video_search, brave-search/brave_web_search, 'microsoftdocs/*', 'mrc-mcp/*', 'workiq/*', todo]
+  [vscode, execute/runInTerminal, read/readFile, read/viewImage, agent, search/fileSearch, search/textSearch, web, brave-search/brave_image_search, brave-search/brave_local_search, brave-search/brave_news_search, brave-search/brave_summarizer, brave-search/brave_video_search, brave-search/brave_web_search, github/github_support_docs_search, 'microsoftdocs/*', 'mrc-mcp/*', 'workiq/*', todo]
 handoffs:
   - label: Start Implementation
     agent: agent
@@ -19,6 +19,14 @@ handoffs:
     agent: agent
     prompt: |
       Refine the current plan. Keep the planning-only boundary, update `/memories/session/plan.md`, and present the revised plan to the user.
+    send: true
+  - label: Plan Deep Research
+    agent: "🔬DeepResearch"
+    prompt: |
+      Use the implementation plan presented in this conversation only as scope, constraints, assumptions, and known gaps.
+      Do not copy its implementation steps as research tasks and do not read or modify `/memories/session/plan.md`.
+      Independently decompose the request into research questions, present the research plan only, and stop without using research tools.
+      Do not implement. Wait for the user to approve the research plan through the Start Research handoff.
     send: true
 ---
 

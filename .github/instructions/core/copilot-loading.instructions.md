@@ -8,7 +8,7 @@ applyTo: "**/*.prompt.md,**/*.instructions.md,**/*.agent.md,**/*.toolsets.jsonc,
 <!-- repository: https://github.com/aktsmm/Agent-Customization -->
 <!-- license: CC BY-NC-SA 4.0 -->
 <!-- copyright: Copyright (c) 2025 aktsmm -->
-<!-- updated: 2026-07-13 -->
+<!-- updated: 2026-07-15 -->
 
 # Copilot CLI / VS Code インストラクション読み込みルール
 
@@ -74,6 +74,9 @@ applyTo: "**/*.prompt.md,**/*.instructions.md,**/*.agent.md,**/*.toolsets.jsonc,
 - `.agent.md` の YAML `tools:` は `vscode/installExtension` のような namespace/toolName 形式を使う
 - `*.toolsets.jsonc` の `"tools"` は toolset 側の短い ID / category 名（例: `execute`, `read`, `microsoft_docs_search`）を使う
 - agent frontmatter の tools 一覧を `*.toolsets.jsonc` にそのまま移植しない。schema warning が `problems` に出ないこともあるため、既存例とエディタ上の警告も確認する
+- リモート GitHub MCP の追加 toolset は HTTP header `X-MCP-Toolsets: default,<toolset>` で有効化する。`github_support_docs_search` は remote-only で、`default` には含まれない。
+- `mcp.json` の変更後も既存 chat の tool catalog は直ちに更新されない。MCP server を再接続するか新しい chat を開き、必要な tool が公開されたことを確認する。
+- HTTP MCP を直接診断するときは `initialize` → `notifications/initialized` → `tools/list` / `tools/call` の順にし、認証情報と session ID の値を出力・保存しない。
 
 ## 配置の判断基準
 
@@ -96,3 +99,4 @@ Verified: 2026-07-13。URL は人間による仕様更新の確認用であり�
 - GitHub repository custom instructions: https://docs.github.com/copilot/customizing-copilot/adding-custom-instructions-for-github-copilot
 - GitHub custom instruction support matrix: https://docs.github.com/en/copilot/reference/custom-instructions-support
 - GitHub Copilot Code Review guidance: https://docs.github.com/en/copilot/tutorials/customize-code-review
+- GitHub MCP toolsets: https://docs.github.com/en/enterprise-cloud@latest/copilot/how-tos/provide-context/use-mcp-in-your-ide/configure-toolsets

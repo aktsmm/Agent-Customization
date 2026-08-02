@@ -8,7 +8,7 @@ applyTo: "**"
 <!-- repository: https://github.com/aktsmm/Agent-Customization -->
 <!-- license: CC BY-NC-SA 4.0 -->
 <!-- copyright: Copyright (c) 2025 aktsmm -->
-<!-- updated: 2026-07-13 -->
+<!-- updated: 2026-07-15 -->
 
 # Web Search Instructions
 
@@ -31,11 +31,12 @@ Web 検索、ページ取得、最新情報確認、出典付き調査を行う�
 
 ## Provider Priority
 
-1. Microsoft / Azure / Microsoft 365 関連は `microsoftdocs/*` を優先する。新機能、GA、Preview、Retirement は Azure Updates / M365 roadmap 系ツールを使う。
-2. 汎用 Web 検索は `brave-search/*` を第一候補にする。レスポンス、構造化結果、再現性のバランスが良い。
-3. 既知の公式 URL がある場合は、検索を挟まず `web/fetch` や `fetch_webpage` で直接取得してよい。
-4. Brave が失敗、429、または利用不可の場合は DuckDuckGo HTML を fetch fallback として使う。
-5. それでも検索候補が必要で、terminal tool が許可されている場合だけ、Copilot CLI `web_search` を read-only fallback として使う。
+1. GitHub / GitHub Enterprise の機能、API、リポジトリ、Issue / PR、Actions、セキュリティ機能を調べるときは GitHub MCP を第一候補にする。公式 Docs は `github_support_docs_search`、リポジトリや Issue / PR は対応する GitHub MCP tool を使い、MCP または必要な toolset が利用できない場合だけ GitHub 公式 URL の直接取得、次に汎用 Web 検索へ進む。
+2. Microsoft / Azure / Microsoft 365 関連は `microsoftdocs/*` を優先する。新機能、GA、Preview、Retirement は Azure Updates / M365 roadmap 系ツールを使う。
+3. 汎用 Web 検索は `brave-search/*` を第一候補にする。レスポンス、構造化結果、再現性のバランスが良い。
+4. 既知の公式 URL がある場合は、検索を挟まず `web/fetch` や `fetch_webpage` で直接取得してよい。
+5. Brave が失敗、429、または利用不可の場合は DuckDuckGo HTML を fetch fallback として使う。
+6. それでも検索候補が必要で、terminal tool が許可されている場合だけ、Copilot CLI `web_search` を read-only fallback として使う。
 
 ## Fallbacks
 
@@ -56,6 +57,10 @@ copilot -p "<query>。URL のみ、1行1件で返して。" `
 ```
 
 - CLI fallback は Brave / DuckDuckGo より優先しない。terminal 利用は read-only な URL 収集に限定し、build / test / install / deploy / format / mutation には使わない。
+- 既知 URL の Fetch がブロック、タイムアウト、または利用不可なら、PowerShell では `Invoke-WebRequest -Uri <url> -Method Get -OutFile <tmp> -PassThru` を第一候補にする。HTTP ステータス、リダイレクト先、保存した本文を同じ経路で確認できる。
+- `Invoke-WebRequest` が失敗した場合は、`curl.exe -L --fail -o <tmp> <url>` を第二候補にする。TLS 検証を無効にするオプションは使わず、両方失敗した場合は未検証とする。
+- 日本語ページ、大容量ページ、バイナリは標準出力へパイプせず、`-OutFile` または `-o` で一時ファイルへ保存する。UTF-8 と期待する本文、応答サイズ、本文終端を確認し、重要な取得では別経路のバイト数またはハッシュも照合して一時ファイルを削除する。
+- フォールバック手順を追加・変更したタスクは、構文や diff だけで完了扱いにせず、実在ページでその経路を実行する。文字コードや応答サイズが論点なら、日本語ページと大容量ページを少なくとも 1 件ずつ試す。
 
 ## Reporting
 
