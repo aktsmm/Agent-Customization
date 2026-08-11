@@ -28,20 +28,22 @@ applyTo: "**"
 
 ## Tools
 
-- 独立した read-only 調査は並列化する。
-- 長い生ログではなく、関連エラー、周辺、終了状態、次アクションを残す。
+- 狭い確認は、対象・列・件数・範囲を絞った短い command / tool call を直接実行し、出力は取得元で filter / limit / summary する。
+- raw output は後の監査・再読に必要な場合だけ file に保存し、親へは相対 path、結論、主要根拠、次 action を返す。
 - shell 構文や出力制御はローカルの terminal rule に従う。
-- セッション中に編集ツール / MCP / 取得ツールが無効化される場合がある。同じツールを 2 回試して失敗したら、代替ルートへ切り替える（例: `create_file` 不可 → terminal 経由でファイル生成、Playwright MCP 不可 → Python + CDP、`get_terminal_output` 不可 → ログをファイル出力して `read_file`）。粘らずに別ルートへ移す。
+- セッション中に編集ツール / MCP / 取得ツールが無効化される場合がある。同じ tool + input は1回だけ再試行し、2回連続失敗なら別ルートへ切り替える（例: `create_file` 不可 → terminal 経由でファイル生成、Playwright MCP 不可 → Python + CDP、`get_terminal_output` 不可 → ログをファイル出力して `read_file`）。
 
 ## Loop
 
-- 同じ失敗を2回見たら、同条件で再試行しない。
+- 入力や操作方式を変えても同じ永続 state が2回続いたら、fallback ladder 全体を停止する。最終 state・試行済み経路・再開条件を残し、3つ目の迂回策を探さない。
 - 反復が増える作業は、手順を固定するか小さな script に切り出す。
 - 非自明な作業は、検証方法を先に決めてから進める。
 
 ## Delegate
 
-- サブエージェントには、必要な入力、制約、期待出力だけ渡す。
+- 広い検索、長いログ、複数ページ調査、または返却が概ね100行を超えそうな read-only 作業は、観点ごとの isolated subagent に委譲する。
+- context isolation は会話履歴の分離であり、tool / file / network 権限の security boundary とみなさない。
+- 子には subgoal、必要な入力、制約、判定基準だけを渡し、親への返却は decision / key evidence / next action と、raw を保存した場合の相対 path に限定する。
 - 独立タスクは分け、BLOCKED は原因か条件を変えてから再実行する。
 - サブエージェントが `thinking` / `redacted_thinking` の 400 や model not found で落ちた場合は、サブエージェント不可と断定せず、利用可能一覧の exact model name か別モデル経路で 1 回だけ再試行する。
 - **view_image** や **ファイル書き出し**を伴う大量目視 audit をサブエージェントに一括委任しない。audit md の書き出しが失敗してテキストだけ返す事例が多い。サブエージェントには探索 / grep / 確実に実行できる小さいタスクを任せ、view_image + report はメインで 3-5 枚なら並列で直接見る。

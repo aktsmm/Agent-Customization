@@ -164,7 +164,7 @@ PREPARE -> RESEARCH -> EVALUATE -> OUTPUT
 
 - 観点ごとにサブエージェントへ委譲する
 - 中間 file は原則作らず、必要な場合だけ `research/YYYYMMDD-<slug>-part-N.md` を一時作成する
-- 各サブエージェントは、可能なら chat で結果を返し、不要な file 生成を避ける
+- 各サブエージェントは chat に decision / key evidence / next action だけを返す。raw が後の統合・監査に必要な場合だけ `research/YYYYMMDD-<slug>-part-N.md` に保存し、相対 path を添える
 - 完了後は正本 1 件へ統合し、不要になった `-part-N.md` `-lite.md` `*-report.md` は削除候補として報告する
 
 サブエージェントには最低限これを伝える。

@@ -8,7 +8,7 @@ applyTo: "**/*.prompt.md,**/*.instructions.md,**/*.agent.md,**/*.toolsets.jsonc,
 <!-- repository: https://github.com/aktsmm/Agent-Customization -->
 <!-- license: CC BY-NC-SA 4.0 -->
 <!-- copyright: Copyright (c) 2025 aktsmm -->
-<!-- updated: 2026-07-15 -->
+<!-- updated: 2026-08-04 -->
 
 # Copilot CLI / VS Code インストラクション読み込みルール
 
@@ -37,12 +37,13 @@ applyTo: "**/*.prompt.md,**/*.instructions.md,**/*.agent.md,**/*.toolsets.jsonc,
 | 設定 | 既定 | 役割 |
 | --- | --- | --- |
 | `chat.includeApplyingInstructions` | true | `applyTo` 一致の instruction を system prompt に添付する |
-| `chat.includeReferencedInstructions` | true | instruction / agent 中の Markdown link 参照先を**再帰添付**する |
+| `chat.includeReferencedInstructions` | false（1.131.0 で確認） | instruction / agent 中の Markdown link 参照先を**再帰添付**する |
 
-- `chat.includeReferencedInstructions: true` は、エージェント起動時にリンク到達閉包（agent / instruction / skill 本文）を丸ごと system prompt へ展開する。catalog（`AGENTS.md` → `README.md` など）への hub リンクが多いと、起動時だけ system prompt が桁違いに膨張し、実タスク指示が希釈されて汎用応答に退行する
+- `chat.includeReferencedInstructions` を有効にすると、エージェント起動時にリンク到達閉包（agent / instruction / skill 本文）を丸ごと system prompt へ展開する。catalog（`AGENTS.md` → `README.md` など）への hub リンクが多いと、起動時だけ system prompt が桁違いに膨張し、実タスク指示が希釈されて汎用応答に退行する
+- 1.131.0 時点で既定は `false`、かつこの設定を参照するのは Local agent harness だけ。無効でも Edit モードでは参照 instructions が添付される
 - 症状: 通常チャットは正常なのに `@agent` 起動時だけ指示を無視して「何を進めますか」型に落ちる。Markdown link を辿る挙動なので skills や個別ファイルの量を削っても直らない
 - 切り分け: `debug-logs/<session>/system_prompt_0.json` のサイズと `<attachment filePath` 数を、通常チャットとエージェント起動で比較する。エージェント側だけ数倍なら再帰添付が原因
-- 対処: `chat.includeReferencedInstructions: false`。ファイルを書き換えず Markdown link を残したまま起動時の自動先読みだけ止める。必要なファイルはエージェントが都度 `read_file` で読める。前提として必須ルールは `applyTo` で scoped した instruction 本体に残し、リンク先は補助的深掘りに限定する
+- 対処: 既定が `false` の版では追加設定は不要。明示的に `true` にしている場合や既定が `true` だった旧版では `false` にする。ファイルを書き換えず Markdown link を残したまま起動時の自動先読みだけ止める。必要なファイルはエージェントが都度 `read_file` で読める。前提として必須ルールは `applyTo` で scoped した instruction 本体に残し、リンク先は補助的深掘りに限定する
 
 ## Instruction Priority
 

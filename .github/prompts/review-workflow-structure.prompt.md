@@ -39,6 +39,8 @@ argument-hint: "対象パス、review 観点、all / 徹底的 などの範囲�
 - `.github/skills/agentic-workflow-guide/references/review-checklist.md`
 - `.github/skills/agentic-workflow-guide/references/design-principles.md`
 
+ワークスペースにワークフロー設計レビュー専用 rubric の instruction がある場合は、`applyTo` が今回の入口へ match しなくてもそれも rubric として読む。
+
 この prompt は入口・スコープ・出力契約だけを持つ。checklist を再掲しない。
 
 ## Required Review Dimensions
@@ -50,7 +52,7 @@ rubric SSOT が無い場合、または最終 sanity check では、次だけを
 - Primitive / SRP: prompt / instruction / skill / agent / hook の選択が最小で、1 agent が 1 責務か。
 - Frontmatter / Placement: `.prompt.md` / `.instructions.md` / `.agent.md` の supported fields、`applyTo` 過大、`.github/agents/` 直下配置を確認する。
 - Deterministic Offload: extract / count / validate / diff / format / parse / lint が LLM loop に混ざっていないか。
-- Link Integrity: 相対 Markdown link が実在するか。機械検査では code span / fenced code 内の記法例、`URL` / `url` / `image-url` などの placeholder target を除外する。
+- Reference Integrity: 相対 Markdown link の実在に加え、`#anchor` と `セクション N` / `section N` / `§N` の散文ポインタが対象の見出しへ解決するか。ファイル実在だけを PASS にしない。機械検査では code span / fenced code 内の記法例、`URL` / `path` などの placeholder target を除外する。
 - Context Compression / Preservation: 冗長な再掲を削りつつ、ユーザー固有事実、運用メタコメント、根拠、必要な Example を誤削除しないか。
 - Runtime Classification: 各 finding を `runtime-affected` / `review-only` に分け、casual input forced routing の有無を確認する。
 
@@ -80,7 +82,8 @@ rubric SSOT が無い場合、または最終 sanity check では、次だけを
 
 ## Verification Gate
 
-- frontmatter、相対リンク、配置、重複件数は、利用可能な既存 validator / parser / search tool を優先して検査する。
+- frontmatter、参照整合性、配置、重複件数は、利用可能な既存 validator / parser / search tool を優先して検査する。
+- 参照整合性は、見出し / `#anchor` の解決を実際に行った gate 名を validator の出力または source で特定できたときだけ `PASS` とし、特定できなければ `NOT_RUN` とする。
 - 各検査を `PASS` / `FAIL` / `NOT_RUN` で記録し、使った tool または script、対象、判定根拠を示す。
 - validator が無い場合は検査を LLM の目視だけで `PASS` にせず、限定 read で代替できない項目を `NOT_RUN` にする。
 - 必須ファイルを読めない、検査が失敗する、または coverage が不足する場合は修正を止め、未確認対象と再開条件を伴う `INCOMPLETE` とする。
@@ -90,7 +93,7 @@ rubric SSOT が無い場合、または最終 sanity check では、次だけを
 
 1. Scope Gate を通す。
 2. 必要な rubric / entry / target files だけ読む。
-3. Verification Gate で frontmatter、agent placement、relative links を検査する。relative link 検査は code span / fenced code と placeholder target を false positive として除外する。
+3. Verification Gate で frontmatter、agent placement、参照整合性（link 実在 + 見出し解決）を検査する。機械検査は code span / fenced code と placeholder target を false positive として除外する。
 4. Rubber Duck 指定時は評価サブエージェントで前提を反証し、主張を実ファイルで照合する。
 5. finding を優先度順に出し、`削除 / 統合 / 分離 / 移動 / 追加 / 維持` に分類する。
 6. `fix` 指定時は低リスク修正を適用し、同じ観点で再レビューする。最大 3 回で止め、残件があれば理由を報告する。
@@ -105,8 +108,8 @@ rubric SSOT が無い場合、または最終 sanity check では、次だけを
 - {Priority} [{削除|統合|分離|移動|追加|維持}] {Category}: {file}:{line} → {fix} | Impact={runtime-affected|review-only} | Trigger={wording-only|wording + catalog|duplicated entry routing|always-loaded boundary violation|other}
 
 ### Runtime Impact
-- runtime-affected: {既定会話挙動や always-loaded entry に影響する残件}
-- review-only: {invoked asset / review asset のみの残件}
+- runtime-affected: {既定会話挙動、always-loaded entry、または実行時に自動ロードされる / agent が読む asset に影響する残件}
+- review-only: {人間が明示的に開いたときだけ読まれる asset の残件}
 
 ### Verification
 - {実施した read / grep / link / frontmatter / subagent review / 再レビュー}

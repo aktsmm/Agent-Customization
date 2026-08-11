@@ -18,6 +18,7 @@ applyTo: "**"
 ## Core Rules
 
 - 明示指示なしの `git push` は禁止（コミットまで可）。
+- `git push` 前は対象 remote を `git fetch` し、`git rev-list --left-right --count 'HEAD...@{upstream}'` などでahead/behindを再計算する。stale tracking refや記憶上の状態を根拠にpushしない。PowerShell では `{}` を含む revision 指定をクォートする（裸の `@{upstream}` は ScriptBlock 扱いで落ちる）。
 - GitHub への接続で SSH が利用可能なときは、HTTPS より SSH を優先する（既存 remote も必要に応じて SSH へ切り替える）。
 - ローカル未展開での軽微操作は `gh api` を優先する。
 - 成果物に絶対パスを埋め込まない（相対パスで扱う）。
@@ -43,6 +44,7 @@ applyTo: "**"
 ## Destructive Operations
 
 - `git filter-repo` / `git rebase -i` / `git reset --hard` 前に未コミット変更を必ず確定する。
+- `HEAD.lock` / `couldn't set HEAD` など同じGit更新失敗の対話promptが2回続いたら`n`で停止する。HEAD・status・diff・rebase/merge metadata・lock所有を確認し、未コミット変更を保護するまでrebase、blanket restore、lock削除を続けない。
 - `git restore <file>` / `git checkout -- <file>` は、そのファイル内の無関係な未コミット変更も巻き戻す。restore 後は対象ファイルの diff を再確認し、巻き戻したくない変更（例: 別作業の編集）が消えていないか確認する。
 - `git stash` だけに依存しない。
 - 大量の `git status` 出力に対しては、`git add -A` 前に「自分が触ったもの」「別ツール由来（skill 同期、formatter、別 IDE）」「未追跡の一時ファイル」を分類してユーザーに確認する。混在 dirty を一括で commit すると、後で範囲を分離するのが困難になる。

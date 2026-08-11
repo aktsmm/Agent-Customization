@@ -9,7 +9,7 @@ applyTo: "**"
 <!-- repository: https://github.com/aktsmm/Agent-Customization -->
 <!-- license: CC BY-NC-SA 4.0 -->
 <!-- copyright: Copyright (c) 2025 aktsmm -->
-<!-- updated: 2026-06-14 -->
+<!-- updated: 2026-08-04 -->
 
 # PowerShell Terminal Instructions
 
@@ -35,6 +35,8 @@ applyTo: "**"
 - 削除や移動などの破壊的操作は、対象パスを明示して実行する。
 - ワイルドカード削除は最小限にする。repo ルートの `Remove-Item *.json` / `*.txt` は tracked file を巻き込むため、一時ファイルは `tmp/` 配下か明示名で削除する。
 - ブラウザの user data / profile directory を削除する前に、それが既定プロファイルか、一時 `--user-data-dir` かを確認する。既定プロファイル削除は通常禁止し、一時プロファイルだけを対象にする。
+- CDP で既存ブラウザを再利用する前に、debug port と親プロセスを確認する。debug port なしの既存プロセスに `--remote-debugging-port` を追加しても、起動は既存プロセスに合流し port が開かないことがある。
+- 既存ブラウザの終了が必要な CDP 復旧は明示承認なしに行わず、port を開けない場合は同じ起動を反復せず、失敗理由と再開条件を記録する。
 - `git reset --hard` など不可逆操作の前に、変更確定またはバックアップを行う。
 
 ## 4. 長時間プロセス
@@ -48,12 +50,14 @@ applyTo: "**"
 - task は、再利用する stable entry point、watch、background job、problem matcher が必要な実行に限る。
 - 同じ単発実行が 2 回以上発生したら script / CLI への昇格を検討し、task が必要なら既存の generic process task や input 付き task を優先する。
 - `retry` `debug` `with fresh auth` のような派生 one-off task を常設しない。
+- task label は実行内容を保証しない。起動前に `command` と `args` を読み、対象を限定しない queue / runner は他セッションが投入した作業を消費するものとして扱う。
 - `.vscode/tasks.json` の `command` や `args` にはローカル絶対パスを直書きせず、ワークスペース配下は `${workspaceFolder}` を使う。例外は task `label` か近傍コメントで理由を残す。
 
 ## 5. 運用メモ
 
 - 一時変数を使うコマンド（例: `gh issue comment --body`）は、変数定義と実行を同一ターミナル実行にまとめる。
 - `gh` や類似 CLI で `--json number,title,url` のようなカンマ区切り引数や、空白を含む検索式を渡すときは、PowerShell で必ず 1 つの文字列として引用する。分解されると別引数扱いになり、検索失敗や `accepts 1 arg(s)` 系エラーになりやすい。
+- `{}` を含む引数はシングルクォートで囲う。例: `git rev-list --left-right --count 'HEAD...@{upstream}'`。裸の `@{upstream}` は PowerShell が ScriptBlock / hashtable と解釈し、`ScriptBlock should only be specified as a value of the Command parameter` で落ちる。`@{n}` や `HEAD@{1}` など git の reflog / upstream 表記全般が対象。
 - 日本語を含むファイルや JSON を扱うときは UTF-8 を維持する。
 - スクリプトや CLI を実行する前に、対象 script / 実行ファイルの存在を確認する。不在時は実行せず、read/grep などの代替検証へ切り替える。
 - VS Code task は再利用する registry とし、日付入り・対象固定の one-off task を常設しない。一時 task と一時スクリプトは完了前に削除する。

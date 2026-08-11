@@ -40,8 +40,8 @@ VS Code と違い、CLI / Scout は workspace（プロジェクトフォルダ�
 
 - 既定は `safe-auto`。workspace scope が明確で、既存資産への小〜中規模更新で済む場合は確認なしで反映してよい
 - `review-only` / `確認だけ` / `dry-run` / `プレビュー` が明示された場合だけ、変更案の提示で停止する
-- safe-auto で修正したときは、検証後に skill / scope 単位で local commit を作る。git 操作前は `Set-Location` で cwd を明示し、誤った repo へ commit しない
-- ahead が origin より 3 commits 以上に達し、remote が private/internal で working tree が clean のときだけ、明示指示なしでも `git push` まで行う。ahead 1、2 では push しない
+- Git 管理下の workspace なら、safe-auto で修正したあと、検証後に skill / scope 単位で local commit を作る。git 操作前は `Set-Location` で cwd を明示し、誤った repo へ commit しない。Git 管理外のフォルダではファイル反映だけで完了とする
+- remote が private/internal で、`origin/<branch>..HEAD` が今回の変更だけなら、明示指示なしでも `git push` まで行う。ahead の件数は条件にしない。commit を滞留させると、次に使う PC が古い状態から始まる。関係ない commit や別セッションの dirty が混ざるときは停止して確認する
 - scope 曖昧、大規模削除、公開・同期範囲変更、高リスクな実行コード / hook 変更、workflow の意味変更、secret / 個人情報 / 環境固有値の扱いに迷う場合だけ確認で停止する
 
 ## Scope Gate
@@ -78,7 +78,7 @@ VS Code と違い、CLI / Scout は workspace（プロジェクトフォルダ�
 - まず既存 workspace 資産へ統合できるかを確認する
 - script / task 化が適切なら既存 runner や script directory を優先する
 - entry file では追加より先に圧縮を検討し、`AGENTS.md` と `.github/copilot-instructions.md` の役割差分を崩さない
-- 複数ファイルが同じ knowledge を owning する cross-cutting 原則（例: cwd discipline、Self-Contained gate、push 閾値）は、関係する全資産に 1 行さずつ追加する複数反映を許可する。同じ長いブロックをコピーせず、独立 SSOT として各々 1 行を入れる
+- 複数ファイルが同じ knowledge を owning する cross-cutting 原則（例: cwd discipline、Self-Contained gate、push 前の scope 検証）は、関係する全資産に 1 行ずつ追加する複数反映を許可する。同じ長いブロックをコピーせず、独立 SSOT として各々 1 行を入れる
 - safe-auto では最小差分で反映し、review-only と Gate 停止時だけ提案に留める
 
 ### 3. 反映 + 必要時承認

@@ -13,7 +13,7 @@ agent: "agent"
 
 # retro private skills
 
-セッションやインシデント、または VS Code workspace の skill から再利用可能な知見を抽出し、private skill repo の既存 skill へ最小差分で統合する。safe-auto では authoring 後に local commit まで行う。private repo が origin より 3 commits 以上 ahead なら、明示指示がなくても push まで行う。public sync は行わない。
+セッションやインシデント、または VS Code workspace の skill から再利用可能な知見を抽出し、private skill repo の既存 skill へ最小差分で統合する。safe-auto では authoring 後に local commit と push まで行う。複数 PC / 複数セッションから同じ private repo を触る前提で、編集前に必ず同期し、commit を滞留させない。public sync は行わない。
 
 これは VS Code workspace 用の prompt 版。intake source は **VS Code workspace の `.github/skills/**`**（例: `<workspace>/.github/skills/c360-operations`）。`~/.copilot/skills|m-skills` の intake は CLI / Scout 用の `retro-private-skills` SKILL が担当する。育成先（write target）はどちらも private repo の `.github/skills/<skill>/`。
 
@@ -33,8 +33,10 @@ agent: "agent"
 - 既定は `safe-auto`。`review-only` / `dry-run` / `プレビュー` が明示された場合だけ、変更案を提示して停止する
 - scope 明確 + Safety Gate 通過 + 既存 skill への小〜中規模更新なら、確認なしで反映してよい
 - safe-auto で private repo に変更を入れた場合は、検証後に skill 単位の local commit を作成し、working tree を clean にして完了する
-- local commit 後に private repo が origin より 3 commits 以上 ahead なら、明示指示がなくても `git push` まで行う。push 前に remote が private repo であること、working tree が clean であること、push 対象が今回までの local commits だけであることを確認する
-- ahead が 1〜2 commits の場合は push しない。public sync、release、tag、force push は明示指示があるときだけ行う
+- 複数 PC / 複数セッションから同じ private repo を触るため、**local commit を滞留させない**。skill 単位 commit を作ったら、明示指示がなくてもそのまま `git push` する（ahead 件数の閾値は設けない）。この prompt の実行自体を push 承認として扱い、global の「明示指示なし push 禁止」をここだけ override する
+- push 前に `git fetch origin` してから ahead/behind を再計算し、remote URL が期待する private skill repo（owner/repo）と一致すること、working tree が clean であること、push 対象が「今回の run で作った commit」または「preflight で `origin/<branch>..HEAD` を確認し対象 skill だけと判定した既存 ahead commit」に限られることを確認する
+- push が reject されたら（別 PC が先に push 済み）`git pull --rebase` で取り込んでから再 push する。force push、public sync、release、tag は明示指示があるときだけ行う
+- push したくない draft を手元に残したい場合は safe-auto を使わず、`review-only` / `dry-run` / `プレビュー` を指定する
 - dirty primary skill changes は authoring / intake material として扱う。safe-auto では対象 skill の変更だけを stage / commit し、無関係 dirty は触らない
 - public / internal / EMU sync は行わない。反映先へ配る必要がある場合は、`Next Step / Handoff` に従う
 - scope 曖昧、大規模削除、意味変更、public/private 境界の変更、secret / 個人情報 / 環境固有値の扱いに迷う場合だけ確認で停止する
@@ -80,7 +82,13 @@ workspace skill を取り込むときは、source の `.github/skills/<skill>` �
 ### 1. 知見抽出
 
 - private repo root を解決し、`.github/skills/` の存在と対象 skill を確認する
-- `git status --short --branch` と ahead/behind を確認し、dirty path を skill 単位に分類する。対象 skill 以外の dirty は stage しない
+- **編集前の git preflight は `fetch -> 分類 -> dirty 処理 -> ahead 処理 -> pull --rebase` の順で行う**。順序を崩すと、無関係 dirty が残ったまま rebase を試して refuse されるし、clean を要求する push gate も通らない
+  1. `git -C <private-repo> fetch origin` を実行する。fetch なしの ahead/behind は stale な remote-tracking ref の値。upstream 未設定なら `@{upstream}` の確認自体が失敗するので、`origin/<branch>` を明示解決するか upstream を設定してから続行する
+  2. `git status --short --branch` で ahead / behind / dirty を確認し、dirty path を skill 単位に分類する
+  3. dirty を先に消す。対象 skill の dirty は commit する。**無関係 dirty を残したまま `pull --rebase` してはいけない**（unstaged changes があると rebase は refuse する）し、`--autostash` で隠すのも禁止。無関係 dirty が残るなら safe-auto では停止して扱いを確認するか、clean な worktree / 一時 clone を作ってそこで対象 skill だけを処理して push する
+  4. working tree が clean になったら ahead を再評価する。ahead が 0 でなければ、push は `origin/<branch>..HEAD` 全体を送るため滞留 commit が今回の push 承認に巻き込まれる。`git log --oneline --stat origin/<branch>..HEAD` で commit と touched paths を列挙し、対象 skill だけなら Mode の push gate を通して先に push し ahead 0 にする。対象外の commit が混ざる場合は safe-auto では停止し、扱いを確認する
+  5. behind があれば `git pull --rebase` する。別 PC の更新を取り込まずに編集すると、同じ skill を古い版ベースで書き換えて conflict になる
+  6. rebase が conflict したら、both-kept（両方残し）は**一時保存の方針**として使ってよいが最終形にはしない。push 前に、同一論点の重複統合、MUST / 禁止 / 既定 mode の矛盾解消、`SKILL.md` frontmatter の一意性を確認する。解消できない矛盾が残る場合は push せず停止する
 - intake する場合は source の workspace `.github/skills/<skill>` を読み取り、private repo 側の同名 skill の有無を確認する
 - `Learning / Evidence / Impact` を作り、最も specific な既存 skill に routing する
 
@@ -107,7 +115,7 @@ workspace skill を取り込むときは、source の `.github/skills/<skill>` �
 - 変更先が private repo の `.github/skills/<skill>/` 配下だけであることを確認する
 - 新規または大きく変更した `SKILL.md` は、folder 名と `name` の一致、trigger を含む `description`、必要な `argument-hint` / `user-invocable` / `license` / `metadata.author` を確認する
 - 追加内容が secret、顧客情報、tenant ID、ローカル絶対パス、外部 workspace 依存を含まないことを確認する
-- safe-auto で変更した場合は、local commit 作成後に private repo の working tree が clean であることを確認する。origin より 3 commits 以上 ahead なら、private remote と clean 状態を再確認して push し、push 後に ahead が解消したことを確認する
+- safe-auto で変更した場合は、local commit 作成後に working tree が clean であることを確認し、`git fetch origin` で ahead/behind を再計算してから push する。**完了条件は working tree clean かつ ahead 0**。push せずに終わると次に使う PC が古い状態から始まる
 
 ## Example Report
 

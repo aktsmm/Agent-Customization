@@ -18,6 +18,12 @@ description: "ターミナル操作の低頻度トラブルシュートメモ。
 - `rg` 導入直後のシェルで `rg` が見つからない場合は、ターミナル再起動か、`$env:Path = [System.Environment]::GetEnvironmentVariable('Path','Machine') + ';' + [System.Environment]::GetEnvironmentVariable('Path','User')` で PATH を再読込してよい。
 - read-only な audit / sync / verify で長い quoted payload や here-string が見えている場合は、共有 shell の復旧待ちを前提にせず、最初から一時 script、clean な one-shot shell、または read-only subagent を選んでよい。
 
+## Git HEAD Update Recovery
+
+- `HEAD.lock` rename failure が繰り返されても、lock fileが残っているとは限らない。2回目の同一promptでは`n`を返し、`HEAD`、branch、`git status --short --branch`、worktree/staged diff、rebase/merge metadata、lockの存在と所有processを読み取る。
+- failed rebaseでHEADが不変のままindex/worktreeだけ変わった場合は、変更前がcleanで、全変更pathのindex内容がfetched remoteと一致すると証明できたときだけ、その半適用stateをHEADへ戻す。未コミット変更や一致しないpathがあれば自動復旧せず停止する。
+- push rejected後はfetchしてahead/behindと変更path重複を再確認する。競合なしならHEADをdetachしないnormal mergeを使い、validator・clean state・remote到達を再確認する。`reset --hard`、blanket restore、active lock削除、force pushで復旧しない。
+
 ## Output and Completion
 
 - `run_in_terminal` の sync 実行が `Command produced no output` を返したり、async 実行が prompt 復帰前に idle した場合も、直ちに失敗扱いにせず expected artifact を先に確認する。artifact が生成済みなら render/capture 問題として扱い、未生成なら dedicated terminal や短い follow-up command で観測を補強する。

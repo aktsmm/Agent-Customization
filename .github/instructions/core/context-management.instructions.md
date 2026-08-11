@@ -8,7 +8,7 @@ applyTo: "**/*.prompt.md,**/*.instructions.md,**/*.agent.md,**/SKILL.md,**/copil
 <!-- repository: https://github.com/aktsmm/Agent-Customization -->
 <!-- license: CC BY-NC-SA 4.0 -->
 <!-- copyright: Copyright (c) 2025 aktsmm -->
-<!-- updated: 2026-07-13 -->
+<!-- updated: 2026-08-05 -->
 
 # Customization Authoring Instructions
 
@@ -37,6 +37,7 @@ Customization 資産を編集するときの量、粒度、自己完結性のル
 - 具体的な判定表・例・手順は always-on ではなく scoped instruction、prompt、agent、skill、または references に逃がす。
 - AI と script / hook の切り分けは、判断や曖昧さ解消は AI、再現性や fail fast が重要な純作業は script / hook を優先する。
 - skill の本体には自明な手順より、よく踏む Gotchas、参照ファイル、scripts / assets の所在を優先して書く。
+- skill の host 固有拡張（例: `context: fork`）は共通仕様と分け、本文・references・scripts は portable に保ち、compatibility と未対応 host の fallback を明記する。
 - review 用 prompt / checklist / skill は設計レビューの置き場にする。既定の対話挙動を変えたい rule は always-on entry か scoped instruction に置く。
 
 ## Writing Rules

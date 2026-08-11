@@ -1,7 +1,7 @@
 ---
 name: "cleanup-old-chat-sessions"
 description: "Use when: 現在の workspace にある古い未ピン留めのローカル VS Code チャットセッションを、少数は GUI、大量時は承認付き offline cleanup で安全に削除する"
-argument-hint: "[保持日数] [--dry-run]（省略時: 5日・apply、offline は再起動承認必須）"
+argument-hint: "[保持日数] [--dry-run]（省略時: 5日・apply、承認は着手時に1回）"
 agent: "agent"
 ---
 
@@ -10,7 +10,7 @@ agent: "agent"
 <!-- repository: https://github.com/aktsmm/Agent-Customization -->
 <!-- license: CC BY-NC-SA 4.0 -->
 <!-- copyright: Copyright (c) 2025 aktsmm -->
-<!-- updated: 2026-08-03 -->
+<!-- updated: 2026-08-04 -->
 
 # 古いチャットセッションを安全に削除
 
@@ -21,7 +21,7 @@ agent: "agent"
 - 保持日数は引数の正の整数を使い、省略時は `5` 日とする。
 - 明示呼び出しを削除承認とみなし、mode 省略時は apply する。`--apply` は互換 alias として同じ扱いにする。
 - `--dry-run` がある場合だけ、候補と検証方法を報告して変更せず停止する。
-- apply でも read-only preflight は必須。GUI mode はそのまま進めてよいが、offline mode の window close / restart は slash command の削除承認に含めず、影響を説明して別途明示承認を得る。
+- apply でも read-only preflight は必須。承認は着手時の 1 回にまとめる。実行開始時に offline mode になり得ること（VS Code の close / restart、backup・quarantine 後の local DB 変更、cloud deletion は未確認）を提示して承認を取り、以降は mode 判定やフェーズ移行で再確認しない。
 - 引数が曖昧、または `archive` を求めている場合は削除せず確認する。
 - cutoff は apply 直前の時刻から保持日数を引き、`lastMessageDate <= cutoff` を「古い」と判定する。
 
@@ -53,7 +53,7 @@ agent: "agent"
 - 候補が `6` 件以上、`stale-index` が `1` 件以上、または GUI の一意照合・操作が不成立なら **offline mode** を提案する。件数だけを理由に GUI mode を強行しない。
 - `5` 件は、native confirmation と削除後の index 再読を最大5回に抑え、仮想リストの広範囲走査を避ける運用上限とする。
 - 候補 `0` 件は no-op。`--dry-run` は選択予定の mode と、その理由も報告する。
-- offline mode へ自動移行しない。「VS Code を閉じて再起動する」「local DB と session file を backup / quarantine 後に変更する」「cloud deletion は未確認」の3点を先に説明し、ユーザーが明示承認した場合だけ進む。
+- offline mode の影響は着手時の承認で提示済みとして扱い、mode 確定時に再確認せず進む。着手時の承認が得られていない場合だけ停止する。
 
 ## GUI mode
 
@@ -69,12 +69,12 @@ agent: "agent"
 
 ## Offline mode
 
-1. 承認後に `workbench.action.files.saveAll` を実行し、VS Code から独立した durable one-shot helper を OS temp に作る。helper、manifest、status、backup、quarantine の path を確定してから window close を開始する。
-2. helper は対象 window に通常の close を送り、ユーザーが VS Code 標準確認で「はい」を選んだ後、対象 renderer の終了を待つ。強制 kill は使わない。終了しなければ変更せず停止する。
+1. 承認後に `workbench.action.files.saveAll` を実行し、VS Code から独立した durable one-shot helper を OS temp に作る。helper、manifest、status、backup、quarantine の path を確定し、window close で agent turn が切れるため artifact path と再開手順をチャットへ提示してから window close を開始する。
+2. helper は対象 workspace の window にだけ通常の close を送る。複数 workspace が同じ main process を共有するため、process 単位で visible window を列挙して一括 close せず、待機条件も main process の終了ではなく対象 window の消滅と `state.vscdb` の unlock で判定する。ユーザーが VS Code 標準確認で「はい」を選んだ後、対象 renderer の終了を待つ。強制 kill は使わない。終了しなければ変更せず停止する。
 3. window 停止後に `workspace.json` の folder URI と現在の workspace を再照合し、`state.vscdb` と pin cache を再読する。workspace binding 不一致、preflight と exact candidate ID 集合が変化、pin 追加、candidate の active / pending-edit 化、schema 破損があれば変更せず再起動する。
-4. SQLite backup を作成し、file-backed session を quarantine へ移動してから、transaction で exact index entries だけを削除する。`stale-index` は index entry だけを削除する。
+4. SQLite backup を作成し、file-backed session を quarantine へ移動してから、transaction で exact index entries だけを削除する。`stale-index` は index entry だけを削除する。VS Code は同じフォルダの `state.vscdb.backup` から workspace storage を復元するため、`state.vscdb` だけを変更すると次の起動で全件戻る。同じ index 削除を `state.vscdb.backup` にも適用するか、その backup を quarantine へ退避して VS Code に再生成させる。
 5. mutation の途中で失敗した場合は DB backup と quarantine file を復元する。rollback の各結果を status に残し、復元不能が1件でもあれば自動 cleanup せず報告する。
-6. offline 検証で削除 ID が index / session files から消え、保護対象が残ることを確認してから同じ workspace を再起動する。再起動後に DB を再読し、削除 ID が復活していないことを確認する。
+6. offline 検証で削除 ID が index / session files から消え、保護対象が残ることを確認してから同じ workspace を再起動する。再起動後に DB を再読し、削除 ID が復活していないことを確認する。復活していたら追加削除せず、quarantine を戻して rollback し、offline mode 失敗として復活の供給元とともに報告する。
 7. 手順6と検証節にある再起動後の DB / Agent Sessions view 確認が両方成功した後だけ、backup、quarantine、manifest、status、helper を削除する。失敗時は復旧に必要な artifact を残し、その場所と次の操作を報告する。
 8. offline mode は local history のみを変更する。cloud sync は未確認と報告し、cloud mapping を推測で直接変更しない。
 
