@@ -49,9 +49,10 @@ agent: "agent"
 
 ## 経路選択
 
-- 候補が `1–5` 件、`stale-index` が `0` 件、全候補を GUI row と一意照合でき、visible GUI 操作が可能なら **GUI mode** を使う。
-- 候補が `6` 件以上、`stale-index` が `1` 件以上、または GUI の一意照合・操作が不成立なら **offline mode** を提案する。件数だけを理由に GUI mode を強行しない。
-- `5` 件は、native confirmation と削除後の index 再読を最大5回に抑え、仮想リストの広範囲走査を避ける運用上限とする。
+- 全候補を GUI row と一意照合でき、visible GUI 操作が可能なら **GUI mode** を既定にする。`agentSession.delete` は `context.sessions` で複数選択をまとめて削除できるため、件数だけを理由に offline mode へ倒さない。
+- 候補が多い場合は、pin / active / 保留中編集を挟まない日時連続ブロックへ分け、各ブロックの native confirmation の件数が想定と一致することを確認してから確定する。
+- `stale-index` は GUI row に現れない可能性があるため、GUI 削除後に index を再読して残存を確認し、残った場合だけ offline mode を提案する。
+- GUI の一意照合または操作が成立しない候補が1件でもある場合は **offline mode** を提案する。
 - 候補 `0` 件は no-op。`--dry-run` は選択予定の mode と、その理由も報告する。
 - offline mode の影響は着手時の承認で提示済みとして扱い、mode 確定時に再確認せず進む。着手時の承認が得られていない場合だけ停止する。
 
@@ -60,7 +61,7 @@ agent: "agent"
 1. Agent Sessions の対象 row から VS Code 標準の `Delete...` action を実行する。この action が session object / selection context を受けて内部状態を更新する経路だけを使う。
 2. 現在の agent が row を選択して context action を実行できる visible GUI 操作経路を持つか確認する。agent 自身で操作できない場合は exact 候補を提示してユーザーの GUI 操作を待ち、keyboard sequence や raw command 呼び出しで代用しない。
 3. GUI mode では window の close / reload / restart、renderer 終了、`state.vscdb` や session file の直接変更を行わない。
-4. `agentSession.delete` に raw ID / URI / keybinding args を渡せると推測しない。`workbench.action.chat.clearHistory` は保持期間や保護条件を無視して全件削除するため使わない。
+4. `agentSession.delete` に raw ID / URI / keybinding args を渡せると推測しない。viewer フォーカス時の `Delete` キーは `agentSession.archive` でアーカイブになるため、削除は row の context menu の `Delete...` を使う。`workbench.action.chat.clearHistory` は保持期間や保護条件を無視して全件削除するため使わない。
 5. 削除前に候補を GUI row と照合する。title、表示日時、provider など GUI で確認できる属性の組み合わせが一意でない候補、GUI に表示されない候補、scope を確認できない候補が1件でもあれば、何も削除せず offline mode の承認へ切り替える。
 6. native action 自体は pin / active session を削除から保護しない。各削除の直前に index、pin cache、active resource を再読し、同じ ID が local・古い・未ピン留め・非アクティブ・保留中編集なしを保つ場合だけ、対象 row を1件 `Delete...` する。
 7. native confirmation が1件を示すことを確認して承認し、操作後に index を再読する。想定した ID だけが消え、pin / active / pending-edit session が残ることを確認してから次へ進む。
@@ -70,13 +71,13 @@ agent: "agent"
 ## Offline mode
 
 1. 承認後に `workbench.action.files.saveAll` を実行し、VS Code から独立した durable one-shot helper を OS temp に作る。helper、manifest、status、backup、quarantine の path を確定し、window close で agent turn が切れるため artifact path と再開手順をチャットへ提示してから window close を開始する。
-2. helper は対象 workspace の window にだけ通常の close を送る。複数 workspace が同じ main process を共有するため、process 単位で visible window を列挙して一括 close せず、待機条件も main process の終了ではなく対象 window の消滅と `state.vscdb` の unlock で判定する。ユーザーが VS Code 標準確認で「はい」を選んだ後、対象 renderer の終了を待つ。強制 kill は使わない。終了しなければ変更せず停止する。
+2. VS Code の main process は、window を閉じた後も全 workspace の `state.vscdb` ハンドルを保持し、process が終了するまで解放しない。そのため対象 window だけを閉じても DB は unlock されない。他 window が同じ main process を共有する場合は、全 window を閉じる明示承認を得るか、offline mode を諦めて GUI mode へ切り替える。承認なく他 workspace の window を閉じない。close は通常の close を送り、強制 kill は使わない。対象 window の消滅、`Code` プロセスの終了、`state.vscdb` の unlock を順に確認し、いずれかがタイムアウトしたら変更せず停止して、ロック保持プロセスを Restart Manager で記録する。
 3. window 停止後に `workspace.json` の folder URI と現在の workspace を再照合し、`state.vscdb` と pin cache を再読する。workspace binding 不一致、preflight と exact candidate ID 集合が変化、pin 追加、candidate の active / pending-edit 化、schema 破損があれば変更せず再起動する。
 4. SQLite backup を作成し、file-backed session を quarantine へ移動してから、transaction で exact index entries だけを削除する。`stale-index` は index entry だけを削除する。VS Code は同じフォルダの `state.vscdb.backup` から workspace storage を復元するため、`state.vscdb` だけを変更すると次の起動で全件戻る。同じ index 削除を `state.vscdb.backup` にも適用するか、その backup を quarantine へ退避して VS Code に再生成させる。
 5. mutation の途中で失敗した場合は DB backup と quarantine file を復元する。rollback の各結果を status に残し、復元不能が1件でもあれば自動 cleanup せず報告する。
 6. offline 検証で削除 ID が index / session files から消え、保護対象が残ることを確認してから同じ workspace を再起動する。再起動後に DB を再読し、削除 ID が復活していないことを確認する。復活していたら追加削除せず、quarantine を戻して rollback し、offline mode 失敗として復活の供給元とともに報告する。
 7. 手順6と検証節にある再起動後の DB / Agent Sessions view 確認が両方成功した後だけ、backup、quarantine、manifest、status、helper を削除する。失敗時は復旧に必要な artifact を残し、その場所と次の操作を報告する。
-8. offline mode は local history のみを変更する。cloud sync は未確認と報告し、cloud mapping を推測で直接変更しない。
+8. offline mode は local history のみを変更する。GUI mode と違い `github.copilot.sessionSync.deleteSessionFromCloud` は呼ばれないため、cloud sync は未確認と報告し、cloud mapping を推測で直接変更しない。
 
 ## 検証
 

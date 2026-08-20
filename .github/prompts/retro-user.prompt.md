@@ -35,7 +35,7 @@ argument-hint: "エラーログ、diff、会話要約、既存 User Data 資産�
 
 - 反映先は `%APPDATA%/Code/User/prompts/` 配下の `*.prompt.md` / `*.instructions.md` / `*.agent.md` に限定する
 - secret / 認証情報 / 個人情報 / 顧客情報 / ローカル絶対パス / 端末固有値 / `/memories/**` は反映しない
-- workspace / repository / `~/.copilot` に置くべき内容は scope 不一致として停止する
+- workspace / repository / `~/.copilot` に置くべき内容は scope 不一致として停止する。workspace へ handoff する場合は、アクティブ VS Code workspace を既定の反映先とし、ユーザー指定なしに外部の新規プロジェクトフォルダを提案しない
 - 追加内容は Self-Contained を保つ：取り込んだ file が他 file への hard reference なしで成立するようにする。ツール制約 (例: Copilot CLI は prompt 不可、SKILL primitive のみ) を踏まえた primitive 選択をした上で、User Data 以外への反映は handoff する
 - actionable な知見なし、または gate 失敗時は理由と代替案を示して停止する
 

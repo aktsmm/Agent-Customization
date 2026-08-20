@@ -1,5 +1,5 @@
 ---
-description: "ターミナル操作の低頻度トラブルシュートメモ。VSCE 拡張機能 publish (vsce publish / VSCE_PAT / VSIX) 、Chrome Web Store publish (CWS)、CDP、stale token、stdout capture、Edge profile、SPA dialog などを必要時に参照する"
+description: "ターミナル操作と Copilot debug log の低頻度トラブルシュートメモ。VSCE 拡張機能 publish (vsce publish / VSCE_PAT / VSIX) 、Chrome Web Store publish (CWS)、CDP、stale token、stdout capture、Edge profile、SPA dialog、chat session の silent stop（空応答）調査を必要時に参照する"
 ---
 
 <!-- syncToGlobal: true -->
@@ -37,6 +37,15 @@ description: "ターミナル操作の低頻度トラブルシュートメモ。
 - Copilot の想定外挙動（instruction 未適用、tool 誤選択、workflow 停止など）を調査するときは、対象 session の debug log を確認する。
 - debug log では `tool_call` と `agent_response` を分けて読む。`agent_response` には pending tool call が現れることがあり、実行済み `tool_call` と混同しやすい。
 - user / memory / assistant text に tool 名が出ただけでは実行済みとみなさない。実際の実行有無は `tool_call` entry と結果で確認する。
+- `main.jsonl` は数十 MB になる。workspace 外なので `grep_search` は効かない。`Select-String` の streaming と `ConvertFrom-Json` で処理し、`Get-Content -Raw` や `readFileSync` の全読みを避ける。1 行が巨大なので表示は `Substring` で切る。
+
+### Silent Stop（空応答でターンが終わる）
+
+- 「session が勝手に止まる」は error ではなく silent stop のことがある。`"status":"error"` 検索では 0 件になるため、エラー不在を正常の根拠にしない。
+- 検出は join で行う。`llm_request` の `spanId` に対して `agent_response` は `agent-msg-<spanId>` で対応する。`status:"ok"` かつ `outputTokens > 0` なのに対応する `agent_response` が無いものが silent stop で、出力が thinking だけで text も tool_call も返らないまま `turn_end` している。
+- コンテキスト超過と決めつけない。同 session の `models.json` にある `capabilities.limits.max_context_window_tokens` と `max_prompt_tokens` で実上限を確認する。
+- 発生ターンの偏りを見る。長い最終報告やまとめを書くターンに集中し、tool call だけの短いターンでは起きない場合、`Try Again` は同条件の再実行なので同じ位置で再発する。長文をチャットへ書かせずファイル出力 + 短い要約にする、別モデルファミリへ切り替える、新 session に切る、のいずれかで条件を変える。
+- `llm_request` の `requestOptions`（`thinking` の type / display、`effort`）と `requestShape.messageCount` を併せて記録する。巨大 prompt と高 effort の thinking が重なるほど再現しやすい。
 
 ## Credentials and Environment
 

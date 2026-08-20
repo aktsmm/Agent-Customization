@@ -57,6 +57,7 @@ All Mode は先に private repo の `scripts/Commit-DirtySkills.ps1` をdry-run�
 - GIM internal 集約先は `SYNC_INTERNAL_SKILLS_GIM_REPO`（既定 `gim-home/yamapan-skills`、org-owned `internal`）を Process scope 優先、無ければ User scope で解決する
 - `.skill-meta.json` は local-only metadata として、dirty 判定、stage、push、public diff から除外する
 - shared file として `.github/skills/README.md`、`.github/skills/assets/**`、自動生成 index の `.github/skills/LICENSE` を別扱いする。broad sync 後に `LICENSE` だけが generated drift として残った場合は内容を確認し、意図どおりなら skill commit とは別に sync/index commit へ分ける
+- skill を追加・削除した直後の broad sync は README freshness gate で停止する。`Update-PublicSkillsReadme.ps1` を実行し、生成差分を index commit として分けてから sync を再実行する
 - `ExcludeSkills` / private-only / internal-only / MS 社内向け skill は public sync から除外し、EMU private sync の候補として扱う
 - sync-only 実行中に README / assets / index / SKILL 本文の編集はしない
 - branch / remote ambiguity、unexpected deletion、public safety audit failure、content authoring 必要時は停止する

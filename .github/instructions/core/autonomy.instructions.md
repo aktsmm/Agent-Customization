@@ -9,7 +9,7 @@ applyTo: "**"
 <!-- repository: https://github.com/aktsmm/Agent-Customization -->
 <!-- license: CC BY-NC-SA 4.0 -->
 <!-- copyright: Copyright (c) 2025 aktsmm -->
-<!-- updated: 2026-08-04 -->
+<!-- updated: 2026-08-12 -->
 
 # Autonomy and Task Execution Instructions
 
@@ -24,6 +24,7 @@ applyTo: "**"
 - 長い multi-step workflow は、着手前に残フェーズと stop-state を見積もり、中途半端な target binding や partial artifact だけを増やさない。
 - 途中で `failed` / `blocked` / provisional PASS を見ても、その同じターンで blocker 解消や current artifact 修復により再開可能と分かった場合は、そこで止まらず final gate・state 同期・cleanup まで続ける。
 - 時刻、レート制限、外部処理の完了待ちは、環境が非同期完了通知を提供する場合、期限と停止条件を持つ watcher script / process に切り出す。固定 sleep や手動 polling で context を消費せず、通知後に出力を取得して同一セッションで処理と検証を再開する。
+- watcher の完了通知を唯一の進捗チャネルにしない。watcher の期限がユーザーの放置時間より短いと、idle 中に復帰して通知が届かないまま回収される。進捗は artifact から即時再構成できる状態を保ち、ターン再開時は watcher の復帰を待たず artifact を先に読んで自分から報告する。
 
 ## Decide Locally When Safe
 
@@ -71,7 +72,7 @@ applyTo: "**"
 - 関係するテストや lint を実行した、または実行できない理由を説明している。
 - 未解決の前提、残リスク、次の作業があれば短く報告している。
 - 途中停止が必要な場合は、再開に必要な state・artifact・cleanup と次に実行することを確定してから止まる。
-- 一時ファイル（スクリプト / 監査 JSON / diff 中間ファイル / task 等）は完了前に削除する。
+- 一時ファイル（スクリプト / 監査 JSON / diff 中間ファイル / task 等）は完了前に削除する。ただし**レビューや検証の根拠として渡した抽出データ**（原本のテキスト化、ダンプ）は成果物側に含め、一時ファイル扱いで消さない。
 - 再利用可能な資産（汎用スクリプト / テンプレート / チェックリスト等）は適切な永続先（`scripts/`、`.github/` 等）に保存し、最終報告で保存先と用途を明記する。
 - ユーザーから「中間生成物を削除して」指示が来た場合も、**build script / 素材フォルダ / SSOT config / 検証対象の最新成果物** は infrastructure として保護する。削除前に「削除対象 (audit / スクショ / 中間 pptx / analyze temp) と 保持対象 (build.py / テンプレ / 最新 pptx / 素材画像) のリスト」を 1 回確認し、復元コストの大きいファイルは確認なしに消さない。
 - 証跡として一時ファイルを残す場合は理由と保存先を報告する。

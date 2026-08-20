@@ -43,7 +43,12 @@ applyTo: "**"
 
 - 広い検索、長いログ、複数ページ調査、または返却が概ね100行を超えそうな read-only 作業は、観点ごとの isolated subagent に委譲する。
 - context isolation は会話履歴の分離であり、tool / file / network 権限の security boundary とみなさない。
+- read-only の探索専用 agent は MCP と `tool_search` を持たないことがある。外部仕様の確認を含むレーンには使わない。`fetch_webpage` だけ持つ agent は MCP 不在でもエラーにならず直 fetch へ静かに劣化するため、返ってきた出力を見ても気づけない。
 - 子には subgoal、必要な入力、制約、判定基準だけを渡し、親への返却は decision / key evidence / next action と、raw を保存した場合の相対 path に限定する。
+- review / critic へ委譲するときは、成果物だけでなく**判断根拠の原本**（元データのテキスト化、ダンプ、元仕様）も artifact として渡す。成果物だけだと内部整合性しか見られず、「現状認識が実物と食い違う」型の欠陥が丸ごと残る。read-only agent は terminal を持たないので、暗号化ファイルや COM / 外部コマンド経由でしか読めない対象は先にテキスト化しておく。
+- 引用一致、件数、存在確認のように決定論的に判定できる項目は script で verify し、subagent には意味論と設計の妥当性を任せる。
+- `runSubagent` は model 省略時に producer と同じモデルを継承する。critic は別ファミリを明示指定する。利用可能なモデル名は、存在しない model 名で 1 回 probe すればエラー応答に一覧が返る。
+- 作業途中で新規に切り出した成果物は未レビュー。元ファイルが gate を通っていても、切り出し先は別途 gate にかける。
 - 独立タスクは分け、BLOCKED は原因か条件を変えてから再実行する。
 - サブエージェントが `thinking` / `redacted_thinking` の 400 や model not found で落ちた場合は、サブエージェント不可と断定せず、利用可能一覧の exact model name か別モデル経路で 1 回だけ再試行する。
 - **view_image** や **ファイル書き出し**を伴う大量目視 audit をサブエージェントに一括委任しない。audit md の書き出しが失敗してテキストだけ返す事例が多い。サブエージェントには探索 / grep / 確実に実行できる小さいタスクを任せ、view_image + report はメインで 3-5 枚なら並列で直接見る。
@@ -54,3 +59,4 @@ applyTo: "**"
 - 結論から短く返す。
 - 成功は成果物と検証結果を中心にする。
 - 失敗は、失敗した操作、状態、キーエラー、次の一手を示す。
+- context を厚く積んだ session では、長い最終報告をチャットへ直接書かない。報告本体は file へ書き出し、チャットは相対 path と短い要約に留める。長文出力ターンは空応答でターンごと落ちることがある。

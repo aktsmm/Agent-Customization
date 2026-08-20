@@ -9,7 +9,7 @@ applyTo: "**"
 <!-- repository: https://github.com/aktsmm/Agent-Customization -->
 <!-- license: CC BY-NC-SA 4.0 -->
 <!-- copyright: Copyright (c) 2025 aktsmm -->
-<!-- updated: 2026-08-04 -->
+<!-- updated: 2026-08-12 -->
 
 # PowerShell Terminal Instructions
 
@@ -43,6 +43,7 @@ applyTo: "**"
 
 - サーバー・watch・監視処理はバックグラウンド実行を優先する。
 - 長時間実行時は、ユーザーへ意図と停止方法を簡潔に伝える。
+- 数十分以上かかる本体処理を chat terminal で起動しない。chat terminal は会話の進行で回収され、プロセスツリーごと落ちる。task など session 外の起動口を使い、進捗は artifact（ログ、summary JSON、プロセス生存）から取得する。
 
 ## 4.5 Task vs Terminal
 

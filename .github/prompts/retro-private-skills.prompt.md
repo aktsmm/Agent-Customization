@@ -15,7 +15,7 @@ agent: "agent"
 
 セッションやインシデント、または VS Code workspace の skill から再利用可能な知見を抽出し、private skill repo の既存 skill へ最小差分で統合する。safe-auto では authoring 後に local commit と push まで行う。複数 PC / 複数セッションから同じ private repo を触る前提で、編集前に必ず同期し、commit を滞留させない。public sync は行わない。
 
-これは VS Code workspace 用の prompt 版。intake source は **VS Code workspace の `.github/skills/**`**（例: `<workspace>/.github/skills/c360-operations`）。`~/.copilot/skills|m-skills` の intake は CLI / Scout 用の `retro-private-skills` SKILL が担当する。育成先（write target）はどちらも private repo の `.github/skills/<skill>/`。
+これは VS Code workspace 用の prompt 版。intake source は **アクティブ VS Code workspace の `.github/skills/**`**（例: `<workspace>/.github/skills/c360-operations`）であり、CWD や外部の新規プロジェクト候補で上書きしない。アクティブ workspace がない場合は停止し、外部フォルダを作らない。`~/.copilot/skills|m-skills` の intake は CLI / Scout 用の `retro-private-skills` SKILL が担当する。育成先（write target）はどちらも private repo の `.github/skills/<skill>/`。
 
 ## When to Use
 

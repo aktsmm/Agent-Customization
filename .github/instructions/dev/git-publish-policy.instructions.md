@@ -6,7 +6,7 @@ description: "Git の公開同期ポリシー（repo visibility、.github/.vscod
 <!-- repository: https://github.com/aktsmm/Agent-Customization -->
 <!-- license: CC BY-NC-SA 4.0 -->
 <!-- copyright: Copyright (c) 2025 aktsmm -->
-<!-- updated: 2026-07-13 -->
+<!-- updated: 2026-08-16 -->
 
 # Git Publish Policy
 
@@ -31,6 +31,13 @@ description: "Git の公開同期ポリシー（repo visibility、.github/.vscod
 - ローカル実ファイルは削除しない。
 - 追跡するのは「リポジトリ公開に必要なファイル」だけにする。
 - `.github` は workflow / automation / 運用上必要なメタデータのみ追跡し、不要な補助資料は追跡しない。
+
+## Internal Notes in Public Repositories
+
+- 内部メモ、cross-repo handoff、調査下書き、監査途中資料を public repo の tracked tree に作らない。
+- 内部成果物は、書き始める前に `.git/info/` または repo が明示した ignore 済み local directory へ置く。
+- 内容を書き込む前に `git check-ignore -v <path>` で追跡対象外であることを確認する。
+- commit / push 前は `git status --short` の未追跡 document を用途分類し、内部資料を公開差分へ混ぜない。
 
 ## If Already Published
 

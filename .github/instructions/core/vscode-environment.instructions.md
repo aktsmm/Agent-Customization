@@ -27,6 +27,12 @@ VS Code 環境でよく参照する保存先と配置場所のメモ。「どこ
 - `%APPDATA%\Code\User\prompts\` 配下に配置
 - ワークスペース固有のものは各リポの `.github/prompts/` に配置
 
+### Copilot Chat の debug log
+
+- `%APPDATA%\Code\User\workspaceStorage\<workspace-hash>\GitHub.copilot-chat\debug-logs\<sessionId>\`
+- 主要ファイル: `main.jsonl`（会話全体）、`models.json`（session 開始時のモデル一覧と上限）、`system_prompt_*.json`、`tools_*.json`、`runSubagent-*.jsonl`
+- `<workspace-hash>` はワークスペースの絶対パス由来。フォルダー名を変えると別ハッシュになり、旧ログは旧ディレクトリに残る
+
 ## 拡張機能ストレージ
 
 - `%APPDATA%\Code\User\globalStorage\` — グローバル拡張機能データ
@@ -35,3 +41,4 @@ VS Code 環境でよく参照する保存先と配置場所のメモ。「どこ
 ## Notes
 
 - GitHub CLI 認証トラブル、PowerShell 運用、Web 検索 fallback の詳細は扱わない。
+- debug log の読み方や silent stop の切り分け手順も扱わない。ここは保存先だけを持つ。
