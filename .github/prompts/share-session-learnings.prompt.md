@@ -3,6 +3,7 @@ name: "share-session-learnings"
 description: "Use when: 今の一連の作業で得た改善点・反省点を、他セッションや別 repo へ渡す共有メモにしたい。命令文ではない叙述の報告として書き、横展開の実装はしない"
 argument-hint: "対象範囲（例: 直近のリリース作業）、渡す相手（別 repo / 別セッション）、特に伝えたい論点"
 agent: "agent"
+model: "GPT-5.6 Terra"
 ---
 
 <!-- syncToGlobal: true -->
