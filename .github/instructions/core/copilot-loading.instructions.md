@@ -8,7 +8,7 @@ applyTo: "**/*.prompt.md,**/*.instructions.md,**/*.agent.md,**/*.toolsets.jsonc,
 <!-- repository: https://github.com/aktsmm/Agent-Customization -->
 <!-- license: CC BY-NC-SA 4.0 -->
 <!-- copyright: Copyright (c) 2025 aktsmm -->
-<!-- updated: 2026-08-04 -->
+<!-- updated: 2026-08-24 -->
 
 # Copilot CLI / VS Code インストラクション読み込みルール
 
@@ -16,16 +16,27 @@ applyTo: "**/*.prompt.md,**/*.instructions.md,**/*.agent.md,**/*.toolsets.jsonc,
 
 > 補足: `.github/copilot-instructions.md` と `AGENTS.md` は読み込み対象だが、User Data 側の metadata/frontmatter ルールをそのまま要求する対象ではない。
 
+## 配置の三層ルール
+
+| 置き場 | VS Code Chat | Copilot CLI | 用途 |
+| --- | --- | --- | --- |
+| `$HOME/.copilot/copilot-instructions.md` | 読む（常時） | 読む（常時） | **共通**。always-on なので短く保つ |
+| `$HOME/.copilot/instructions/**` | 読まない | 読む（再帰） | **CLI 固有** |
+| `%APPDATA%/Code/User/prompts/**` | 読む | 読まない | **VS Code 固有** |
+
+- 両方で必要な詳細ルールは自動同期されない。片方を編集したら同じターンでもう片方も更新する
+
 ## VS Code GitHub Copilot Chat で自動ロードされる主な file
 
 | ファイル | スコープ | 備考 |
 | --- | --- | --- |
-| `$HOME/.copilot/instructions/**/*.instructions.md` | ユーザー | 公式 Docs 記載のユーザープロファイル instructions |
+| `$HOME/.copilot/copilot-instructions.md` | ユーザー | **常時ロードされる**。`github.copilot.chat.codeGeneration.useInstructionFiles`（既定 true）が gate で、`.github/copilot-instructions.md` と**同じスイッチ**。片方だけ切ることはできない（1.134.0 の実装で確認） |
+| `$HOME/.copilot/instructions/**/*.instructions.md` | ユーザー | `chat.instructionsFilesLocations` 次第。この環境では `false` にして CLI 専用ゾーンにしている |
 | `%APPDATA%/Code/User/prompts/*.instructions.md` | ユーザー | VS Code プロファイル固有の User Data instructions |
 | `.github/copilot-instructions.md` | ワークスペース | repo-wide の短い原則 |
 | `.github/instructions/**/*.instructions.md` | ワークスペース | `applyTo` 付きの scoped rule |
-| `AGENTS.md` | ワークスペース | agent / workflow の入口 |
-| `CLAUDE.md` 系 | 互換 | Claude Code 互換の instructions |
+| `AGENTS.md` | ワークスペース | agent / workflow の入口。`chat.useAgentsMdFile` が gate |
+| `CLAUDE.md` 系 | 互換 | workspace root / `.claude/` / **ユーザーホーム `~/.claude/CLAUDE.md`** を探索。`chat.useClaudeMdFile` が gate |
 
 ## VS Code で確認する場所
 
@@ -54,13 +65,15 @@ applyTo: "**/*.prompt.md,**/*.instructions.md,**/*.agent.md,**/*.toolsets.jsonc,
 
 | ファイル | スコープ | 備考 |
 | --- | --- | --- |
-| `$HOME/.copilot/copilot-instructions.md` | グローバル | CLI 全体の原則 |
+| `$HOME/.copilot/copilot-instructions.md` | グローバル | CLI 全体の原則。VS Code Chat も読む共通ファイル |
+| `$HOME/.copilot/instructions/**/*.instructions.md` | グローバル | **再帰的に自動ロードされる**（2026-08-24 にカナリアで実測。ルート直下・サブフォルダとも有効）。`COPILOT_CUSTOM_INSTRUCTIONS_DIRS` は不要 |
 | `.github/copilot-instructions.md` | ワークスペース | repo-wide の原則 |
 | `.github/instructions/**/*.instructions.md` | ワークスペース | `applyTo` 付き rule |
 | `AGENTS.md` | ワークスペース | agent / workflow の入口 |
 | `CLAUDE.md` / `GEMINI.md` | 互換 | 互換 file |
 
 - 追加ディレクトリを CLI に読ませるときは `COPILOT_CUSTOM_INSTRUCTIONS_DIRS` を使う
+- 読み込みを実測するときは、一意トークンを返させる使い捨ての canary instruction を置き、`copilot -p "<token>" --silent` で確認して削除する
 
 ## 明示的に呼んだときだけ読まれる file
 
@@ -83,8 +96,9 @@ applyTo: "**/*.prompt.md,**/*.instructions.md,**/*.agent.md,**/*.toolsets.jsonc,
 
 | 内容 | 配置先 |
 | --- | --- |
-| VS Code Chat の個人 rule | VS Code User Data または `$HOME/.copilot/instructions/` |
-| Copilot CLI の個人 rule | `$HOME/.copilot/copilot-instructions.md` |
+| VS Code Chat と CLI で共通の個人 rule | `$HOME/.copilot/copilot-instructions.md`（always-on なので短く） |
+| VS Code Chat 固有の個人 rule | VS Code User Data `%APPDATA%/Code/User/prompts/` |
+| Copilot CLI 固有の個人 rule | `$HOME/.copilot/instructions/**` |
 | repo-wide の短い rule | `.github/copilot-instructions.md` |
 | 特定ファイル群に効く rule | `.github/instructions/**/*.instructions.md` |
 | 特定 workflow / task | `.github/agents/` または `.github/skills/` |
