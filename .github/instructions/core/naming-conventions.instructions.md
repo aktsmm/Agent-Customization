@@ -26,6 +26,7 @@ applyTo: "**"
 - フォルダは複数ファイルを含むなら複数形、単一概念なら単数形にする。
 - 中間生成物は `output/`, `tmp/`, `work/`, `artifacts/` など用途別フォルダへ分ける。
 - 日付付き成果物は `YYYY-MM-DD-topic-purpose.ext` を優先する。
+- 写真・スクリーンショットの整理は例外で、`YYYY-MM-DD_カテゴリ_連番.ext` を使う。既存ファイル名との互換のため区切りはアンダースコアのまま維持する。
 - 同じ成果物の派生は suffix で揃える: `name.md`, `name-ja.md`, `name-final.pptx`。
 
 ## Scripts and Code Files

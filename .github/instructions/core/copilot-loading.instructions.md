@@ -25,6 +25,7 @@ applyTo: "**/*.prompt.md,**/*.instructions.md,**/*.agent.md,**/*.toolsets.jsonc,
 | `%APPDATA%/Code/User/prompts/**` | 読む | 読まない | **VS Code 固有** |
 
 - 両方で必要な詳細ルールは自動同期されない。片方を編集したら同じターンでもう片方も更新する
+- `local-terminal-environment.instructions.md` はこの PC 固有の例外。User Data 側を編集元とし、CLI 側は同じ NTFS ハードリンクを使う。公開・同期しない
 
 ## VS Code GitHub Copilot Chat で自動ロードされる主な file
 
