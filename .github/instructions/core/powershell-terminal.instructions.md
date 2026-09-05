@@ -29,6 +29,7 @@ applyTo: "**"
 - 文字列・変数展開・パイプラインは PowerShell の流儀に合わせる。
 - `foreach (...) { ... } | Format-Table` のように statement form 直後へ pipe しない。結果を変数に受けてから pipe するか、pipeline-native な `ForEach-Object` を使う（`An empty pipe element is not allowed` 回避）。
 - `python -c "..."` に複数行コードを埋め込まない。1行で済まなければスクリプトファイルと編集ツールを使う。
+- 1 行でも、regex（特に `(?<!...)` の後読み）、f-string の `{}`、`|` を含む Python コードは `-c` に渡さない。PowerShell が先に解釈し、`The module '?<!' could not be loaded` や `Expressions are only allowed as the first element of a pipeline` で落ちる。一時スクリプトを作って実行し、完了後に削除する。
 
 ## 3. 安全運用
 
@@ -48,6 +49,7 @@ applyTo: "**"
 ## 4.5 Task vs Terminal
 
 - 単発の調査、デバッグ、認証依存、環境変数依存、出力追跡が必要な実行は terminal を優先する。
+- 同じ terminal への呼び出しは直列化する。コマンドの目的が独立していても shell は共有され得るため、並列化は実行環境が独立していると確認できる場合だけ行う。
 - task は、再利用する stable entry point、watch、background job、problem matcher が必要な実行に限る。
 - 同じ単発実行が 2 回以上発生したら script / CLI への昇格を検討し、task が必要なら既存の generic process task や input 付き task を優先する。
 - `retry` `debug` `with fresh auth` のような派生 one-off task を常設しない。
@@ -57,7 +59,7 @@ applyTo: "**"
 ## 5. 運用メモ
 
 - 一時変数を使うコマンド（例: `gh issue comment --body`）は、変数定義と実行を同一ターミナル実行にまとめる。
-- `gh` や類似 CLI で `--json number,title,url` のようなカンマ区切り引数や、空白を含む検索式を渡すときは、PowerShell で必ず 1 つの文字列として引用する。分解されると別引数扱いになり、検索失敗や `accepts 1 arg(s)` 系エラーになりやすい。
+- `gh` や類似 CLI へ**空白を含む検索式**を渡すときは、PowerShell で 1 つの文字列として引用する。一方 `--json a,b,c` のカンマ区切りは、ネイティブコマンドの引数では分解されないので引用は必須ではない（2026-08-26 実測: 引用あり / なしのどちらも `["--json","a,b,c"]`）。`--jq` に渡す式は `$j` のような jq 変数を含むため、必ずシングルクォートで囲む。ダブルクォートだと PowerShell が先に展開して式が壊れる。
 - `{}` を含む引数はシングルクォートで囲う。例: `git rev-list --left-right --count 'HEAD...@{upstream}'`。裸の `@{upstream}` は PowerShell が ScriptBlock / hashtable と解釈し、`ScriptBlock should only be specified as a value of the Command parameter` で落ちる。`@{n}` や `HEAD@{1}` など git の reflog / upstream 表記全般が対象。
 - 日本語を含むファイルや JSON を扱うときは UTF-8 を維持する。
 - スクリプトや CLI を実行する前に、対象 script / 実行ファイルの存在を確認する。不在時は実行せず、read/grep などの代替検証へ切り替える。

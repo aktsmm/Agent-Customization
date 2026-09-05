@@ -41,6 +41,8 @@ argument-hint: "対象、重点観点、モード（例: current workspace / all
 | `verbose` / `full` / `詳細` | 通常の mode に詳細出力を足す modifier。Coverage Matrix 全表や詳細な Findings は明示時だけ出す |
 | `release` / `deploy` / `publish` | default の品質 gate 後、明示された配布対象だけ Release Addendum へ進む |
 
+No-Edit の指定は、この prompt 全体の修正・Guard 成果物追加・state 更新・release・cleanup 要求より優先する。`Fix now` も未修正の指摘として報告し、ファイル・state・永続メモを変更しない。
+
 ### Release Intent
 
 - `release` / `deploy` / `publish` mode が明示された場合だけ full release intent と扱う。
@@ -133,7 +135,7 @@ Priority: P0 = 主要機能破壊・データ損失・情報露出 / P1 = 導線
 5. Sweep: 同根原因・同観点の類似 gap を全文検索し、まとめて直す。1 件で満足しない。
 6. Test / Guard: 回帰テスト、静的ガード、契約テスト、dry-run、surface snapshot などを追加。
 7. Verify: diagnostics → lint → typecheck → test → build。stdout だけでなく artifact / state / process / exit code でも確認。
-8. Coverage: 前回と今回の主改善軸が重複していないか確認する。Covered/N/A/Open の未分類軸を残さず、どの mode でも発見済み `Fix now` は未処理で残さない。
+8. Coverage: 前回と今回の主改善軸が重複していないか確認する。Covered/N/A/Open の未分類軸を残さず、実行可能 mode では発見済み `Fix now` は未処理で残さない。No-Edit mode では未修正の指摘として残す。
 9. Docs / Cleanup: README / Quick Start / help / error message / CHANGELOG / 用語を同期し、一時資材・dead code・不要 terminal を片付ける。
 10. Close Current Run: `Fix now` が残るなら同じ run 内で閉じる。残すなら `Guard now` / `Block` の条件を満たす。
 
@@ -312,7 +314,7 @@ Handoff Packet は `Block`、ユーザー判断待ち、重要な文脈を持つ
 - 発見 gap を `Fix now / Guard now / Block` に分類した。
 - 実行可能 mode では、少なくとも 1 つの具体改善または `Guard now` 成果物を完了した。
 - 機能名 / 機能要件 / UIUX / docs sync / cleanup / 同観点 sweep のうち、対象に関係するものを見た。
-- `Fix now` は修正・再検証まで完了し、残件に入れていない。
+- 実行可能 mode では `Fix now` を修正・再検証まで完了し、残件に入れていない。No-Edit mode では未修正として明記した。
 - `Guard now` / `Block` には試行内容、AI 代替、次の確認がある。
 - Run Ledger に Prior State Used / Closed This Run / Still Open / New Axis Covered / Next Run Focus があり、最大 10 行に収まっている。
 - Local State の使用/更新/省略理由を Run Ledger に書いた。

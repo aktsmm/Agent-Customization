@@ -9,35 +9,25 @@ description: 保存してコミット＆プッシュ
 <!-- license: CC BY-NC-SA 4.0 -->
 <!-- copyright: Copyright (c) 2025 aktsmm -->
 
-# git commit & push
+# Git Commit & Push
 
-保存していないファイルを保存して commit & push してください。
+未保存の変更を保存し、作業単位で commit & push する。
 
-## 手順
+## 保存
 
-1. `Get-Location; git branch --show-current` で現在地とブランチを確認
-2. `git config user.name` でユーザー名を取得（コミットメッセージに使用）
-3. VS Code コマンド `workbench.action.files.saveAll` で未保存ファイルを保存
-4. `git fetch origin; git status -sb` で同期状態と変更を確認する（変更なければ「Nothing to commit」で終了）
-5. `master` が behind の場合は、作業ツリーが clean なときだけ `git pull --ff-only` を実行する。分岐している場合や作業ツリーが dirty の場合は、自動 rebase しない
-6. 変更が複数の独立した作業に混在している場合は `git add .` を使わず、対象パスごとにコミットを分ける。単一作業なら `git add -- <対象パス>; git diff --cached --check; git commit -m "<コミットメッセージ>"`
-7. `git push`
-8. push が rejected された場合:
-	- `git fetch origin; git status -sb` で ahead / behind と作業ツリーを確認する
-	- 作業ツリーが clean で fast-forward 可能なら `git pull --ff-only; git push` を実行する
-	- 分岐している場合は、自動で `git pull --rebase --autostash` を実行しない。競合対象と rebase の必要性を報告し、ユーザーの承認後に専用の安全手順で進める
-9. 完了後、リモートリポジトリの URL をマークダウンリンク形式で表示（例: `[リポジトリ名](https://github.com/owner/repo)`）
+- 今回の依頼またはハーネスの状態から保存済み・未保存なしと確認できれば、保存処理と再確認は不要。
+- それ以外は、現在のハーネスで許可された保存機能を使い、正常完了を確認する。例: VS Code の `workbench.action.files.saveAll`。拡張機能や補助スクリプトは追加しない。
+- 保存手段がない、失敗・キャンセル・未保存の残存、または完了未確認でも、確認質問や停止はせず、ディスク上の内容で Git 操作を続行する。最終報告で保存結果と、未保存の編集が反映されていない可能性を明記する。保存済みとは推測しない。
 
-## コミットメッセージのフォーマット
+## Git 操作
 
-**Conventional Commits** 形式でコミットメッセージを作成してください。
+1. 作業ディレクトリ、現在のブランチ、送信先 remote / upstream、`git config user.name` を確認する。
+2. `git fetch <remote>` と `git status -sb` で同期状態と変更を確認する。未コミット変更も未送信コミットもなく、behind でもなければ `Nothing to commit/push` で終了する。
+3. 未コミット変更がある場合は差分を確認し、対象パスを明示して `git add -- <対象パス>`、`git diff --cached --check`、`git commit` の順に実行する。各操作の成功を確認して次へ進み、独立した作業は別コミットにする。
+4. push 直前に送信先を再 fetch し、ahead / behind を確認する。behind の解消は作業ツリーが clean かつ fast-forward 可能な場合の `git pull --ff-only` に限る。解消できなければ停止して状況を報告し、rebase・autostash・履歴変更を承認なく実行しない。
+5. `git push` を実行する。rejected の場合は手順4で再確認し、解消できた場合だけ1回再試行する。
+6. 完了後、リモートリポジトリの URL を Markdown リンクで表示する。
 
-```
-<type>(<scope>): <subject> - <user.name>
-```
+## コミットメッセージ
 
-例（`git config user.name` を反映）:
-
-- `feat(auth): ログイン機能を追加 - <user.name>`
-- `fix(api): タイムアウトエラーを修正 - <user.name>`
-- `docs(readme): セットアップ手順を更新 - <user.name>`
+Conventional Commits 形式: `<type>(<scope>): <subject> - <user.name>`。`<user.name>` は手順1で取得した値を使う。

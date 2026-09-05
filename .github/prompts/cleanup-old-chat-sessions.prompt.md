@@ -19,7 +19,7 @@ agent: "agent"
 ## 引数と実行モード
 
 - 保持日数は引数の正の整数を使い、省略時は `5` 日とする。
-- 明示呼び出しを削除承認とみなし、mode 省略時は apply する。`--apply` は互換 alias として同じ扱いにする。
+- 明示呼び出しで mode 省略時は apply を選ぶ。`--apply` は互換 alias とする。mode 選択だけで削除承認済みとはみなさず、実操作は下記の着手時承認後に行う。
 - `--dry-run` がある場合だけ、候補と検証方法を報告して変更せず停止する。
 - apply でも read-only preflight は必須。承認は着手時の 1 回にまとめる。実行開始時に offline mode になり得ること（VS Code の close / restart、backup・quarantine 後の local DB 変更、cloud deletion は未確認）を提示して承認を取り、以降は mode 判定やフェーズ移行で再確認しない。
 - 引数が曖昧、または `archive` を求めている場合は削除せず確認する。
@@ -50,7 +50,7 @@ agent: "agent"
 ## 経路選択
 
 - 全候補を GUI row と一意照合でき、visible GUI 操作が可能なら **GUI mode** を既定にする。`agentSession.delete` は `context.sessions` で複数選択をまとめて削除できるため、件数だけを理由に offline mode へ倒さない。
-- 候補が多い場合は、pin / active / 保留中編集を挟まない日時連続ブロックへ分け、各ブロックの native confirmation の件数が想定と一致することを確認してから確定する。
+- GUI の削除単位は、exact ID と全 row を一意照合できる選択集合（1件以上）とする。候補が多い場合は、pin / active / 保留中編集を挟まない日時連続ブロックへ分ける。各集合の全IDについて GUI mode の直前検証を行い、native confirmation の件数が集合の件数と一致する場合だけ確定する。
 - `stale-index` は GUI row に現れない可能性があるため、GUI 削除後に index を再読して残存を確認し、残った場合だけ offline mode を提案する。
 - GUI の一意照合または操作が成立しない候補が1件でもある場合は **offline mode** を提案する。
 - 候補 `0` 件は no-op。`--dry-run` は選択予定の mode と、その理由も報告する。
@@ -58,13 +58,13 @@ agent: "agent"
 
 ## GUI mode
 
-1. Agent Sessions の対象 row から VS Code 標準の `Delete...` action を実行する。この action が session object / selection context を受けて内部状態を更新する経路だけを使う。
+1. Agent Sessions の対象 row / selection から VS Code 標準の `Delete...` action を使う。session object / selection context を受けて内部状態を更新する経路に限り、実行は手順5以降の照合と検証後に行う。
 2. 現在の agent が row を選択して context action を実行できる visible GUI 操作経路を持つか確認する。agent 自身で操作できない場合は exact 候補を提示してユーザーの GUI 操作を待ち、keyboard sequence や raw command 呼び出しで代用しない。
 3. GUI mode では window の close / reload / restart、renderer 終了、`state.vscdb` や session file の直接変更を行わない。
 4. `agentSession.delete` に raw ID / URI / keybinding args を渡せると推測しない。viewer フォーカス時の `Delete` キーは `agentSession.archive` でアーカイブになるため、削除は row の context menu の `Delete...` を使う。`workbench.action.chat.clearHistory` は保持期間や保護条件を無視して全件削除するため使わない。
-5. 削除前に候補を GUI row と照合する。title、表示日時、provider など GUI で確認できる属性の組み合わせが一意でない候補、GUI に表示されない候補、scope を確認できない候補が1件でもあれば、何も削除せず offline mode の承認へ切り替える。
-6. native action 自体は pin / active session を削除から保護しない。各削除の直前に index、pin cache、active resource を再読し、同じ ID が local・古い・未ピン留め・非アクティブ・保留中編集なしを保つ場合だけ、対象 row を1件 `Delete...` する。
-7. native confirmation が1件を示すことを確認して承認し、操作後に index を再読する。想定した ID だけが消え、pin / active / pending-edit session が残ることを確認してから次へ進む。
+5. 削除前に候補を GUI row と照合する。title、表示日時、provider などの組み合わせが一意でない候補、GUI に表示されない候補、scope を確認できない候補が1件でもあれば、その集合を削除せず経路選択へ戻る。offline mode は着手時承認の範囲内でのみ使う。
+6. native action 自体は pin / active session を削除から保護しない。各集合の削除直前に index、pin cache、active resource を再読し、選択された全 row と exact ID 集合が一致すること、全IDが local・古い・未ピン留め・非アクティブ・保留中編集なしを保つことを確認する。全件確認できた場合だけ選択集合に `Delete...` を実行する。
+7. native confirmation の件数が検証済み集合の件数と一致することを確認して承認し、操作後に index を再読する。削除前後の差分が想定した exact ID 集合と一致し、pin / active / pending-edit session が残ることを確認してから次の集合へ進む。1件でも不一致・未確認なら停止する。
 8. キャンセル、候補変化、想定外 ID の消失、検証不能が起きたら残りを削除せず停止する。
 9. workspace 外、global storage、debug logs、他 provider resource は触らない。native action の cloud deletion は best effort で失敗が表面化しない場合があるため、正式な同期状態を別途確認できない限り未確認と報告する。
 

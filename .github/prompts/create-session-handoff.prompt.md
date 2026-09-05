@@ -3,7 +3,6 @@ name: "create-session-handoff"
 description: "Use when: 現在の会話・作業状態から、別セッションへそのまま渡せる自己完結した依頼文を作る。依頼文の生成のみで、対象作業は実行しない"
 argument-hint: "次セッションへ依頼したい作業、終点、除外事項（省略時は会話から推定）"
 agent: "agent"
-model: "GPT-5.6 Terra"
 tools: [vscode/askQuestions, execute/runInTerminal, read, vscodeGeneral/usages, search]
 ---
 

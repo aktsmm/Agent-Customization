@@ -141,15 +141,6 @@ Input runtime task strategy: `${input:runtimeTaskStrategy:template / record。�
    - Next fix candidates
 15. 最終回答では、action、execution mode、評価対象、結果、赤 gate、警告、次の一手を簡潔に出す。
 
-## Supported Operations
-
-- `setup`: 評価プロジェクトを初回構築、または必要ファイルを再生成する
-- `run`: static eval を実行して結果 JSON と report を更新する
-- `runtime`: 既定は template task を作成して `copilot-sdk` 実行し、runtime 結果 JSON と report を更新する
-- `gate`: `metadata` / `agent-structure` / `token-budget` の個別実行を行う
-- `report`: 既存結果の要約と report 更新を行う
-- `full`: `setup -> static run -> optional runtime -> report` を一括実行する
-
 ## Command Reference
 
 ```powershell

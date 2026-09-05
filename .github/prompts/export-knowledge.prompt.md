@@ -106,10 +106,7 @@ references:
 
 ## Index Targets
 
-| ドメイン  | インデックスファイル |
-| --------- | -------------------- |
-| microsoft | `<resolved-root>\_index\knowledge-index.json` |
-| copilot   | `<resolved-root>\_index\knowledge-index.json` |
+各ドメインで解決した `<resolved-root>\_index\knowledge-index.json` を使う。
 
 `resolved-root` は Markdown の出力 root と同じ場所を使う。root が決まるまでファイル作成と index 更新を開始しない。
 

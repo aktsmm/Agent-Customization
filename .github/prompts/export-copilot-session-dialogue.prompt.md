@@ -16,8 +16,9 @@ description: "Interaction flow: セッション中の対話フロー・使用ツ
 ## Core Contract
 
 - 対話フロー、使用ツール、handoff、成果、再利用知見を記録する
-- 試行錯誤は詳細ではなく回数と理由に圧縮する
+- 試行錯誤は詳細コードを省略し、回数と理由に圧縮する
 - モード切替と runSubagent / handoff は明示的に残す
+- ユーザー入力は「要約 + （原文）」で記録
 
 ## 出力先
 
@@ -40,12 +41,6 @@ description: "Interaction flow: セッション中の対話フロー・使用ツ
 7. 効果的だった技法
 8. エラー・リトライ（型/原因/対処/回数）
 9. 成果物と再利用知見
-
-## Compression Rules
-
-- ユーザー入力は「要約 + （原文）」で記録
-- 試行錯誤は詳細コードを省略し、回数と理由だけ残す
-- モード切替、handoff、runSubagent は明示的に残す
 
 ## Output Format
 

@@ -30,6 +30,7 @@ applyTo: "**"
 
 - 狭い確認は、対象・列・件数・範囲を絞った短い command / tool call を直接実行し、出力は取得元で filter / limit / summary する。
 - raw output は後の監査・再読に必要な場合だけ file に保存し、親へは相対 path、結論、主要根拠、次 action を返す。
+- バイナリや大容量ファイルを in-band 経路（tool 戻り値、stdout、CDP の base64 応答）で運ばない。ブラウザのダウンロード機能、`-OutFile`、`--output` のように**転送元が直接 file へ書く**経路を使う。数 MB を超える in-band 転送は harness ごと重くする。
 - shell 構文や出力制御はローカルの terminal rule に従う。
 - セッション中に編集ツール / MCP / 取得ツールが無効化される場合がある。同じ tool + input は1回だけ再試行し、2回連続失敗なら別ルートへ切り替える（例: `create_file` 不可 → terminal 経由でファイル生成、Playwright MCP 不可 → Python + CDP、`get_terminal_output` 不可 → ログをファイル出力して `read_file`）。
 
@@ -37,7 +38,7 @@ applyTo: "**"
 
 - 入力や操作方式を変えても同じ永続 state が2回続いたら、fallback ladder 全体を停止する。最終 state・試行済み経路・再開条件を残し、3つ目の迂回策を探さない。
 - 反復が増える作業は、手順を固定するか小さな script に切り出す。
-- 非自明な作業は、検証方法を先に決めてから進める。
+- 非自明な作業は、実際の利用経路と応答 schema に基づき合格条件を先に決める。設定値・自己申告・別経路の成功だけで完了とせず、存在未確認の項目や未実行の任意 probe を必須判定に使わない。必要な根拠が未取得なら未確認とする。
 
 ## Delegate
 
