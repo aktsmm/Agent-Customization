@@ -47,6 +47,8 @@ public / EMU / GIM へ反映する必要がある場合は、育成と local com
 
 ## Scope Gate
 
+- scope 不一致 / handoff-required による停止は当該知見だけに適用し、安全に独立処理できる対象内の知見は続行する。実行全体の安全性が未確定な場合は停止する。
+- 別の Retro / workflow が適切な知見は、推奨先・理由・引き継ぐ知見を示す。推奨先の実在と担当 scope を確認し、未確認なら `確認待ち` として不足情報を示す。許可 scope 外へ自動で切り替えて編集しない。
 - intake source は VS Code workspace の `.github/skills/<skill>`、または private repo 内の既存 skill。`~/.copilot/skills|m-skills` を source にしたいときは CLI / Scout 用 SKILL 版へ回す
 - 反映先（write target）は private repo の `.github/skills/<skill>/` に限定する。workspace の `.github/skills/**` は読み取り専用 source として扱い、書き込みは private repo 側だけに行う
 - secret / 認証情報 / 個人情報 / 顧客情報 / ローカル絶対パス / 端末固有値 / `/memories/**` は反映しない
@@ -69,11 +71,11 @@ workspace skill を取り込むときは、source の `.github/skills/<skill>` �
 ## Edit Rules
 
 - private repo root は `private repo path` → `SYNC_PUBLIC_SKILLS_PRIVATE_REPO` の Process/User → `SYNC_PUBLIC_SKILLS_SCRIPT` からの逆算 → current workspace の順で解決する
-- 新規ファイルより既存 skill への統合を優先し、`削除 -> 統合 / 圧縮 -> 分離 -> 追加` の順で検討する
+- 既存の意味で充足する知見は `既存で充足` とし、同じ知見の再実行でも変更しない。差分が必要なら新規作成・追記より削除・置換・統合・圧縮を優先し、不足時だけ分離・追加を検討する。
 - 圧縮は AI が判断できる最小情報を主目的にし、人間向け可読性は二次とする
 - 冗長説明は圧縮するが、非自明な判断基準や手順は消さない
 - `SKILL.md` が太る場合も、まず既存文の置換や圧縮を優先し、それでも重い場合だけ `references/*` を使う
-- `SKILL.md` は一般論の手順書ではなく入口として扱う。追加するなら、モデルが既に知っている自明な手順より、実作業で踏んだ Gotchas、完了判定、参照すべき scripts / references の所在を優先する
+- `SKILL.md` は入口とし、自明な一般手順より Gotchas・完了判定・scripts / references の所在を優先する
 - 同じ Learning / Evidence / Impact を言い換えて繰り返さず、1 論点 1 塊でまとめる
 - `git add` / `git commit` / `git push` の直前に、`Set-Location <private-repo>` または `git -C <private-repo>` で working directory を private repo root に固定する。前の tool call から引き継いだ cwd を信用しない。commit / push 後に `git status --short --branch` を再確認して cwd 違いの commit を早期検知する
 
@@ -90,15 +92,15 @@ workspace skill を取り込むときは、source の `.github/skills/<skill>` �
   5. behind があれば `git pull --rebase` する。別 PC の更新を取り込まずに編集すると、同じ skill を古い版ベースで書き換えて conflict になる
   6. rebase が conflict したら、both-kept（両方残し）は**一時保存の方針**として使ってよいが最終形にはしない。push 前に、同一論点の重複統合、MUST / 禁止 / 既定 mode の矛盾解消、`SKILL.md` frontmatter の一意性を確認する。解消できない矛盾が残る場合は push せず停止する
 - intake する場合は source の workspace `.github/skills/<skill>` を読み取り、private repo 側の同名 skill の有無を確認する
-- `Learning / Evidence / Impact` を作り、最も specific な既存 skill に routing する
+- 全知見を論点別に列挙し、それぞれ Learning / Evidence / Impact と最適な反映先を決める。
 
 ### 2. 変更案作成
 
 - 優先度: Impact x Recurrence（P1/P2/P3）
 - 対象 skill が明示されている場合は、その skill を先に読む
-- まず既存 skill へ統合できるかを確認し、収まらない場合だけ `New Skill Proposal` を出して停止する
+- まず知見ごとに既存 skill へ統合できるかを確認し、収まらない知見だけ `New Skill Proposal` を提示して反映を保留する
 - 対象が `SKILL.md` のときは、追加より先に既存節の圧縮や置換を検討する
-- 複数 skill が独立して owning すべき cross-cutting 原則（例: tool-platform 制約、Self-Contained ノート、commit/push 論理）は、該当する全 skill に 1 行だけ追加する複数反映を許可する。portability を守るための独立 SSOT コピーで、hard reference に依存しない形を取る
+- 明示依頼なしでも、採用知見は許可 scope 内の不足する全反映先へ最小差分で反映する。独立した責務を持つ反映先には自己完結した規則を置き、長い重複は作らない。
 - safe-auto では最小差分で反映し、review-only と Gate 停止時だけ提案に留める
 
 ### 3. 反映 + 必要時承認
@@ -108,10 +110,11 @@ workspace skill を取り込むときは、source の `.github/skills/<skill>` �
 
 ### 3.5. 肥大化チェック（反映後）
 
-- 反映後、DRY 違反・冗長表現・重複定義があれば圧縮・削除・分離する
+- 変更範囲の重複・冗長さを削除・置換・統合する。変更前後の本文文字数を同じ改行条件で測定し、純増時だけ差分と置換では足りない理由をチャットで報告する。必要な新知識は追加できるが、量を減らすために非自明な手順・判断基準は削らず、実行のたびに履歴ファイルを増やさない。
 
 ### 4. 検証
 
+- 抽出した全知見を `反映済み / 既存で充足 / 見送り / handoff / 確認待ち / 承認待ち / 提案のみ` に分類し、反映先または理由と照合して未処理を残さない。対象外の知見は推奨先の確認済みなら `handoff`、未確認なら `確認待ち` とし、対象外という理由だけで `見送り` にしない。review-only の変更案は `提案のみ` とし、反映済みと報告しない。
 - 変更先が private repo の `.github/skills/<skill>/` 配下だけであることを確認する
 - 新規または大きく変更した `SKILL.md` は、folder 名と `name` の一致、trigger を含む `description`、必要な `argument-hint` / `user-invocable` / `license` / `metadata.author` を確認する
 - 追加内容が secret、顧客情報、tenant ID、ローカル絶対パス、外部 workspace 依存を含まないことを確認する
@@ -121,11 +124,12 @@ workspace skill を取り込むときは、source の `.github/skills/<skill>` �
 
 ```markdown
 # Retro: [Title]
-- Learnings: ...
+- Learnings: 各知見の状態 / 反映先 / 未反映理由
 - Changes: ...
 - Target: ...
 - Commit: <hash or none>
+- Handoff: 推奨 Retro / workflow・理由・引き継ぐ知見（なければ none）
 - Gate: pass / stop reason
 ```
 
-Stop: 入力不足 / private repo 未解決 / scope 不一致 / Safety Gate 失敗 / actionable な知見なし / 新規 skill 候補 / review-only
+Stop: 入力不足 / private repo 未解決 / Safety Gate 失敗 / actionable な知見なし / review-only。scope 不一致 / 新規 skill 候補は当該知見のみ handoff / 承認待ちにする。

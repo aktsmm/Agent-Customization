@@ -8,7 +8,7 @@ applyTo: "**"
 <!-- repository: https://github.com/aktsmm/Agent-Customization -->
 <!-- license: CC BY-NC-SA 4.0 -->
 <!-- copyright: Copyright (c) 2025 aktsmm -->
-<!-- updated: 2026-07-15 -->
+<!-- updated: 2026-09-07 -->
 
 # Web Search Instructions
 
@@ -33,10 +33,12 @@ Web 検索、ページ取得、最新情報確認、出典付き調査を行う�
 
 1. GitHub / GitHub Enterprise の機能、API、リポジトリ、Issue / PR、Actions、セキュリティ機能を調べるときは GitHub MCP を第一候補にする。公式 Docs は `github_support_docs_search`、リポジトリや Issue / PR は対応する GitHub MCP tool を使い、MCP または必要な toolset が利用できない場合だけ GitHub 公式 URL の直接取得、次に汎用 Web 検索へ進む。
 2. Microsoft / Azure / Microsoft 365 関連は `microsoftdocs/*` を優先する。新機能、GA、Preview、Retirement は Azure Updates / M365 roadmap 系ツールを使う。
-3. 汎用 Web 検索は `brave-search/*` を第一候補にする。レスポンス、構造化結果、再現性のバランスが良い。
-4. 既知の公式 URL がある場合は、検索を挟まず `web/fetch` や `fetch_webpage` で直接取得してよい。
-5. Brave が失敗、429、または利用不可の場合は DuckDuckGo HTML を fetch fallback として使う。
-6. それでも検索候補が必要で、terminal tool が許可されている場合だけ、Copilot CLI `web_search` を read-only fallback として使う。
+3. OpenAI / ChatGPT / Codex / OpenAI API 関連は `openaiDeveloperDocs`（OpenAI Docs MCP）を優先する。利用不可または公式 Docs 外の情報が必要な場合は、OpenAI 公式 URL を直接取得してから汎用 Web 検索へ進む。
+4. Anthropic / Claude / Claude Code / Anthropic API 関連は、Platform Docs には `anthropicDocs`、Claude Code Docs には `claudeCodeDocs` を優先する。利用不可または公式 Docs 外の情報が必要な場合は、Anthropic 公式 URL を直接取得してから汎用 Web 検索へ進む。
+5. 汎用 Web 検索は `brave-search/*` を第一候補にする。レスポンス、構造化結果、再現性のバランスが良い。
+6. 既知の公式 URL がある場合は、検索を挟まず `web/fetch` や `fetch_webpage` で直接取得してよい。
+7. Brave が失敗、429、または利用不可の場合は DuckDuckGo HTML を fetch fallback として使う。
+8. それでも検索候補が必要で、terminal tool が許可されている場合だけ、Copilot CLI `web_search` を read-only fallback として使う。
 
 ## Fallbacks
 
