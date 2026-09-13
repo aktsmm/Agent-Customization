@@ -35,7 +35,7 @@ Web 検索、ページ取得、最新情報確認、出典付き調査を行う�
 2. Microsoft / Azure / Microsoft 365 関連は `microsoftdocs/*` を優先する。新機能、GA、Preview、Retirement は Azure Updates / M365 roadmap 系ツールを使う。
 3. OpenAI / ChatGPT / Codex / OpenAI API 関連は `openaiDeveloperDocs`（OpenAI Docs MCP）を優先する。利用不可または公式 Docs 外の情報が必要な場合は、OpenAI 公式 URL を直接取得してから汎用 Web 検索へ進む。
 4. Anthropic / Claude / Claude Code / Anthropic API 関連は、Platform Docs には `anthropicDocs`、Claude Code Docs には `claudeCodeDocs` を優先する。利用不可または公式 Docs 外の情報が必要な場合は、Anthropic 公式 URL を直接取得してから汎用 Web 検索へ進む。
-5. 既知の公開 X 投稿を調べるときは、投稿 ID を `https://api.fxtwitter.com/2/status/{id}` へ渡す FxTwitter API の JSON 取得を優先してよい。X の画面を直接取得するより、本文・投稿者・メディア・反応数を機械的に読みやすい。
+5. 既知の公開 X 投稿またはハッシュタグを含む明示クエリを調べるときは、FxTwitter API v2 の JSON 取得を優先してよい。既知投稿は `/2/status/{id}`、クエリは `/2/search?q=<URL-encoded-query>&feed=latest&count=<1-100>` を使い、`code: 200` の結果だけを採用する。検索の次ページは `cursor.bottom` を `cursor` に渡す。
 6. FxTwitter は X Corp. 非公式の第三者サービスとして扱う。認証情報を渡さず、非公開・削除済み投稿や大量・継続収集には使わない。取得失敗時は X の原 URL やブラウザ確認へ切り替え、出典には原 URL を示す。
 7. 汎用 Web 検索は `brave-search/*` を第一候補にする。レスポンス、構造化結果、再現性のバランスが良い。
 8. 既知の公式 URL がある場合は、検索を挟まず `web/fetch` や `fetch_webpage` で直接取得してよい。
