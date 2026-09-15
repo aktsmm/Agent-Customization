@@ -31,6 +31,7 @@ description: "Git の公開同期ポリシー（repo visibility、.github/.vscod
 - ローカル実ファイルは削除しない。
 - 追跡するのは「リポジトリ公開に必要なファイル」だけにする。
 - `.github` は workflow / automation / 運用上必要なメタデータのみ追跡し、不要な補助資料は追跡しない。
+- private/internal repo内だけで使う画面証跡は、tenant/subscription/resource等の環境識別子をマスク必須にしない。public repoまたは外部共有ではマスクし、visibilityに関係なくsecret・token・資格情報を含めない。
 
 ## Internal Notes in Public Repositories
 

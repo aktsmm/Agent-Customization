@@ -24,6 +24,12 @@ description: "セッション内容を CSA ペルソナ（日本マイクロソ�
 	- 内容に即したもの（製品名/機能名が明確ならそれを優先）
 	- 汎用タグは最小限（例: #Azure #Microsoft）
 
+## 文字数検証
+
+- 最終判定には `twitter-text` v3 互換パーサーと公式設定 `https://raw.githubusercontent.com/twitter/twitter-text/master/config/v3.json` を使う。`String.length` や目視で代用しない
+- `weightedLength` が280以下であることを確認する。URLは実際の長さにかかわらず公式設定の短縮後長（現在23）として扱う
+- 絵文字、結合絵文字、異体字セレクターは見た目の文字数で数えず、パーサー結果を採用する。計測できない場合は文字数未検証として投稿可能と断定しない
+
 ## 出力例
 
 ```

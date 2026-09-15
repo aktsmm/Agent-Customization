@@ -9,7 +9,7 @@ argument-hint: "対象、重点観点、モード（例: current workspace / all
 <!-- repository: https://github.com/aktsmm/Agent-Customization -->
 <!-- license: CC BY-NC-SA 4.0 -->
 <!-- copyright: Copyright (c) 2025 aktsmm -->
-<!-- updated: 2026-06-28 -->
+<!-- updated: 2026-09-15 -->
 
 # refine product 100
 
@@ -72,11 +72,11 @@ Retry は同一原因 3 回まで。超えたら、試した代替と失敗理�
 
 永続 state file は `.git/info/refine-product-state.md` の 1 つだけ使う。`.github/` 配下の state file や追加の log file は作らない。`Run Ledger` と `Handoff Packet` はチャット出力であり、永続 file ではない。
 
-前回 state は、ユーザー指定の state file、`.git/info/refine-product-state.md`、直近会話の `Run Ledger` / `Handoff Packet` の順に読む。直近会話の出力は local state が無い、古い、またはユーザーが明示した場合の fallback として使い、本文を次回出力へそのまま再掲しない。`.git/` が無い場合は代替 file を自動作成せず、チャット state だけで進める。
+前回 state は、ユーザー指定の state file、`.git/info/refine-product-state.md`、直近会話の `Run Ledger` / `Handoff Packet` の順に読む。これは参照順であり、古い記録を最新の確認結果より優先する順ではない。同じ対象・version の成果物、終了結果、公開状態が後から確認済みならそれで項目を更新し、旧 Block や todo を理由に完了済み操作を再実行しない。local state が無い・古い場合は直近会話を補助に使い、証拠が矛盾する場合だけ対象を絞って読み取り確認する。`.git/` が無い場合は代替 file を作らずチャット state を使う。
 
 実行可能 mode（default / quick / release）では、`.git/info/refine-product-state.md` を必ず作成・compact rewrite する。`.git/` が無い場合だけ `Local State: skipped` とし、理由を書く。No-Edit mode（plan / review / dry-run）では作成しない。
 
-state file は append-only にしない。毎回 compact rewrite し、次回判断に効く current snapshot だけを残す。`.git/info/` 配下なので `.gitignore` 変更は不要。
+state file は append-only にせず compact rewrite する。実行可能 mode では、公開確認や旧 Block 解消など重要な状態が確定した時点で state と todo を同期し、最終報告まで更新を先送りしない。完了済み操作の再実行は状態同期の代わりにならない。`.git/info/` 配下なので `.gitignore` 変更は不要。
 
 state file の構成は次に限定する: `Current Snapshot` / `Last Run Detail` / `Open Items` / `Recent Runs` / `Do Not Repeat` / `Next Focus Candidates` / `Guard or Block`。
 
@@ -157,9 +157,11 @@ prompt / instruction / skill / hook / reusable script 自体に再発要因が�
 4. build / pack を実行し、artifact の存在・サイズ・更新時刻を正本にする。
 5. pack 中身を列挙し、src / test / .github / .vscode / sourcemap / 内部資料の混入を確認。
 6. Commit → push → publish → GitHub Release は、ユーザーの明示 release 指示がある場合だけ実行。
-7. publish 後は registry / Marketplace / Git tag / GitHub Release など別経路で裏取り。stale 表示だけで再 publish しない。
+7. publish 後は対象識別子・version を registry / 公開 API と掲載ページで裏取りし、必要な tag / Release / 添付の状態を照合する。送信成功と公開反映を区別し、stale 表示だけで再 publish しない。反映待ちは期限付き確認を1本に限定し、通知待ち中に別の手動 polling を重ねない。
 8. commit / push 済みでも tag / publish / GitHub Release が未完なら release は未完了。`Release Status` に未完了箇所を分けて書く。
 9. 認証・審査・権限不足で止まる場合は `Block` とし、version / artifact / commit / tag / push / publish 状態を分けて報告。
+
+公開前に必須とした品質 gate と対象配布の確認が揃ったら公開完了を報告する。任意の追加スクリーンショット、再ダウンロード、同じページの再確認を後付けの完了条件にしない。事前に必須のハッシュ照合等は維持し、未達の必須 gate を省略しない。完了後は state 同期と所有範囲の cleanup だけを終え、新しい監査は別作業にする。
 
 ## Prompt-only Handoff
 

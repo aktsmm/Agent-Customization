@@ -14,9 +14,9 @@ description: "ターミナル操作と Copilot debug log の低頻度トラブ�
 
 ## Shell Recovery
 
-- 同じ read-only 検証や確認コマンドが共有 shell で 2 回以上飲まれたり、`>>` が続く場合は、その shell での再試行を打ち切り、read-only な subagent や別の非共有実行経路へ切り替えてよい。
+- 共有 shell で入力行だけの再表示、構文崩れ、利用済みコマンドの不認識が2回続いたら、その shell での再試行を打ち切る。不認識だけで未導入やPATH破損と断定せず、成功を確認できた独立実行経路を同じ作業の残工程でも使う。工程が変わるたびに壊れた shell へ戻らない。変更操作の再開前は成果物・Git参照・外部状態を確認し、既に完了した書込みを再送しない。
 - `rg` 導入直後のシェルで `rg` が見つからない場合は、ターミナル再起動か、`$env:Path = [System.Environment]::GetEnvironmentVariable('Path','Machine') + ';' + [System.Environment]::GetEnvironmentVariable('Path','User')` で PATH を再読込してよい。
-- read-only な audit / sync / verify で長い quoted payload や here-string が見えている場合は、共有 shell の復旧待ちを前提にせず、最初から一時 script、clean な one-shot shell、または read-only subagent を選んでよい。
+- 長い quoted payload は短いスクリプトへ分離し、独立プロセスの `command` / `args` で渡す。既存の適切な process task が使えるなら優先し、スクリプトの存在と構文を確認する。実行経路の変更は実行権限を広げない。共有 task 設定の編集・cleanup 時は最新版を読み、今回追加した項目だけを扱い、他セッションの項目を実行・削除しない。
 
 ## Git HEAD Update Recovery
 
@@ -28,7 +28,7 @@ description: "ターミナル操作と Copilot debug log の低頻度トラブ�
 
 - `run_in_terminal` の sync 実行が `Command produced no output` を返したり、async 実行が prompt 復帰前に idle した場合も、直ちに失敗扱いにせず expected artifact を先に確認する。artifact が生成済みなら render/capture 問題として扱い、未生成なら dedicated terminal や短い follow-up command で観測を補強する。
 - 長い `npm` / `node` / test suite で stdout capture が不安定な場合は、`cmd /c "... && echo OK"` や `Write-Output "name-exit=$LASTEXITCODE"` のような success marker を付け、末尾の marker か exit code を正本にする。`> $null` や `Select-Object -Last N` を使う場合も marker か exit code の確認を省略しない。
-- 共有 shell の stdout が成功行や URL を返しても、重要な結果は実 artifact、Git object、認証済み画面など別経路で裏取りする。
+- stdout や active terminal の最終コマンドは、目的の実行と一致する command・実行ID・cwd・開始時刻を照合して使う。別ターミナルや前回実行の成功を流用しない。重要な結果は実 artifact、Git object、公開 API 等でも確認し、必要な根拠が揃ったら同じ裏取りを繰り返さない。
 - PowerShell script を編集した後は、`[scriptblock]::Create((Get-Content -Raw -Encoding UTF8 <file>))` で構文確認してから実行する。
 - PowerPoint / Excel / VS Code で開かれた Office ファイルを解析するときは、ロックフリーな一時コピーを作り、解析後に削除する。成果物の上書きが必要なら版番を上げる。
 

@@ -23,7 +23,7 @@ description: 保存してコミット＆プッシュ
 
 1. 作業ディレクトリ、現在のブランチ、送信先 remote / upstream、`git config user.name` を確認する。
 2. `git fetch <remote>` と `git status -sb` で同期状態と変更を確認する。未コミット変更も未送信コミットもなく、behind でもなければ `Nothing to commit/push` で終了する。
-3. 未コミット変更がある場合は差分を確認し、対象パスを明示して `git add -- <対象パス>`、`git diff --cached --check`、`git commit` の順に実行する。各操作の成功を確認して次へ進み、独立した作業は別コミットにする。
+3. 未コミット変更がある場合は差分を確認し、対象パスを明示して `git add -- <対象パス>`、`git diff --cached --check`、`git commit` の順に実行する。複数PoC・別artifact/test・無関係な変更は作業単位へ分類し、scope別の明示pathでstageして別コミットにする。
 4. push 直前に送信先を再 fetch し、ahead / behind を確認する。behind の解消は作業ツリーが clean かつ fast-forward 可能な場合の `git pull --ff-only` に限る。解消できなければ停止して状況を報告し、rebase・autostash・履歴変更を承認なく実行しない。
 5. `git push` を実行する。rejected の場合は手順4で再確認し、解消できた場合だけ1回再試行する。
 6. 完了後、リモートリポジトリの URL を Markdown リンクで表示する。
