@@ -9,7 +9,7 @@ applyTo: "**"
 <!-- repository: https://github.com/aktsmm/Agent-Customization -->
 <!-- license: CC BY-NC-SA 4.0 -->
 <!-- copyright: Copyright (c) 2025 aktsmm -->
-<!-- updated: 2026-08-12 -->
+<!-- updated: 2026-09-23 -->
 
 # PowerShell Terminal Instructions
 
@@ -26,6 +26,7 @@ applyTo: "**"
 - コマンドは PowerShell 互換で書く（Bash 構文を混ぜない）。
 - Bash heredoc (`<<EOF` / `<<'PATCH'`) や patch 本文を terminal に送らず、ファイル編集ツールか短い単発コマンドを使う。
 - 連結は `;`（`&&` は使わない）、出力破棄は `$null`（`/dev/null` は使わない）を使う。
+- 検証対象の native command を `;` で連結するときは、各実行直後に `$LASTEXITCODE` を確認するか、単発実行に分ける。前の失敗でも後続が実行され、最後の成功が結果を上書きするため。
 - 文字列・変数展開・パイプラインは PowerShell の流儀に合わせる。
 - `foreach (...) { ... } | Format-Table` のように statement form 直後へ pipe しない。結果を変数に受けてから pipe するか、pipeline-native な `ForEach-Object` を使う（`An empty pipe element is not allowed` 回避）。
 - `python -c "..."` に複数行コードを埋め込まない。1行で済まなければスクリプトファイルと編集ツールを使う。
@@ -62,6 +63,7 @@ applyTo: "**"
 - `gh` や類似 CLI へ**空白を含む検索式**を渡すときは、PowerShell で 1 つの文字列として引用する。一方 `--json a,b,c` のカンマ区切りは、ネイティブコマンドの引数では分解されないので引用は必須ではない（2026-08-26 実測: 引用あり / なしのどちらも `["--json","a,b,c"]`）。`--jq` に渡す式は `$j` のような jq 変数を含むため、必ずシングルクォートで囲む。ダブルクォートだと PowerShell が先に展開して式が壊れる。
 - `{}` を含む引数はシングルクォートで囲う。例: `git rev-list --left-right --count 'HEAD...@{upstream}'`。裸の `@{upstream}` は PowerShell が ScriptBlock / hashtable と解釈し、`ScriptBlock should only be specified as a value of the Command parameter` で落ちる。`@{n}` や `HEAD@{1}` など git の reflog / upstream 表記全般が対象。
 - 日本語を含むファイルや JSON を扱うときは UTF-8 を維持する。
+- `Get-Content -Raw` は CRLF を保持する。multiline regex で行末を照合するときは改行前の `\r` を許容するか、`\r?\n` で split する。
 - スクリプトや CLI を実行する前に、対象 script / 実行ファイルの存在を確認する。不在時は実行せず、read/grep などの代替検証へ切り替える。
 - VS Code task は再利用する registry とし、日付入り・対象固定の one-off task を常設しない。一時 task と一時スクリプトは完了前に削除する。
 - スクリプトや CLI の変更系操作は、既定を read-only / dry-run にし、破壊的変更や外部反映は `--apply` などの明示フラグを必須にする。

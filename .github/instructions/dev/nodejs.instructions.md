@@ -32,6 +32,7 @@ Node.js では、セットアップ手順より project behavior rule を優先�
 
 - 依存導入や script 実行前に Node.js の version と package manager を確認する
 - `package.json` の script と `engines` を尊重する
+- `npm exec <tool>` が未導入の package を対話的に追加しようとしたら、検証目的では package script か既存の local binary へ切り替え、依存追加の明示依頼なしに承認しない。
 - 新しい依存を追加したら、必要なら audit や test で確認する
 
 ## Out of Scope Here

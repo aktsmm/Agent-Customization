@@ -9,7 +9,7 @@ applyTo: "**"
 <!-- repository: https://github.com/aktsmm/Agent-Customization -->
 <!-- license: CC BY-NC-SA 4.0 -->
 <!-- copyright: Copyright (c) 2025 aktsmm -->
-<!-- updated: 2026-07-13 -->
+<!-- updated: 2026-09-23 -->
 
 # Git Operations Instructions
 
@@ -25,6 +25,10 @@ applyTo: "**"
 - `gh issue comment --body` などへ変数を渡すときは、変数定義と実行を同一ターミナル実行で行う。
 - Git hook は `.sample` のままでは実行されない。クローン再現性が必要な場合は、repo 管理下（例: `hooks/pre-commit`）に実体を置き、README で `.git/hooks/` へのコピー手順を案内する。
 - 公開同期、repo visibility、`.github` / `.vscode` の公開判断は、実行前に対象と公開範囲を確認し、必要時は `git-publish-policy.instructions.md` を参照する。
+
+## Submodules
+
+- Submodule の内部変更は親から直接コミットせず、子リポジトリで commit・検証した後に、親で更新された gitlink を stage・commit する。親の `git status` が submodule path だけを変更として示すことを確認し、push は各リポジトリで別々に扱う。
 
 ## Release Sanity
 

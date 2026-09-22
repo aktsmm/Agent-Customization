@@ -8,7 +8,7 @@ applyTo: "**"
 <!-- repository: https://github.com/aktsmm/Agent-Customization -->
 <!-- license: CC BY-NC-SA 4.0 -->
 <!-- copyright: Copyright (c) 2025 aktsmm -->
-<!-- updated: 2026-09-14 -->
+<!-- updated: 2026-09-22 -->
 
 # Web Search Instructions
 
@@ -35,12 +35,13 @@ Web 検索、ページ取得、最新情報確認、出典付き調査を行う�
 2. Microsoft / Azure / Microsoft 365 関連は `microsoftdocs/*` を優先する。新機能、GA、Preview、Retirement は Azure Updates / M365 roadmap 系ツールを使う。
 3. OpenAI / ChatGPT / Codex / OpenAI API 関連は `openaiDeveloperDocs`（OpenAI Docs MCP）を優先する。利用不可または公式 Docs 外の情報が必要な場合は、OpenAI 公式 URL を直接取得してから汎用 Web 検索へ進む。
 4. Anthropic / Claude / Claude Code / Anthropic API 関連は、Platform Docs には `anthropicDocs`、Claude Code Docs には `claudeCodeDocs` を優先する。利用不可または公式 Docs 外の情報が必要な場合は、Anthropic 公式 URL を直接取得してから汎用 Web 検索へ進む。
-5. 既知の公開 X 投稿またはハッシュタグを含む明示クエリを調べるときは、FxTwitter API v2 の JSON 取得を優先してよい。既知投稿は `/2/status/{id}`、クエリは `/2/search?q=<URL-encoded-query>&feed=latest&count=<1-100>` を使い、`code: 200` の結果だけを採用する。検索の次ページは `cursor.bottom` を `cursor` に渡す。
-6. FxTwitter は X Corp. 非公式の第三者サービスとして扱う。認証情報を渡さず、非公開・削除済み投稿や大量・継続収集には使わない。取得失敗時は X の原 URL やブラウザ確認へ切り替え、出典には原 URL を示す。
-7. 汎用 Web 検索は `brave-search/*` を第一候補にする。レスポンス、構造化結果、再現性のバランスが良い。
-8. 既知の公式 URL がある場合は、検索を挟まず `web/fetch` や `fetch_webpage` で直接取得してよい。
-9. Brave が失敗、429、または利用不可の場合は DuckDuckGo HTML を fetch fallback として使う。
-10. それでも検索候補が必要で、terminal tool が許可されている場合だけ、Copilot CLI `web_search` を read-only fallback として使う。
+5. 既知の公開 X 投稿または X の明示クエリを調べるときは、FxTwitter API v2 の JSON 取得を優先してよい。ハッシュタグは必須ではなく、通常キーワード、`OR`、ドメイン、ハッシュタグを URL encode した `q` に渡せる。既知投稿は `/2/status/{id}`、検索は `/2/search?q=<URL-encoded-query>&feed=latest&count=<1-100>` を使い、`code: 200` の結果だけを採用する。次ページは `cursor.bottom` を `cursor` に渡す。
+6. 人気投稿を探す場合も `feed=latest` で合意した時間窓・件数を先に収集し、重複排除後に `likes`、`reposts`、`views` でローカル sort する。反応数は候補発見に使い、採用根拠にはしない。本文、原 X URL、外部リンク先の repo / 記事 / 公式情報を別途確認する。
+7. FxTwitter は X Corp. 非公式の第三者サービスとして扱う。認証情報を渡さず、非公開・削除済み投稿や大量・継続収集には使わない。取得失敗時は X の原 URL やブラウザ確認へ切り替え、出典には原 URL を示す。
+8. 汎用 Web 検索は `brave-search/*` を第一候補にする。レスポンス、構造化結果、再現性のバランスが良い。
+9. 既知の公式 URL がある場合は、検索を挟まず `web/fetch` や `fetch_webpage` で直接取得してよい。
+10. Brave が 429 を返したら、失敗した query を直列で 1 回だけ再試行する。複数 query の並列実行直後は特にこの経路を使い、同じ 429 が続くか利用不可なら DuckDuckGo HTML へ切り替える。
+11. それでも検索候補が必要で、terminal tool が許可されている場合だけ、Copilot CLI `web_search` を read-only fallback として使う。
 
 ## Fallbacks
 
