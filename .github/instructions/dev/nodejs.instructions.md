@@ -26,6 +26,8 @@ Node.js では、セットアップ手順より project behavior rule を優先�
 
 - `package-lock.json` があるなら npm、`pnpm-lock.yaml` があるなら pnpm、`yarn.lock` があるなら yarn を優先する
 - automation や CI 相当の実行では、`ci` や `--frozen-lockfile` 相当で再現性を守る
+- 管理端末で公開 registry への直接通信が禁止されている場合は、承認済みの registry 設定を使い、遮断先を `--registry` で強制したり TLS 検証を無効にしたりしない
+- 公開 OSS の lockfile 更新後は、`resolved` の社内専用 URL 混入と integrity を検査し、その lockfile で clean install と full audit を確認する。ローカルで証明できない場合は承認済み hosted CI で生成・検証する
 - lock file を削除して依存関係を作り直すのは最後の手段にする
 
 ## Execution Rules

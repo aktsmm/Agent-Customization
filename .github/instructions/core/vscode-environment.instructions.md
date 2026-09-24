@@ -1,5 +1,5 @@
 ---
-description: "VS Code 内部パス（User Data / workspaceStorage / globalStorage）を参照するときに使う。保存先の SSOT として読み出すための手動参照メモ"
+description: "VS Code 内部パス（User Data / workspaceStorage / globalStorage）と、Copilot Chat に貼り付けた画像の実ファイルの保存先（vscode-chat-images）を参照するときに使う。貼付画像を外部へ添付・コピー・OCR する前にも読む。保存先の SSOT として読み出すための手動参照メモ"
 ---
 
 <!-- syncToGlobal: true -->
