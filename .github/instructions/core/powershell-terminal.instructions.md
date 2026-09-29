@@ -62,6 +62,7 @@ applyTo: "**"
 - 一時変数を使うコマンド（例: `gh issue comment --body`）は、変数定義と実行を同一ターミナル実行にまとめる。
 - `gh` や類似 CLI へ**空白を含む検索式**を渡すときは、PowerShell で 1 つの文字列として引用する。一方 `--json a,b,c` のカンマ区切りは、ネイティブコマンドの引数では分解されないので引用は必須ではない（2026-08-26 実測: 引用あり / なしのどちらも `["--json","a,b,c"]`）。`--jq` に渡す式は `$j` のような jq 変数を含むため、必ずシングルクォートで囲む。ダブルクォートだと PowerShell が先に展開して式が壊れる。
 - `{}` を含む引数はシングルクォートで囲う。例: `git rev-list --left-right --count 'HEAD...@{upstream}'`。裸の `@{upstream}` は PowerShell が ScriptBlock / hashtable と解釈し、`ScriptBlock should only be specified as a value of the Command parameter` で落ちる。`@{n}` や `HEAD@{1}` など git の reflog / upstream 表記全般が対象。
+- PowerShell の二重引用符内で `\"` はエスケープにならず文字列が途中で切れ、`>>` 継続待ちで止まる。`rg` などへ渡す regex は単一引用符で囲む。また `dir/*.py` はネイティブコマンドへ展開されず `rg` が os error 123 で落ちるため、`rg <pattern> dir -g '*.py'` を使う。
 - 日本語を含むファイルや JSON を扱うときは UTF-8 を維持する。
 - `Get-Content -Raw` は CRLF を保持する。multiline regex で行末を照合するときは改行前の `\r` を許容するか、`\r?\n` で split する。
 - スクリプトや CLI を実行する前に、対象 script / 実行ファイルの存在を確認する。不在時は実行せず、read/grep などの代替検証へ切り替える。

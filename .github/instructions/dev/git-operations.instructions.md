@@ -61,7 +61,7 @@ applyTo: "**"
 
 ## gh CLI
 
-- private repo、release、PR/Issue 操作で権限エラーが出たら、repo 名を疑う前に `gh auth status` で active account と credential を確認する。
+- private repo、release、PR/Issue 操作で権限エラーや `Repository not found`（VS Code の同期ボタン含む）が出たら、repo 名を疑う前に `gh auth status` で active account と credential を確認し、必要なら `gh auth switch -u <owner>` で戻す。
 - `GITHUB_TOKEN` / `GH_TOKEN` が keyring 認証を上書きしている場合は、そのシェルだけ両変数を `$null` にして再確認してよい。
 - GitHub API は成功するのに clone / push が失敗する場合は、Git transport の credential を切り分ける。PR/Issue 確認では `-R <owner>/<repo>` を明示してよい。
 - 長いマークダウンを `--body` で直接渡すとシェルの問題が起きやすいので、`--body-file` でファイル経由で渡す。

@@ -26,7 +26,7 @@ Microsoft 365 内のメール、会議、Teams、共有ファイルなど、組�
 - 内部の進捗（内部 Sync、資料作成）と対外提示（顧客への送付・説明）を分けて判定する。内部で完了していても顧客へ渡していないケースが多い。
 - クエリには `5項目以内`、`簡潔に`、`根拠ファイル/会議名も含めて` のように出力粒度を明示する。
 - WorkIQ は所在確認に強いが、最終成果物ではローカル議事録、内部メモ、受領資料と突き合わせて確定情報だけを残す。
-- WorkIQ が返すのは所在と要約まで。確定した一覧や実ファイルが要るときは下の 2 経路へ切り替える。WorkIQ が 1 回空振りしただけで「取得不可」と報告しない。
+- Teams チャネルの全投稿・返信は WorkIQ 検索の空振りから判定しない。既知スレッドを個別に再照会し、採用する投稿は URL の channel ID・日時（返信は parentMessageId も）と本文を照合する。矛盾や一覧の網羅性は Teams Web UI 等で確認し、確認できなければ未確認とする。実ファイルが要るときは下のファイル系経路を使う。
 - **ファイル系（SharePoint / OneDrive）**: CDP で認証済みブラウザ session を借り、SharePoint REST を叩く（フォルダ列挙は `<site>/_api/web/GetFolderByServerRelativeUrl('<server-relative path>')/Files`、横断検索は `<site>/_api/search/query?querytext='...'`）。`az account get-access-token` のトークンでは corp テナントの Graph `/sites/{id}/drive` も SharePoint REST も scope 不足で 403。
 - **ディレクトリ系（人・組織）**: Graph を直接叩く。`az account get-access-token --tenant <corp> --resource https://graph.microsoft.com` のトークンは `User.Read.All` を持つので `/users/{upn}` と `/users/{upn}/manager` は通る。ファイル系が 403 だったことを理由にディレクトリも使えないと断定しない。
   - `mail`（`Firstname.Lastname@`）が UPN と一致しない人がいる。404 なら `/users?$filter=mail eq '<address>'` で引き直す

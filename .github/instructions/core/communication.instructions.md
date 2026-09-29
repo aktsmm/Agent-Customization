@@ -9,7 +9,7 @@ applyTo: "**"
 <!-- repository: https://github.com/aktsmm/Agent-Customization -->
 <!-- license: CC BY-NC-SA 4.0 -->
 <!-- copyright: Copyright (c) 2025 aktsmm -->
-<!-- updated: 2026-06-03 -->
+<!-- updated: 2026-09-28 -->
 
 # Communication Instructions
 
@@ -47,7 +47,7 @@ applyTo: "**"
 ## Code and Documents
 
 - コードコメントは既存スタイルに合わせ、必要な箇所だけに書く。
-- 生成物は再現できる形にする。
+- 生成物は再現できる形にする。ユーザーが別ツール・別チャット・フォームへ貼る文面は、差し込み欄（`<本文>` 等）を残さず完成形の全文を 1 つのコードブロックで出す。出せないほど長い場合は全文を保存したファイルの絶対パスを示す。
 - 既存 OSS を改良して使っているツールは、`自作` と断定せず、`公開 OSS を自分向けに改良したもの` や `fork / custom 版` と書く。出自を曖昧にすると、読者に「ゼロから自分で作った」と誤認されやすいため。
 - 手順やコマンドは PowerShell / Windows 環境を前提に、必要なら UTF-8 やパスの注意を添える。
 - 作業ログや設計資産を永続化するときは、必要ならファイル上部の `updated` / metadata を更新する。本文への履歴注記は原則書かない。
