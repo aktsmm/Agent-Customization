@@ -8,7 +8,7 @@ applyTo: "**"
 <!-- repository: https://github.com/aktsmm/Agent-Customization -->
 <!-- license: CC BY-NC-SA 4.0 -->
 <!-- copyright: Copyright (c) 2025 aktsmm -->
-<!-- updated: 2026-09-21 -->
+<!-- updated: 2026-09-29 -->
 
 # Agent Context Efficiency
 
@@ -45,7 +45,7 @@ applyTo: "**"
 
 - 広い検索、長いログ、複数ページ調査、または返却が概ね100行を超えそうな read-only 作業は、観点ごとの isolated subagent に委譲する。
 - context isolation は会話履歴の分離であり、tool / file / network 権限の security boundary とみなさない。
-- read-only agent の書き込み監査で text artifact を fingerprint する場合は、dispatch 前に保存・formatter の完了を確認し、raw hash と正規化 hash（想定 encoding で decode し、CRLF / CR を LF に統一）を同じ session 内で記録する。raw hash だけが変化したら改行・encoding を確認し、正規化 hash も変化するか decode できない場合は対象差分を確認して、説明できない変更だけを汚染とする。
+- read-only agent の書き込み監査で text artifact を fingerprint する場合は、保存・formatter 完了後に raw hash と改行正規化 hash を記録し、正規化 hash も変わる説明できない変更だけを汚染とする。
 - read-only の探索専用 agent は MCP と `tool_search` を持たないことがある。外部仕様の確認を含むレーンには使わない。`fetch_webpage` だけ持つ agent は MCP 不在でもエラーにならず直 fetch へ静かに劣化するため、返ってきた出力を見ても気づけない。
 - 子には subgoal、必要な入力、制約、判定基準だけを渡し、親への返却は decision / key evidence / next action と、raw を保存した場合の相対 path に限定する。
 - 別チャット / 別エージェントへローカル成果物を引き継ぐ場合は、受け手の file 読取能力を確認する。同一 PC のファイルを読めるなら実在確認済みの絶対 path で直接読取を依頼し、読めない場合だけ実ファイル添付を要求する。再利用・公開する資産には絶対 path を残さない。

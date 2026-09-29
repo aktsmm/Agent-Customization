@@ -9,7 +9,7 @@ applyTo: "**"
 <!-- repository: https://github.com/aktsmm/Agent-Customization -->
 <!-- license: CC BY-NC-SA 4.0 -->
 <!-- copyright: Copyright (c) 2025 aktsmm -->
-<!-- updated: 2026-09-23 -->
+<!-- updated: 2026-09-29 -->
 
 # PowerShell Terminal Instructions
 
@@ -53,7 +53,7 @@ applyTo: "**"
 - 同じ terminal への呼び出しは直列化する。コマンドの目的が独立していても shell は共有され得るため、並列化は実行環境が独立していると確認できる場合だけ行う。
 - task は、再利用する stable entry point、watch、background job、problem matcher が必要な実行に限る。
 - 同じ単発実行が 2 回以上発生したら script / CLI への昇格を検討し、task が必要なら既存の generic process task や input 付き task を優先する。
-- `retry` `debug` `with fresh auth` のような派生 one-off task を常設しない。
+- `retry` `debug` `with fresh auth` や日付入り・対象固定の派生 one-off task を常設しない。一時 task と一時スクリプトは完了前に削除する。
 - task label は実行内容を保証しない。起動前に `command` と `args` を読み、対象を限定しない queue / runner は他セッションが投入した作業を消費するものとして扱う。
 - `.vscode/tasks.json` の `command` や `args` にはローカル絶対パスを直書きせず、ワークスペース配下は `${workspaceFolder}` を使う。例外は task `label` か近傍コメントで理由を残す。
 
@@ -66,7 +66,6 @@ applyTo: "**"
 - 日本語を含むファイルや JSON を扱うときは UTF-8 を維持する。
 - `Get-Content -Raw` は CRLF を保持する。multiline regex で行末を照合するときは改行前の `\r` を許容するか、`\r?\n` で split する。
 - スクリプトや CLI を実行する前に、対象 script / 実行ファイルの存在を確認する。不在時は実行せず、read/grep などの代替検証へ切り替える。
-- VS Code task は再利用する registry とし、日付入り・対象固定の one-off task を常設しない。一時 task と一時スクリプトは完了前に削除する。
 - スクリプトや CLI の変更系操作は、既定を read-only / dry-run にし、破壊的変更や外部反映は `--apply` などの明示フラグを必須にする。
 - 不要な async / timeout terminal は作業完了前に閉じ、共有 terminal は不要と断定できる場合だけ対象にする。残す場合は理由と停止方法を報告する。
 - 低頻度の shell 復旧、credential、publish、CDP、Office ロックは、該当タスクで専用の手動参照 instruction を使う。

@@ -9,7 +9,7 @@ applyTo: "**"
 <!-- repository: https://github.com/aktsmm/Agent-Customization -->
 <!-- license: CC BY-NC-SA 4.0 -->
 <!-- copyright: Copyright (c) 2025 aktsmm -->
-<!-- updated: 2026-09-23 -->
+<!-- updated: 2026-09-29 -->
 
 # Git Operations Instructions
 
@@ -18,11 +18,10 @@ applyTo: "**"
 ## Core Rules
 
 - 明示指示なしの `git push` は禁止（コミットまで可）。
-- `git push` 前は対象 remote を `git fetch` し、`git rev-list --left-right --count 'HEAD...@{upstream}'` などでahead/behindを再計算する。stale tracking refや記憶上の状態を根拠にpushしない。PowerShell では `{}` を含む revision 指定をクォートする（裸の `@{upstream}` は ScriptBlock 扱いで落ちる）。
+- `git push` 前は対象 remote を `git fetch` し、`git rev-list --left-right --count 'HEAD...@{upstream}'` などでahead/behindを再計算する。stale tracking refや記憶上の状態を根拠にpushしない。
 - GitHub への接続で SSH が利用可能なときは、HTTPS より SSH を優先する（既存 remote も必要に応じて SSH へ切り替える）。
 - ローカル未展開での軽微操作は `gh api` を優先する。
 - 成果物に絶対パスを埋め込まない（相対パスで扱う）。
-- `gh issue comment --body` などへ変数を渡すときは、変数定義と実行を同一ターミナル実行で行う。
 - Git hook は `.sample` のままでは実行されない。クローン再現性が必要な場合は、repo 管理下（例: `hooks/pre-commit`）に実体を置き、README で `.git/hooks/` へのコピー手順を案内する。
 - 公開同期、repo visibility、`.github` / `.vscode` の公開判断は、実行前に対象と公開範囲を確認し、必要時は `git-publish-policy.instructions.md` を参照する。
 
