@@ -34,7 +34,7 @@ agent: "agent"
 - scope 明確 + Safety Gate 通過 + 既存 skill への小〜中規模更新なら、確認なしで反映してよい
 - safe-auto で private repo に変更を入れた場合は、検証後に skill 単位の local commit を作成し、working tree を clean にして完了する
 - 複数 PC / 複数セッションから同じ private repo を触るため、**local commit を滞留させない**。skill 単位 commit を作ったら、明示指示がなくてもそのまま `git push` する（ahead 件数の閾値は設けない）。この prompt の実行自体を push 承認として扱い、global の「明示指示なし push 禁止」をここだけ override する
-- push 前に `git fetch origin` してから ahead/behind を再計算し、remote URL が期待する private skill repo（owner/repo）と一致すること、working tree が clean であること、push 対象が「今回の run で作った commit」または「preflight で `origin/<branch>..HEAD` を確認し対象 skill だけと判定した既存 ahead commit」に限られることを確認する
+- push 前に `git fetch origin` してから ahead/behind を再計算し、remote URL が期待する private skill repo（owner/repo）と一致すること、working tree が clean であること、push 対象が「今回の run で作った commit」または「preflight で `origin/<branch>..HEAD` を確認し対象 skill だけと判定した既存 ahead commit」に限られることを確認する。push がキャンセル・中断された場合も再送前に fetch、status、ahead commit と対象 path を再確認し、既に反映済みなら再送しない
 - push が reject されたら（別 PC が先に push 済み）`git pull --rebase` で取り込んでから再 push する。force push、public sync、release、tag は明示指示があるときだけ行う
 - push したくない draft を手元に残したい場合は safe-auto を使わず、`review-only` / `dry-run` / `プレビュー` を指定する
 - dirty primary skill changes は authoring / intake material として扱う。safe-auto では対象 skill の変更だけを stage / commit し、無関係 dirty は触らない
@@ -116,7 +116,7 @@ workspace skill を取り込むときは、source の `.github/skills/<skill>` �
 
 - 抽出した全知見を `反映済み / 既存で充足 / 見送り / handoff / 確認待ち / 承認待ち / 提案のみ` に分類し、反映先または理由と照合して未処理を残さない。対象外の知見は推奨先の確認済みなら `handoff`、未確認なら `確認待ち` とし、対象外という理由だけで `見送り` にしない。review-only の変更案は `提案のみ` とし、反映済みと報告しない。
 - 変更先が private repo の `.github/skills/<skill>/` 配下だけであることを確認する
-- 新規または大きく変更した `SKILL.md` は、folder 名と `name` の一致、trigger を含む `description`、必要な `argument-hint` / `user-invocable` / `license` / `metadata.author` を確認する
+- 変更した `SKILL.md` は変更規模にかかわらず YAML frontmatter をパースし、folder 名と `name` の一致、用途を拾う `description` と `argument-hint`、`user-invocable` / `license` / `metadata.author` を確認する。metadata lint の通過だけでは古い用途のヒントを検出できない
 - 追加内容が secret、顧客情報、tenant ID、ローカル絶対パス、外部 workspace 依存を含まないことを確認する
 - safe-auto で変更した場合は、local commit 作成後に working tree が clean であることを確認し、`git fetch origin` で ahead/behind を再計算してから push する。**完了条件は working tree clean かつ ahead 0**。push せずに終わると次に使う PC が古い状態から始まる
 

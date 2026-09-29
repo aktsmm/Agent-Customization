@@ -29,7 +29,7 @@ applyTo: "**"
 
 ## Tools
 
-- 狭い確認は、対象・列・件数・範囲を絞った短い command / tool call を直接実行し、出力は取得元で filter / limit / summary する。
+- 狭い確認は、対象・列・件数・範囲を絞った短い command / tool call を直接実行し、出力は取得元で filter / limit / summary する。`fetch_webpage` はスライド共有・イベントページなどで全文級（数十 KB）を返すことがあるため、数個の事実だけ要るときは `Invoke-WebRequest -OutFile` + 正規表現で該当行だけ抽出する。
 - raw output は後の監査・再読に必要な場合だけ file に保存し、親へは相対 path、結論、主要根拠、次 action を返す。
 - バイナリや大容量ファイルを in-band 経路（tool 戻り値、stdout、CDP の base64 応答）で運ばない。ブラウザのダウンロード機能、`-OutFile`、`--output` のように**転送元が直接 file へ書く**経路を使う。数 MB を超える in-band 転送は harness ごと重くする。
 - shell 構文や出力制御はローカルの terminal rule に従う。

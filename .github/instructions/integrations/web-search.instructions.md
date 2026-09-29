@@ -35,7 +35,7 @@ Web 検索、ページ取得、最新情報確認、出典付き調査を行う�
 2. Microsoft / Azure / Microsoft 365 関連は `microsoftdocs/*` を優先する。新機能、GA、Preview、Retirement は Azure Updates / M365 roadmap 系ツールを使う。
 3. OpenAI / ChatGPT / Codex / OpenAI API 関連は `openaiDeveloperDocs`（OpenAI Docs MCP）を優先する。利用不可または公式 Docs 外の情報が必要な場合は、OpenAI 公式 URL を直接取得してから汎用 Web 検索へ進む。
 4. Anthropic / Claude / Claude Code / Anthropic API 関連は、Platform Docs には `anthropicDocs`、Claude Code Docs には `claudeCodeDocs` を優先する。利用不可または公式 Docs 外の情報が必要な場合は、Anthropic 公式 URL を直接取得してから汎用 Web 検索へ進む。
-5. 公開 X 投稿・検索は FxTwitter API v2（X Corp. 非公式の第三者サービス）を優先してよい。既知投稿は `/2/status/{id}`、検索は `/2/search?q=<URL-encoded-query>&feed=latest&count=<1-100>`（次ページは `cursor.bottom`）で `code: 200` だけ採用する。人気投稿も `latest` で集めて反応数でローカル sort し、反応数は候補発見にのみ使う。認証情報を渡さず、非公開・削除済み・大量継続収集に使わない。出典は原 X URL とリンク先の一次情報で確認する。
+5. 公開 X 投稿・検索は FxTwitter API v2（X Corp. 非公式の第三者サービス）を優先してよい。既知投稿は `/2/status/{id}`、検索は `/2/search?q=<URL-encoded-query>&feed=latest&count=<1-100>`（次ページは `cursor.bottom`）で `code: 200` だけ採用する。`since:` / `until:`（YYYY-MM-DD）と `from:<handle>` が使えるが、実応答は `count=100` でも約 20 件で止まるため、期間・handle・キーワードで分割して再検索し、ハッシュタグ検索だけで網羅と判断しない。人気投稿も `latest` で集めて反応数でローカル sort し、反応数は候補発見にのみ使う。認証情報を渡さず、非公開・削除済み・大量継続収集に使わない。出典は原 X URL とリンク先の一次情報で確認する。
 6. 汎用 Web 検索は `brave-search/*` を第一候補にする。レスポンス、構造化結果、再現性のバランスが良い。
 7. 既知の公式 URL がある場合は、検索を挟まず `web/fetch` や `fetch_webpage` で直接取得してよい。
 8. Brave が 429 を返したら、失敗した query を直列で 1 回だけ再試行する。複数 query の並列実行直後は特にこの経路を使い、同じ 429 が続くか利用不可なら DuckDuckGo HTML へ切り替える。

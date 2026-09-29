@@ -22,6 +22,7 @@ applyTo: "**"
 - GitHub への接続で SSH が利用可能なときは、HTTPS より SSH を優先する（既存 remote も必要に応じて SSH へ切り替える）。
 - ローカル未展開での軽微操作は `gh api` を優先する。
 - 成果物に絶対パスを埋め込まない（相対パスで扱う）。
+- Playwright MCP はワークスペース直下に `.playwright-mcp/`（console log / snapshot）を生成し、自動 commit などで履歴へ混入する。ブラウザ自動化を使う repo は初回に `.gitignore` へ追加し、追跡済みなら `git rm -r --cached -- .playwright-mcp` で外す（ファイルは残る）。完了前に自分が作った未追跡分は `git clean -n` で確認してから削除する。
 - Git hook は `.sample` のままでは実行されない。クローン再現性が必要な場合は、repo 管理下（例: `hooks/pre-commit`）に実体を置き、README で `.git/hooks/` へのコピー手順を案内する。
 - 公開同期、repo visibility、`.github` / `.vscode` の公開判断は、実行前に対象と公開範囲を確認し、必要時は `git-publish-policy.instructions.md` を参照する。
 
