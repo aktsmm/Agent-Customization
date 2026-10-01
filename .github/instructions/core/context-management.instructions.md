@@ -8,7 +8,7 @@ applyTo: "**/*.prompt.md,**/*.instructions.md,**/*.agent.md,**/SKILL.md,**/copil
 <!-- repository: https://github.com/aktsmm/Agent-Customization -->
 <!-- license: CC BY-NC-SA 4.0 -->
 <!-- copyright: Copyright (c) 2025 aktsmm -->
-<!-- updated: 2026-08-05 -->
+<!-- updated: 2026-10-01 -->
 
 # Customization Authoring Instructions
 
@@ -30,6 +30,7 @@ Customization 資産を編集するときの量、粒度、自己完結性のル
 ## Scope and Primitive
 
 - 詳細手順、長い recipe、persona、ドメイン固有規則は always-on に置かない。
+- workspace の instruction と `AGENTS.md` には、その repo 固有の内容だけを書く。どの repo でも成り立つ汎用ルールは User Data 側に置き、workspace に重複して書かない。
 - always-on の入口 file には routing と少数の global guardrails だけ残す。
 - `tasks.json` のような registry file を実行履歴や試行錯誤ログの置き場にしない。
 - prompt / instruction / skill / agent / hook は最小の primitive を選ぶ。単純な primitive で解けるなら agent 化しない。
@@ -59,7 +60,7 @@ Customization 資産を編集するときの量、粒度、自己完結性のル
 - PR ブロック等の挙動変更要求。
 - linter / formatter / 設定で済むルール。
 - 「常に X 文字以内で答える」など固定の出力長制約。
-- デバッグ途中の仮説を確定事実として残す記述。
+- デバッグ途中の仮説、実測日・端末差・原因未特定の経緯など、ルールの判断に影響しない注記。
 
 ## Always-On 特有のルール
 
