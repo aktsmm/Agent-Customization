@@ -52,6 +52,10 @@ GitHub Copilot / VS Code 用の prompts、agents、instructions、skills を管�
 4. ユーザー確認後に同期
 5. 結果と `git status --short` を報告
 
+### User Data から repo へ反映する
+
+逆方向（User Data → この repo）は `scripts/Sync-UserCustomizations.ps1` を使います。引数なしは読み取りのみで、`-Apply` で変更分だけをミラーして commit / push します。`syncToGlobal: true` のファイルだけが対象で、監査ヒット時や既存の未コミット差分がある場合は書き込まず停止します。テストは `tests/scripts/` にあります。
+
 ### 個別 asset を確認する
 
 詳細な一覧は [AGENTS.md](AGENTS.md) を参照してください。
