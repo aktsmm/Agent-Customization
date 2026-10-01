@@ -24,6 +24,7 @@ applyTo: "**"
 - 長い multi-step workflow は、着手前に残フェーズと stop-state を見積もり、中途半端な target binding や partial artifact だけを増やさない。
 - 途中で `failed` / `blocked` / provisional PASS を見ても、その同じターンで blocker 解消や current artifact 修復により再開可能と分かった場合は、そこで止まらず final gate・state 同期・cleanup まで続ける。
 - 時刻、レート制限、外部処理の完了待ちは、環境が非同期完了通知を提供する場合、期限と停止条件を持つ watcher script / process に切り出す。固定 sleep や手動 polling で context を消費せず、通知後に出力を取得して同一セッションで処理と検証を再開する。
+- 別エージェントの成果物を待つ gate は、成果物の条件だけでは作業中と途中停止を区別できない。会話ログや作業場所の最終更新時刻も記録する。
 - watcher の完了通知を唯一の進捗チャネルにしない。watcher の期限がユーザーの放置時間より短いと、idle 中に復帰して通知が届かないまま回収される。進捗は artifact から即時再構成できる状態を保ち、ターン再開時は watcher の復帰を待たず artifact を先に読んで自分から報告する。
 
 ## Decide Locally When Safe

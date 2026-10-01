@@ -41,8 +41,8 @@ argument-hint: "エラーログ、diff、会話要約、またはインシデン
 - 既定は `safe-auto`。workspace scope が明確で、既存資産への小〜中規模更新で済む場合は確認なしで反映してよい
 - `review-only` / `確認だけ` / `dry-run` / `プレビュー` が明示された場合だけ、変更案の提示で停止する
 - Git 管理下の workspace なら、safe-auto で修正したあと、検証後に skill / scope 単位で local commit を作る。git 操作前は `Set-Location` で cwd を明示し、誤った repo へ commit しない。Git 管理外のフォルダではファイル反映だけで完了とする
-- remote が private/internal で、`origin/<branch>..HEAD` が今回の変更だけなら、明示指示なしでも `git push` まで行う。この prompt の実行自体を push 承認として扱い、global / repo `AGENTS.md` の「明示指示なし push 禁止」をここだけ override する。ahead の件数は条件にしない。commit を滞留させると、次に使う PC が古い状態から始まる。関係ない commit や別セッションの dirty が混ざるときは停止して確認する
-- scope 曖昧、大規模削除、公開・同期範囲変更、高リスクな実行コード / hook 変更、workflow の意味変更、secret / 個人情報 / 環境固有値の扱いに迷う場合だけ確認で停止する
+- remote が private/internal で、`origin/<branch>..HEAD` が今回の変更だけなら、明示指示なしでも `git push` まで行う。この prompt の実行自体を push 承認として扱い、global / repo `AGENTS.md` の「明示指示なし push 禁止」をここだけ override する。ahead の件数は条件にしない。commit を滞留させると、次に使う PC が古い状態から始まる。関係ない commit は停止して確認する。別セッションの無関係dirtyは保持して対象パスだけをstageし、実行checkoutがclean・currentなら隔離せず直接編集する。push前にbehind/divergenceを統合し、`--autostash`や全体stageは使わない。
+- 承認済みscope内の局所的な改善は再確認しない。対象不明、新しい権限・宵先・公開区分・既定動作、大規模削除、権限を広げる実行コード/hook、secret / 個人情報 / 環境固有値の扱いに迷う場合だけ確認で停止する
 
 ## Scope Gate
 
@@ -67,7 +67,7 @@ argument-hint: "エラーログ、diff、会話要約、またはインシデン
 
 ### 0. Pre-Flight Inventory
 
-知見抽出前に、サブエージェントで反映先候補・scope gate・既存規則を調べ、不要な分散や重複を防ぐ。
+知見抽出前に、反映先候補・scope gate・既存規則をgrep・一覧で絞り、不要な分散や重複を防ぐ。サブエージェントは複数資産にまたがる候補や大規模な棚卸しだけに使い、単一資産への局所的な更新では自分で読む。
 
 ### 1. 知見抽出
 
@@ -95,7 +95,8 @@ argument-hint: "エラーログ、diff、会話要約、またはインシデン
 ### 4. 検証
 
 - 抽出した全知見を `反映済み / 既存で充足 / 見送り / handoff / 確認待ち / 承認待ち / 提案のみ` に分類し、反映先または理由と照合して未処理を残さない。対象外の知見は推奨先の確認済みなら `handoff`、未確認なら `確認待ち` とし、対象外という理由だけで `見送り` にしない。review-only の変更案は `提案のみ` とし、反映済みと報告しない。
-- 変更箇所に応じたテスト / 診断を実行し、未検証項目は理由を明記する。
+- 変更箇所に応じたテスト / 診断を実行し、未検証項目は理由を明記する。小変更は対象テストと診断を優先し、全件は実行コードや共有設定を変えるときだけ 1 回実行する。
+- この run で確認した未処理や対象外の知見は、理由と推奨 workflow を最大 3 件の次候補として示す。提案だけで scope・commit・push・公開を追加せず、新しい全体棚卸しはしない。
 
 ## Example Report
 

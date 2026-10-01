@@ -9,7 +9,7 @@ applyTo: "**"
 <!-- repository: https://github.com/aktsmm/Agent-Customization -->
 <!-- license: CC BY-NC-SA 4.0 -->
 <!-- copyright: Copyright (c) 2025 aktsmm -->
-<!-- updated: 2026-09-29 -->
+<!-- updated: 2026-10-01 -->
 
 # PowerShell Terminal Instructions
 
@@ -46,6 +46,7 @@ applyTo: "**"
 - サーバー・watch・監視処理はバックグラウンド実行を優先する。
 - 長時間実行時は、ユーザーへ意図と停止方法を簡潔に伝える。
 - 数十分以上かかる本体処理を chat terminal で起動しない。chat terminal は会話の進行で回収され、プロセスツリーごと落ちる。task など session 外の起動口を使い、進捗は artifact（ログ、summary JSON、プロセス生存）から取得する。
+- 無人実行（Scheduler 等）の prompt では、数秒以上無出力になるコマンドの stdout で分岐させない。sync 実行は無出力のまま先に返るため、結果ファイルを書かせ、記録時刻が今回の実行開始後であることを確認して読む。
 
 ## 4.5 Task vs Terminal
 
@@ -60,7 +61,7 @@ applyTo: "**"
 ## 5. 運用メモ
 
 - 一時変数を使うコマンド（例: `gh issue comment --body`）は、変数定義と実行を同一ターミナル実行にまとめる。
-- `gh` や類似 CLI へ**空白を含む検索式**を渡すときは、PowerShell で 1 つの文字列として引用する。一方 `--json a,b,c` のカンマ区切りは、ネイティブコマンドの引数では分解されないので引用は必須ではない（2026-08-26 実測: 引用あり / なしのどちらも `["--json","a,b,c"]`）。`--jq` に渡す式は `$j` のような jq 変数を含むため、必ずシングルクォートで囲む。ダブルクォートだと PowerShell が先に展開して式が壊れる。
+- `gh` や類似 CLI へ**空白を含む検索式**を渡すときは、PowerShell で 1 つの文字列として引用する。`--json a,b,c` のカンマ区切りも引用する。引用しないと環境によって分解され、`accepts at most 1 arg(s), received 3` で落ちる。`--jq` に渡す式は `$j` のような jq 変数を含むため、必ずシングルクォートで囲む。ダブルクォートだと PowerShell が先に展開して式が壊れる。
 - `{}` を含む引数はシングルクォートで囲う。例: `git rev-list --left-right --count 'HEAD...@{upstream}'`。裸の `@{upstream}` は PowerShell が ScriptBlock / hashtable と解釈し、`ScriptBlock should only be specified as a value of the Command parameter` で落ちる。`@{n}` や `HEAD@{1}` など git の reflog / upstream 表記全般が対象。
 - PowerShell の二重引用符内で `\"` はエスケープにならず文字列が途中で切れ、`>>` 継続待ちで止まる。`rg` などへ渡す regex は単一引用符で囲む。また `dir/*.py` はネイティブコマンドへ展開されず `rg` が os error 123 で落ちるため、`rg <pattern> dir -g '*.py'` を使う。
 - 日本語を含むファイルや JSON を扱うときは UTF-8 を維持する。

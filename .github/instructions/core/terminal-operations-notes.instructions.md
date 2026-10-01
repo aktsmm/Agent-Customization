@@ -26,7 +26,7 @@ description: "ターミナル操作と Copilot debug log の低頻度トラブ�
 
 ## Output and Completion
 
-- `run_in_terminal` の sync 実行が `Command produced no output` を返したり、async 実行が prompt 復帰前に idle した場合も、直ちに失敗扱いにせず expected artifact を先に確認する。artifact が生成済みなら render/capture 問題として扱い、未生成なら dedicated terminal や短い follow-up command で観測を補強する。
+- `run_in_terminal` の sync 実行が `Command produced no output` を返したり、async 実行が prompt 復帰前に idle した場合も、直ちに失敗扱いにせず expected artifact を先に確認する。artifact が生成済みなら render/capture 問題として扱い、未生成なら dedicated terminal や短い follow-up command で観測を補強する。完了まで待たせたい長い無出力処理は、stderr へ2秒以下の間隔で心拍を出すと sync 実行が約2分まで待つ。
 - 長い `npm` / `node` / test suite で stdout capture が不安定な場合は、`cmd /c "... && echo OK"` や `Write-Output "name-exit=$LASTEXITCODE"` のような success marker を付け、末尾の marker か exit code を正本にする。`> $null` や `Select-Object -Last N` を使う場合も marker か exit code の確認を省略しない。
 - stdout や active terminal の最終コマンドは、目的の実行と一致する command・実行ID・cwd・開始時刻を照合して使う。別ターミナルや前回実行の成功を流用しない。重要な結果は実 artifact、Git object、公開 API 等でも確認し、必要な根拠が揃ったら同じ裏取りを繰り返さない。
 - PowerShell script を編集した後は、`[scriptblock]::Create((Get-Content -Raw -Encoding UTF8 <file>))` で構文確認してから実行する。

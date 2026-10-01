@@ -32,14 +32,14 @@ agent: "agent"
 
 - 既定は `safe-auto`。`review-only` / `dry-run` / `プレビュー` が明示された場合だけ、変更案を提示して停止する
 - scope 明確 + Safety Gate 通過 + 既存 skill への小〜中規模更新なら、確認なしで反映してよい
-- safe-auto で private repo に変更を入れた場合は、検証後に skill 単位の local commit を作成し、working tree を clean にして完了する
+- safe-auto は検証後にskill単位でcommitする。同じskillの関連する小変更は1 commitにまとめ、実行checkoutをcleanにする。元checkoutの無関係dirtyは保持・報告する。
 - 複数 PC / 複数セッションから同じ private repo を触るため、**local commit を滞留させない**。skill 単位 commit を作ったら、明示指示がなくてもそのまま `git push` する（ahead 件数の閾値は設けない）。この prompt の実行自体を push 承認として扱い、global の「明示指示なし push 禁止」をここだけ override する
 - push 前に `git fetch origin` してから ahead/behind を再計算し、remote URL が期待する private skill repo（owner/repo）と一致すること、working tree が clean であること、push 対象が「今回の run で作った commit」または「preflight で `origin/<branch>..HEAD` を確認し対象 skill だけと判定した既存 ahead commit」に限られることを確認する。push がキャンセル・中断された場合も再送前に fetch、status、ahead commit と対象 path を再確認し、既に反映済みなら再送しない
 - push が reject されたら（別 PC が先に push 済み）`git pull --rebase` で取り込んでから再 push する。force push、public sync、release、tag は明示指示があるときだけ行う
 - push したくない draft を手元に残したい場合は safe-auto を使わず、`review-only` / `dry-run` / `プレビュー` を指定する
 - dirty primary skill changes は authoring / intake material として扱う。safe-auto では対象 skill の変更だけを stage / commit し、無関係 dirty は触らない
 - public / internal / EMU sync は行わない。反映先へ配る必要がある場合は、`Next Step / Handoff` に従う
-- scope 曖昧、大規模削除、意味変更、public/private 境界の変更、secret / 個人情報 / 環境固有値の扱いに迷う場合だけ確認で停止する
+- 承認済みscope内の局所的な育成は再確認しない。対象不明、新しい権限・宛先・公開区分・既定動作、破壊的削除、機密判断の変更だけ確認する。
 
 ## Next Step / Handoff
 
@@ -84,12 +84,12 @@ workspace skill を取り込むときは、source の `.github/skills/<skill>` �
 ### 1. 知見抽出
 
 - private repo root を解決し、`.github/skills/` の存在と対象 skill を確認する
-- **編集前の git preflight は `fetch -> 分類 -> dirty 処理 -> ahead 処理 -> pull --rebase` の順で行う**。順序を崩すと、無関係 dirty が残ったまま rebase を試して refuse されるし、clean を要求する push gate も通らない
+- 編集前は `fetch -> dirty/滞留commitの分類 -> 実行checkoutのclean化 -> behind/divergence統合 -> 許可commitのpush` とする。無関係dirtyを巻き込むrebaseやpushはしない。
   1. `git -C <private-repo> fetch origin` を実行する。fetch なしの ahead/behind は stale な remote-tracking ref の値。upstream 未設定なら `@{upstream}` の確認自体が失敗するので、`origin/<branch>` を明示解決するか upstream を設定してから続行する
   2. `git status --short --branch` で ahead / behind / dirty を確認し、dirty path を skill 単位に分類する
-  3. dirty を先に消す。対象 skill の dirty は commit する。**無関係 dirty を残したまま `pull --rebase` してはいけない**（unstaged changes があると rebase は refuse する）し、`--autostash` で隠すのも禁止。無関係 dirty が残るなら safe-auto では停止して扱いを確認するか、clean な worktree / 一時 clone を作ってそこで対象 skill だけを処理して push する
-  4. working tree が clean になったら ahead を再評価する。ahead が 0 でなければ、push は `origin/<branch>..HEAD` 全体を送るため滞留 commit が今回の push 承認に巻き込まれる。`git log --oneline --stat origin/<branch>..HEAD` で commit と touched paths を列挙し、対象 skill だけなら Mode の push gate を通して先に push し ahead 0 にする。対象外の commit が混ざる場合は safe-auto では停止し、扱いを確認する
-  5. behind があれば `git pull --rebase` する。別 PC の更新を取り込まずに編集すると、同じ skill を古い版ベースで書き換えて conflict になる
+  3. 対象skillのdirtyを確認・commitする。元checkoutがcleanかつcurrentなら直接編集する。無関係dirtyやdivergenceがある場合だけ隔離し、cloneよりworktreeを優先して元checkoutは変更しない。dirtyのままrebaseや`--autostash`を使わない。preflightは1コマンドにまとめ、同じrunで読み取り済みの状態を再確認しない。
+  4. `origin/<branch>..HEAD`のcommitとpathを確認する。対象外commitが混ざれば停止して扱いを確認し、pushへ便乗させない。
+  5. 実行checkoutがcleanならbehind/divergenceを先に`pull --rebase`等で統合し、検証後に許可commitだけpushする。公開syncの読取sourceは検証済みremote SHAのsnapshotを使えるが、broad/push用checkoutはbranch・clean・current条件を満たす。
   6. rebase が conflict したら、both-kept（両方残し）は**一時保存の方針**として使ってよいが最終形にはしない。push 前に、同一論点の重複統合、MUST / 禁止 / 既定 mode の矛盾解消、`SKILL.md` frontmatter の一意性を確認する。解消できない矛盾が残る場合は push せず停止する
 - intake する場合は source の workspace `.github/skills/<skill>` を読み取り、private repo 側の同名 skill の有無を確認する
 - 全知見を論点別に列挙し、それぞれ Learning / Evidence / Impact と最適な反映先を決める。
@@ -118,7 +118,8 @@ workspace skill を取り込むときは、source の `.github/skills/<skill>` �
 - 変更先が private repo の `.github/skills/<skill>/` 配下だけであることを確認する
 - 変更した `SKILL.md` は変更規模にかかわらず YAML frontmatter をパースし、folder 名と `name` の一致、用途を拾う `description` と `argument-hint`、`user-invocable` / `license` / `metadata.author` を確認する。metadata lint の通過だけでは古い用途のヒントを検出できない
 - 追加内容が secret、顧客情報、tenant ID、ローカル絶対パス、外部 workspace 依存を含まないことを確認する
-- safe-auto で変更した場合は、local commit 作成後に working tree が clean であることを確認し、`git fetch origin` で ahead/behind を再計算してから push する。**完了条件は working tree clean かつ ahead 0**。push せずに終わると次に使う PC が古い状態から始まる
+- safe-autoは実行checkoutのcleanとremoteを確認し、fetch後に許可commitをpushしてahead 0を確認する。元checkoutの無関係dirtyは完了条件に含めず保持・報告する。
+- 軽量なGit状態と確定内容差分から、dirty skill→Retro、未push commit→private push範囲確認、public-safeの未同期差分→public syncを最大3件の次候補として示す。private/internal/明示保留を公開候補にせず、提案だけでcommit・push・同期を追加しない。
 
 ## Example Report
 

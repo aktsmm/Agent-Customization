@@ -9,7 +9,7 @@ applyTo: "**"
 <!-- repository: https://github.com/aktsmm/Agent-Customization -->
 <!-- license: CC BY-NC-SA 4.0 -->
 <!-- copyright: Copyright (c) 2025 aktsmm -->
-<!-- updated: 2026-09-29 -->
+<!-- updated: 2026-10-01 -->
 
 # Git Operations Instructions
 
@@ -44,6 +44,7 @@ applyTo: "**"
 - subject は命令形・簡潔・文末ピリオドなし。
 - 必要なら ` - <user.name>` を末尾に付与してよい。
 - PowerShell で `git commit -m` を使う場合、メッセージはシングルクォートで囲む（`(scope)` の括弧がサブ式として評価されるため）。
+- 日本語を含む commit message は `-m` に渡さず、UTF-8 ファイルへ書いて `git commit -F <file>` を使う。PowerShell から渡すと cp932 経由で文字化けしたまま保存される。確認は `git log` の表示ではなく、保存されたバイトを UTF-8 として decode して判定する。
 
 ## Destructive Operations
 
@@ -51,6 +52,7 @@ applyTo: "**"
 - `HEAD.lock` / `couldn't set HEAD` / `unable to unlink` など同じGit更新失敗の対話promptが2回続いたら`n`で停止する。HEAD・status・diff・rebase/merge metadataを確認し、Windowsのfile lockはHandle / Process Explorerで所有processを特定する。未コミット変更を保護するまでrebase、blanket restore、lock削除を続けず、handleを強制closeしない。
 - `git restore <file>` / `git checkout -- <file>` は、そのファイル内の無関係な未コミット変更も巻き戻す。restore 後は対象ファイルの diff を再確認し、巻き戻したくない変更（例: 別作業の編集）が消えていないか確認する。
 - `git stash` だけに依存しない。
+- 別作業や別セッションの変更が同居しうるときは、add 後・commit 前に `git diff --cached --stat` で対象と行数が想定どおりか確認する。単一ファイルの add でも、同じファイルの別作業の変更を巻き込む。pathspec なしの `git commit` は他者が stage 済みの変更も含める。乖離したら `git restore --staged <file>` で戻す。
 - 大量の `git status` 出力に対しては、`git add -A` 前に「自分が触ったもの」「別ツール由来（skill 同期、formatter、別 IDE）」「未追跡の一時ファイル」を分類してユーザーに確認する。混在 dirty を一括で commit すると、後で範囲を分離するのが困難になる。
 
 ## Encoding
