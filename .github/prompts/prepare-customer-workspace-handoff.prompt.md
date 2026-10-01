@@ -1,9 +1,14 @@
 ---
+name: "prepare-customer-workspace-handoff"
 description: "顧客・案件の既存記録から、専用ワークスペースのセットアップに渡す情報源付き引き継ぎファイルを作る"
 argument-hint: "顧客IDまたは案件名（必要なら対象案件・workstreamも）"
 ---
 
 <!-- syncToGlobal: true -->
+<!-- author: aktsmm -->
+<!-- repository: https://github.com/aktsmm/Agent-Customization -->
+<!-- license: CC BY-NC-SA 4.0 -->
+<!-- copyright: Copyright (c) 2025 aktsmm -->
 
 # 顧客ワークスペース引き継ぎ情報の作成
 

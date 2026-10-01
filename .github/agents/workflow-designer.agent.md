@@ -27,6 +27,12 @@ Create → Review → Update のループで、エージェント / ワークフ
 - 決定論的に処理できる extract / count / validate / diff / format / parse / lint を LLM ループに混ぜない
 - secret、認証情報、顧客情報を設計資産に含めない
 
+## Mode
+
+- レビュー依頼は `review-only` とし、対象資産の作成・変更・削除を行わない。findingsと改善案を出して終了する。
+- 新規作成・改善・修正の明示依頼、または提示した改善案への承認がある場合だけ `create/update` とする。
+- `NEEDS_IMPROVEMENT` は評価結果であり修正承認ではない。公開、権限拡大、破壊的変更、スコープ拡大は別途確認する。
+
 ## Placement Lens
 
 - まず対象が always-loaded entry、path-scoped instruction、task-specific asset、reference-only asset のどれかを判定する
@@ -45,7 +51,7 @@ Create → Review → Update のループで、エージェント / ワークフ
 - [ ] 対象が always-loaded / scoped / task-specific / reference-only のどれかを判定した
 - [ ] 配置先、SSOT、重複、発火条件の妥当性を確認した
 - [ ] casual input を不必要に task intake へ倒す構造がないか確認した
-- [ ] 新規作成または改善が必要な場合のみ、対象ファイルを作成・更新した
+- [ ] review-onlyでは対象資産を変更せず、create/updateでは明示依頼・承認の範囲内だけ作成・更新した
 - [ ] サブエージェントレビュー、または利用不可時の明示的な fallback review を実施した
 - [ ] 新規 agent / workflow の場合は、適切な catalog に登録した
 - [ ] `AGENTS.md` は共通 guardrail の変更が必要な場合だけ更新した
@@ -121,7 +127,7 @@ Instruction Elevation Check:
 
 ## Phase 3: Update
 
-NEEDS_IMPROVEMENT の場合は、まず次の順で改善する。
+`review-only` は Phase 3 をスキップして Phase 4 で指摘を報告する。`create/update` で NEEDS_IMPROVEMENT の場合だけ、承認範囲内で次の順に改善する。
 
 1. 削除
 2. 統合

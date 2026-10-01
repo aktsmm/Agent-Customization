@@ -1,6 +1,6 @@
 ---
 name: "tweet-x-csa-microsoft"
-description: "セッション内容を CSA ペルソナ（日本マイクロソフト Cloud Solution Architect）視点で X 投稿用にフォーマル変換。Microsoft / Azure 中心、絵文字なし、ハッシュタグ付き。汎用的なバズ系 X 投稿は `tweet-generate-x` を使う"
+description: "セッション内容を CSA ペルソナ（日本マイクロソフト Cloud Solution Architect）視点で X 投稿用にフォーマル変換。Microsoft / Azure 中心、絵文字なし、ハッシュタグ付き。ニュース起点の投稿生成は generate-news-x-posts、短文リライトは rewrite-x-post を使う"
 ---
 <!-- syncToGlobal: true -->
 <!-- author: aktsmm -->

@@ -43,11 +43,11 @@ Input action: `${input:action:setup / run / runtime / gate / report / full。空
 
 Input execution mode: `${input:executionMode:static / runtime / both。空欄なら static}`
 
-Input gate mode: `${input:gateMode:metadata / agent-structure / token-budget / all。action が gate のときだけ使う。空欄なら all}`
+Input gate mode: `${input:gateMode:metadata / agent-structure / token-budget / all。action が gate のときだけ使う。空欄なら all。all は3モードを順次実行する論理指定}`
 
 Input max file tokens: `${input:maxFileTokens:空欄なら 5000}`
 
-Input max total tokens: `${input:maxTotalTokens:空欄なら 60000}`
+Input max total tokens: `${input:maxTotalTokens:空欄なら user-data は 130000、workspace / custom は 60000}`
 
 Input runtime prompt: `${input:runtimePrompt:runtime のときに実行・記録する prompt。空欄なら target を要約する smoke prompt を使う}`
 
@@ -79,6 +79,7 @@ Input runtime task strategy: `${input:runtimeTaskStrategy:template / record。�
    - `workspace`: `targetPath` が空なら `${workspaceFolder}\.github`
    - `custom`: `targetPath` を必須として扱う
    - 単一ファイルもディレクトリも可
+   - `maxTotalTokens` が空なら、全User Data資産を含む `user-data` は130000、読み込み単位を想定する `workspace / custom` は60000を使う
 3. 評価対象が存在するか確認する。存在しない場合は、候補パスを出して停止する。
 4. `action` を決める。
    - `setup`: Waza project の存在確認と不足資産の作成/更新だけ行う
@@ -122,7 +123,7 @@ Input runtime task strategy: `${input:runtimeTaskStrategy:template / record。�
    - `metadata`
    - `agent-structure`
    - `token-budget`
-   - `all`
+   - `all`: grader に `Mode all` を渡さず、上記3モードを1回ずつ順次実行する
 12. 結果 JSON を読み、summary を抽出する。
    - total tests
    - succeeded / failed / errors
@@ -143,6 +144,8 @@ Input runtime task strategy: `${input:runtimeTaskStrategy:template / record。�
 
 ## Command Reference
 
+代表的な static eval。workspace / custom target は `Workflow` の target 解決規則に従って `$env:WAZA_CUSTOMIZATIONS_TARGET` だけを変える。
+
 ```powershell
 $project = Join-Path $HOME 'waza-copilot-customization-evals'
 Set-Location $project
@@ -150,61 +153,9 @@ $env:WAZA_CUSTOMIZATIONS_TARGET = Join-Path $env:APPDATA 'Code\User\prompts'
 waza run evals\copilot-customizations\eval.yaml --output results\customizations-eval.json --no-update-check -v
 ```
 
-Workspace example:
-
-```powershell
-$project = Join-Path $HOME 'waza-copilot-customization-evals'
-Set-Location $project
-$env:WAZA_CUSTOMIZATIONS_TARGET = Join-Path '${workspaceFolder}' '.github'
-waza run evals\copilot-customizations\eval.yaml --output results\customizations-eval.json --no-update-check -v
-```
-
-Runtime example:
-
-```powershell
-$project = Join-Path $HOME 'waza-copilot-customization-evals'
-Set-Location $project
-$env:WAZA_CUSTOMIZATIONS_TARGET = Join-Path $env:APPDATA 'Code\User\prompts\evaluate-waza-copilot-customizations.prompt.md'
-pwsh -NoProfile -ExecutionPolicy Bypass -File evals\copilot-customizations\scripts\write-runtime-task.ps1 -TargetPath $env:WAZA_CUSTOMIZATIONS_TARGET -OutputPath evals\copilot-customizations\runtime-tasks\runtime-target.yaml
-waza run evals\copilot-customizations\runtime-eval.yaml --output results\runtime-customizations-eval.json --no-update-check -v
-```
-
-Recorded task example:
-
-```powershell
-$project = Join-Path $HOME 'waza-copilot-customization-evals'
-Set-Location $project
-$env:WAZA_CUSTOMIZATIONS_TARGET = Join-Path $env:APPDATA 'Code\User\prompts\evaluate-waza-copilot-customizations.prompt.md'
-waza new task from-prompt "Review the target customization file and summarize its purpose, guardrails, and expected usage." evals\copilot-customizations\runtime-tasks\runtime-recorded.yaml --overwrite
-# Review the generated task before execution; relax brittle path_pattern and literal contains_cs checks if needed.
-```
-
-Individual gates:
-
-```powershell
-pwsh -NoProfile -ExecutionPolicy Bypass -File evals\copilot-customizations\scripts\grade-copilot-customizations.ps1 -Mode metadata -TargetPath $env:WAZA_CUSTOMIZATIONS_TARGET
-pwsh -NoProfile -ExecutionPolicy Bypass -File evals\copilot-customizations\scripts\grade-copilot-customizations.ps1 -Mode agent-structure -TargetPath $env:WAZA_CUSTOMIZATIONS_TARGET
-pwsh -NoProfile -ExecutionPolicy Bypass -File evals\copilot-customizations\scripts\grade-copilot-customizations.ps1 -Mode token-budget -TargetPath $env:WAZA_CUSTOMIZATIONS_TARGET -MaxFileTokens 5000 -MaxTotalTokens 60000
-```
-
-Setup / repair hints:
-
-```powershell
-New-Item -ItemType Directory -Force results, reports | Out-Null
-Test-Path .waza.yaml
-Test-Path evals\copilot-customizations\eval.yaml
-Test-Path evals\copilot-customizations\runtime-eval.yaml
-Test-Path evals\copilot-customizations\tasks\customization-static.yaml
-Test-Path evals\copilot-customizations\scripts\grade-copilot-customizations.ps1
-Test-Path evals\copilot-customizations\scripts\write-copilot-customizations-report.ps1
-Test-Path evals\copilot-customizations\scripts\write-runtime-task.ps1
-```
-
-Report generation:
-
-```powershell
-pwsh -NoProfile -ExecutionPolicy Bypass -File evals\copilot-customizations\scripts\write-copilot-customizations-report.ps1 -ResultJson results\customizations-eval.json -TargetPath $env:WAZA_CUSTOMIZATIONS_TARGET -Action run
-```
+- runtime、record、個別 gate、report のコマンドは `Workflow` 手順10〜14を正本とする。
+- `record` では生成taskを実行前に読み、固定された一時pathや過剰に厳しい `contains_cs` を修正する。
+- setup / repair では手順5の必須資産を `Test-Path` で確認し、不足分だけtemplateから復元する。
 
 ## Final Response Format
 

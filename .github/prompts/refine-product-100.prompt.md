@@ -13,17 +13,13 @@ argument-hint: "対象、重点観点、モード（例: current workspace / all
 
 # refine product 100
 
-対象プロダクトを何度も実行して最高品質へ近づけるための汎用 prompt。前回サマリーを読み、同じ観点の焼き直しを避け、AI が自律的に今回いちばん効く改善軸を選び、具体改善・検証・記録まで行う。
-
-種別不問: code / docs / slide / runbook / prompt / data / AI asset。
+前回サマリーから今回最も効く改善軸を選び、code / docs / slide / runbook / prompt / data / AI assetを具体改善・検証・記録する。
 
 ## Non-Negotiables
 
 - 実行可能 mode では、各回で必ず 1 つ以上の具体改善を行う。レビューだけで終わらない。安全に編集できない場合でも `Guard now` として test / docs / checklist / static guard などの成果物を残す。
 - 実行可能 mode では、`.git/info/refine-product-state.md` を必ず compact rewrite する。`.git/` が無い場合だけ `Local State: skipped` とし、理由を書く。
-- 100% を目指す。検証なし完了、1 件修正で同根放置、Fix now の残件逃げは禁止。
-- `Fix now / Guard now / Block` の分類は `Safety + Classification` を SSOT とする。
-- `残した観点` に `Fix now` を入れない。残せるのは成果物付きの `Guard now` または確認待ちの `Block` のみ。
+- 100% を目指し、検証なし完了、同根放置、`Fix now` の残件逃げをしない。分類は `Safety + Classification` を SSOT とし、残せるのは成果物付き `Guard now` または確認待ち `Block` だけ。
 - 実機確認が必要でも、機械的代替（test / static guard / manifest consistency / dry-run payload / checklist）を最低 1 つ追加してから止まる。
 - 止まる前に次を確認する: 今回の具体改善 / 前回との差分 / 同根 sweep / test or guard / docs sync / cleanup / artifact hygiene / 別軸 review / terminal cleanup / prompt or instruction 側の再発要因。
 
@@ -45,14 +41,10 @@ No-Edit の指定は、この prompt 全体の修正・Guard 成果物追加・s
 
 ### Release Intent
 
-- `release` / `deploy` / `publish` mode が明示された場合だけ full release intent と扱う。
-- `公開` / `publish` / `Marketplace` などの語だけでは即 publish しない。配布範囲が曖昧なら `Block` または GATE で確認する。
-- release mode で対象が software package / VS Code extension / npm package などの単一配布物として特定でき、既存 manifest から package 名と version を決められる場合は、配布対象が明確とみなし、品質 gate 後に commit / tag / push / publish / GitHub Release / verification まで進める。途中で「本当に publish するか」を再確認しない。
-- `Release Please` / `リリースして` / `release まで` / `make release` のように release 実行を依頼された場合も、対象 repo と package manifest が一意なら明確な release intent と扱う。`release-prep` / `準備だけ` / `publish しない` / `VSIX だけ` が明示された場合だけ外部公開前に止める。
-- release mode で配布対象が複数候補、version 未決定、公開先不明、権限/認証不足、または破壊的履歴操作が必要な場合は、commit / push だけで完了扱いにせず、`Block` または GATE で不足点を確認する。
-- `git push` / publish / deploy は、release mode で対象配布が明確な場合、またはユーザーが対象配布を明示した場合のみ実行する。
-- release 完了は、配布対象ごとに `VSIX / tag / publish / GitHub Release / verification` が done または blocked と分かれている状態を指す。
-- Release でも品質改善 gate は必須。`Fix now` がある状態で配布へ進まない。
+- `release` / `deploy` / `publish` または同義の明示依頼だけを full release intent とする。単語が文脈に出ただけ、`release-prep`、`準備だけ`、`publishしない` は実行承認にしない。
+- repo、単一配布物、manifest上の package/version、公開先が一意なら、品質 gate 後に commit / tag / push / publish / GitHub Release / verification まで再確認なしで進める。
+- 配布対象、version、公開先、権限が不明、または破壊的履歴操作が必要なら `Block` として確認する。
+- `Fix now` がある状態では配布せず、各配布工程を個別に `done / skipped / blocked` で報告する。
 
 ## Safety + Classification
 
@@ -70,25 +62,14 @@ Retry は同一原因 3 回まで。超えたら、試した代替と失敗理�
 
 ## State Intake / Local State / Run Ledger
 
-永続 state file は `.git/info/refine-product-state.md` の 1 つだけ使う。`.github/` 配下の state file や追加の log file は作らない。`Run Ledger` と `Handoff Packet` はチャット出力であり、永続 file ではない。
-
-前回 state は、ユーザー指定の state file、`.git/info/refine-product-state.md`、直近会話の `Run Ledger` / `Handoff Packet` の順に読む。これは参照順であり、古い記録を最新の確認結果より優先する順ではない。同じ対象・version の成果物、終了結果、公開状態が後から確認済みならそれで項目を更新し、旧 Block や todo を理由に完了済み操作を再実行しない。local state が無い・古い場合は直近会話を補助に使い、証拠が矛盾する場合だけ対象を絞って読み取り確認する。`.git/` が無い場合は代替 file を作らずチャット state を使う。
-
-実行可能 mode（default / quick / release）では、`.git/info/refine-product-state.md` を必ず作成・compact rewrite する。`.git/` が無い場合だけ `Local State: skipped` とし、理由を書く。No-Edit mode（plan / review / dry-run）では作成しない。
-
-state file は append-only にせず compact rewrite する。実行可能 mode では、公開確認や旧 Block 解消など重要な状態が確定した時点で state と todo を同期し、最終報告まで更新を先送りしない。完了済み操作の再実行は状態同期の代わりにならない。`.git/info/` 配下なので `.gitignore` 変更は不要。
-
-state file の構成は次に限定する: `Current Snapshot` / `Last Run Detail` / `Open Items` / `Recent Runs` / `Do Not Repeat` / `Next Focus Candidates` / `Guard or Block`。
-
-肥大化防止: `Last Run Detail` は直近 1 run の構造化要約だけを最大 25 行で残す。`Recent Runs` は 2 run 以上前を 1 run = 1 行で最大 5 件に圧縮する。`Open Items` / `Do Not Repeat` / `Guard or Block` は各最大 10 件、`Next Focus Candidates` は最大 3 件。全体が 160 行または 16KB を超えそうなら、古い run を要約してから上書きする。
-
-state file には raw logs、全文 Findings、terminal 出力、diff、長文 Handoff、secret、個人データ、ローカル絶対パス、一時ログ、未検証の推測を書かない。
-
-古い run を 1 行に圧縮する前に、その run の未解決 `Open` / `Guard now` / `Block` を stable ID で `Open Items` または `Guard or Block` に upsert する。形式は `OPEN-YYYYMMDD-01` / `GUARD-YYYYMMDD-01` / `BLOCK-YYYYMMDD-01` とし、同じ論点が再出した場合は既存 ID を更新して重複追加しない。閉じた ID は再利用しない。
-
-入力または直近会話に前回の `Run Ledger` / `Handoff Packet` / `Next Steps` がある場合は最初に読み、各項目を `Closed / Still Open / Reclassified / New` に分類する。ただし、新しい `Run Ledger` / `Handoff Packet` には前回本文を全文転載せず、必要な状態だけを要約する。無い場合は `baseline` として扱う。
-
-連続実行では、前回の `Open Items` を無視して新観点だけに飛ばない。同時に、前回と同じ観点の焼き直しだけで終わらない。各項目を `閉じた / 継続 / 再分類 / 対象外化` のいずれかに動かし、前回より情報量、検証状態、または成果物が進んだことを `Run Ledger` と local state に残す。
+- 永続先は `.git/info/refine-product-state.md` だけ。Run Ledger / Handoff はチャット出力とし、`.github/` や代替logを作らない。
+- 前回状態は、ユーザー指定state → local state → 直近Run Ledger/Handoffの順に読む。最新の実測を優先し、完了済み操作を旧Blockやtodoだけで再実行しない。
+- Executableではlocal stateを確定時点ごとにcompact rewriteする。No-Editまたは`.git/`なしでは作らず、`Local State: skipped`と理由を記録する。
+- 構成は `Current Snapshot / Last Run Detail / Open Items / Recent Runs / Do Not Repeat / Next Focus Candidates / Guard or Block` に限定する。
+- 上限は Last Run 25行、Recent Runs 5件、Open/Do Not Repeat/Guard各10件、Next Focus 3件、全体160行または16KB。超過前に古いrunを1行へ圧縮する。
+- 未解決項目は圧縮前に `OPEN|GUARD|BLOCK-YYYYMMDD-NN` でupsertし、閉じたIDを再利用しない。
+- raw log、全文Findings、terminal出力、diff、長文Handoff、secret、個人データ、絶対path、未検証推測を書かない。
+- 前回項目を `Closed / Still Open / Reclassified / New` に動かし、本文を転載せず進展だけをstateとLedgerへ残す。
 
 ## Autonomous Improvement Planning
 
@@ -120,24 +101,18 @@ state file には raw logs、全文 Findings、terminal 出力、diff、長文 H
 | AI / 自動化資産 | prompt injection、幻覚防止、根拠、禁止事項、出力形式、不明時、handoff/state、tool scope、決定論処理の script 化 |
 | Cleanup・成果物衛生 | dead code、重複、古い資材、一時ファイル、不要 terminal、生成物混入、絶対パス、ローカル依存 |
 
-追加探索では、最低 1 回は次の問いで抜け軸を探す: `ユーザー / 運用者 / 保守者 / 監査者 / 次に引き継ぐ AI` の誰がどこで困るか。
-
-通知、メール、チャット投稿、CLI 出力などは、生成テキストだけでなく最終的に読まれる surface で評価する。
+追加探索では `ユーザー / 運用者 / 保守者 / 監査者 / 次のAI` の誰がどこで困るかを1回問い、通知やCLI出力は最終surfaceで評価する。
 
 Priority: P0 = 主要機能破壊・データ損失・情報露出 / P1 = 導線混乱・テスト不在・README 不一致 / P2 = 品質改善・文言・dead code。
 
 ## Fix Cycle
 
-1. Context: entry points、検証手段、プロジェクト固有 instruction、前回 ledger を読む。
-2. Health Check: 現状の test / lint / build / diagnostics が通るか確認。失敗時は baseline failure と修正由来 failure を分け、スクリプト自体の壊れも疑う。
-3. Review: Coverage Matrix で gap を出し、各軸を `Covered / N/A / Open` に分類し、`Open` を `Fix now / Guard now / Block` に分類。
-4. Implement: 最小差分で修正。既存設計・命名・テストパターンに合わせる。
-5. Sweep: 同根原因・同観点の類似 gap を全文検索し、まとめて直す。1 件で満足しない。
-6. Test / Guard: 回帰テスト、静的ガード、契約テスト、dry-run、surface snapshot などを追加。
-7. Verify: diagnostics → lint → typecheck → test → build。stdout だけでなく artifact / state / process / exit code でも確認。
-8. Coverage: 前回と今回の主改善軸が重複していないか確認する。Covered/N/A/Open の未分類軸を残さず、実行可能 mode では発見済み `Fix now` は未処理で残さない。No-Edit mode では未修正の指摘として残す。
-9. Docs / Cleanup: README / Quick Start / help / error message / CHANGELOG / 用語を同期し、一時資材・dead code・不要 terminal を片付ける。
-10. Close Current Run: `Fix now` が残るなら同じ run 内で閉じる。残すなら `Guard now` / `Block` の条件を満たす。
+1. Context/Health: entry point、instruction、前回state、検証手段を読み、baseline failureと今回由来を分ける。
+2. Review: Coverageを分類し、Openを `Fix now / Guard now / Block` に分ける。
+3. Implement/Sweep: 既存パターンに合わせて最小修正し、同根gapを検索してまとめて直す。
+4. Test/Verify: 回帰testやguardを追加し、diagnostics → lint → typecheck → test → buildをartifact/state/exit codeまで確認する。
+5. Docs/Cleanup: README、help、CHANGELOG、用語を同期し、一時資材、dead code、terminalを片付ける。
+6. Close: `Fix now`を0にし、残件は条件を満たす `Guard now / Block` へ再分類する。
 
 未解決項目が残る場合は、安全条件を再評価し、`Guard now` / `Block` に再分類してから current run を閉じる。再分類できない `Fix now` が残る場合は未完了として明記し、完了宣言しない。
 
@@ -151,17 +126,11 @@ prompt / instruction / skill / hook / reusable script 自体に再発要因が�
 
 `release` mode かつ配布対象が明示されたソフトウェア配布物だけに適用する。ドキュメント等は skip。
 
-1. 対象 version が既に公開済みでないか確認。既存なら patch 以上を上げる。
-2. package metadata / lockfile / version display / CHANGELOG / release notes を同期。
-3. typecheck / lint / unit / integration / dependency audit を実行。Fix now 可能な audit は直す。
-4. build / pack を実行し、artifact の存在・サイズ・更新時刻を正本にする。
-5. pack 中身を列挙し、src / test / .github / .vscode / sourcemap / 内部資料の混入を確認。
-6. Commit → push → publish → GitHub Release は、ユーザーの明示 release 指示がある場合だけ実行。
-7. publish 後は対象識別子・version を registry / 公開 API と掲載ページで裏取りし、必要な tag / Release / 添付の状態を照合する。送信成功と公開反映を区別し、stale 表示だけで再 publish しない。反映待ちは期限付き確認を1本に限定し、通知待ち中に別の手動 polling を重ねない。
-8. commit / push 済みでも tag / publish / GitHub Release が未完なら release は未完了。`Release Status` に未完了箇所を分けて書く。
-9. 認証・審査・権限不足で止まる場合は `Block` とし、version / artifact / commit / tag / push / publish 状態を分けて報告。
-
-公開前に必須とした品質 gate と対象配布の確認が揃ったら公開完了を報告する。任意の追加スクリーンショット、再ダウンロード、同じページの再確認を後付けの完了条件にしない。事前に必須のハッシュ照合等は維持し、未達の必須 gate を省略しない。完了後は state 同期と所有範囲の cleanup だけを終え、新しい監査は別作業にする。
+1. versionの公開済み有無を確認し、既存ならpatch以上を上げ、metadata、lockfile、表示、CHANGELOG、release notesを同期する。
+2. typecheck、lint、test、audit後にbuild/packし、artifactの存在・サイズ・時刻とtarball内容を確認する。
+3. 明示release intentがある場合だけ commit → push → publish → GitHub Releaseへ進む。
+4. registry/APIと掲載ページでversion、tag、Release、添付を確認し、送信成功と公開反映を区別する。stale表示だけで再publishしない。
+5. 各工程を個別報告し、認証・審査・権限不足は `Block` にする。必須gate達成後はstate同期とcleanupだけ行い、新しい監査を足さない。
 
 ## Prompt-only Handoff
 
@@ -175,155 +144,61 @@ Coverage output は通常 delta-based にする: `Covered / N/A / Open` の総�
 
 ## Output Contract
 
-### No-Edit（plan / review / dry-run）
+出力は次の順序にする。空の任意セクションは省略し、長い作業ログや前回出力の再掲はしない。
 
-````markdown
-## Plan or Findings
-- {計画または指摘。修正はしない}
+| Mode | 必須セクション |
+| --- | --- |
+| No-Edit | `Plan or Findings` / `Gate` / `Coverage Matrix Summary` / `Safe-to-Fix 判定` / `Recommendation` / `Run Ledger` |
+| Executable | `Done` / `Improvement Focus` / `Sweep` / `Check` / `Findings` / `Safe-to-Fix 判定` / `Coverage Sweep` / `100% Pass 判定` / `Next Steps` / `Run Ledger` |
+| release | Executable に `Release Status` を追加し、version、artifact、commit、tag、push、publish、GitHub Release、公開確認を個別に `done / skipped / blocked` で示す |
 
-## Gate
-- {次回の実行前に確認すべきこと。なければ none}
+- No-Edit は未編集であること、全 `Open` 軸、分類変化、未修正の `Fix now / Guard now / Block` を明記する。
+- Executable は実行した変更と検証コマンド、同根 sweep、`Fix now = 0`、残る `Guard now / Block` の代替と次確認を示す。
+- Coverage は通常、`Covered / N/A / Open` 件数、全 `Open` 軸、前回からの分類変化だけにする。全表は verbose 時だけ出す。
+- `Documentation / Cleanup` と `Meta Improvements` は該当時だけ出す。
 
-## Coverage Matrix Summary
-- Covered / N/A / Open: {件数}
-- Open axes: {全 Open 軸。なければ none}
-- Changes since prior state: {分類変化。Covered -> Open の退行を含む。なければ none}
-- Full matrix: {verbose / full / 詳細 mode のときだけ表で出す}
+### Run Ledger
 
-## Safe-to-Fix 判定
-- Fix now / Guard now / Block: {各一覧。No-Edit のため未修正として明記}
+常に次の compact form を最大 10 行で出す。No-Edit では `Local State: skipped (no-edit mode)`、`Concrete Improvement` は次回 target、`Closed This Run` は `none` とする。
 
-## Recommendation
-- {削除 / 統合 / 分離 / 移動 / 追加 / 維持 の分類付き改善案}
-
-## Run Ledger
 ```text
 Run Type: baseline|continuation|rerun|release-prep
-Prior State Used: local state (.git/info/refine-product-state.md)|user state file|previous Handoff Packet|previous Run Ledger|none
-Local State: skipped (no-edit mode)
-Primary Axis This Run: {前回と重複しない主改善軸}
-Concrete Improvement Target: 次回実行で改善する最小対象: {target}
-Closed This Run: none
-Still Open: {Findings / 計画由来の open items。Fix now は未修正として明記}
-Reclassified: none
-New Axis Covered: {今回計画に含めた別軸}
-Next Run Focus: {次に実行する 1-3 項目}
-```
-
-Run Ledger は最大 10 行に収め、前回 Run Ledger / Handoff Packet の本文を再掲しない。
-
-## Handoff Packet（該当時のみ）
-```text
-Goal: {次に達成すること}
-Current State: {no-edit のため未編集 / 検出済み Findings / 対象ファイル}
-Open Items: {Fix now / Guard now / Block / Next Steps}
-Prior State Used: {Run Ledger / Handoff Packet / local state (.git/info/refine-product-state.md) / user state file / none}
-Recommended Path: {Plan first / Rerun refine / AI can continue now / User decision}
-Resume Prompt: {次ターンでそのまま貼れる依頼文}
-Do Not: {触らない範囲 / 未確認前提 / 公開・削除禁止など}
-```
-
-Handoff Packet は `Block`、ユーザー判断待ち、重要な文脈を持つ `Guard now`、または非自明な再開経路がある場合だけ出す。
-
-## Handoff Options / Next Action Suggestions（該当時のみ）
-| 候補 | 目的 | いつ選ぶか | そのまま使える依頼文 |
-| --- | --- | --- | --- |
-````
-
-### Executable（default / quick / release）
-
-````markdown
-## Done
-- {修正内容。仮説判断した場合は根拠も短く併記}
-
-## Improvement Focus
-- Previous Summary Used: {何を読んだか / なければ baseline}
-- Primary Axis This Run: {今回の主改善軸。前回との差分も短く書く}
-- Concrete Improvement: {この run で完了した具体改善}
-
-## Sweep
-- {同根原因・同観点の横展開。なければ「なし」}
-
-## Check
-- `{command}`: PASS/FAIL (exit code) {必要なら修正後 PASS}
-
-## Findings
-| Priority | 観点 | 内容 | 対応 |
-| --- | --- | --- | --- |
-
-## Safe-to-Fix 判定
-- Fix now: {0 件であること。残っていれば未完了}
-- Guard now: {成果物 / 試したこと / 残す理由 / 次の確認}
-- Block: {不足入力 / AI代替 / 今は止める理由 / 次の確認}
-
-## Coverage Sweep
-- Coverage Matrix の Covered / N/A / Open 件数、全 Open 軸、前回 state からの分類変化（Covered -> Open の退行を含む）
-- 再確認した観点 / 追加で直したもの / 残した観点 / Subagent 使用有無
-
-## Documentation / Cleanup（該当時のみ）
-
-## Meta Improvements（該当時のみ）
-
-## Release Status（release mode のみ）
-- Version: {before -> after}
-- Artifact: {path / size / timestamp / checksum if available}
-- Commit / Tag / Push / Publish / GitHub Release: {done / skipped / blocked}
-- Registry or Marketplace verification: {source / result / stale risk}
-
-## 100% Pass 判定
-
-## Next Steps（優先度順、[AI] / [User] 担当付き）
-
-## Run Ledger
-```text
-Run Type: baseline|continuation|rerun|release-prep
-Prior State Used: local state (.git/info/refine-product-state.md)|user state file|previous Handoff Packet|previous Run Ledger|none
+Prior State Used: local state|user state file|previous Handoff Packet|previous Run Ledger|none
 Local State: used|updated|skipped ({path or reason})
 Primary Axis This Run: {前回と重複しない主改善軸}
-Concrete Improvement: {この run で完了した具体改善}
-Closed This Run: {閉じた項目と検証結果}
-Still Open: {Guard now / Block / Next Steps。Fix now は不可}
-Reclassified: {分類変更した項目と理由。なければ none}
+Concrete Improvement: {完了した改善、またはNo-Editで次回改善する最小対象}
+Closed This Run: {閉じた項目と検証結果、またはnone}
+Still Open: {No-EditのFix now、またはGuard now / Block / Next Steps}
+Reclassified: {分類変更と理由、またはnone}
 New Axis Covered: {今回追加で見た別軸}
-Next Run Focus: {次回最初に見る 1-3 項目}
+Next Run Focus: {次に見る1〜3項目}
 ```
 
-Run Ledger は最大 10 行に収め、前回 Run Ledger / Handoff Packet の本文を再掲しない。
+### Handoff（該当時のみ）
 
-## Handoff Packet（該当時のみ）
+`Block`、ユーザー判断待ち、重要な `Guard now`、または非自明な再開経路がある場合だけ次を出す。
+
 ```text
 Goal: {次に達成すること}
-Current State: {完了済み変更 / 検証結果 / 成果物 / 対象ファイル}
-Open Items: {Guard now / Block / Next Steps。Fix now は不可}
-Prior State Used: {Run Ledger / Handoff Packet / local state (.git/info/refine-product-state.md) / user state file / none}
+Current State: {未編集のFindings、または完了済み変更・検証・成果物}
+Open Items: {Fix now / Guard now / Block / Next Steps。ExecutableではFix now不可}
+Prior State Used: {使用したstate}
 Recommended Path: {Plan first / Rerun refine / AI can continue now / User decision}
-Resume Prompt: {次ターンでそのまま貼れる依頼文}
-Do Not: {触らない範囲 / 未確認前提 / 公開・削除禁止など}
+Resume Prompt: {次ターンでそのまま使える依頼文}
+Do Not: {触らない範囲 / 未確認前提 / 公開・削除禁止}
 ```
 
-Handoff Packet は `Block`、ユーザー判断待ち、重要な文脈を持つ `Guard now`、または非自明な再開経路がある場合だけ出す。
-
-## Handoff Options / Next Action Suggestions（該当時のみ）
-| 候補 | 目的 | いつ選ぶか | そのまま使える依頼文 |
-| --- | --- | --- | --- |
-````
+複数経路の選択が必要な場合だけ、`Handoff Options / Next Action Suggestions` を `候補 / 目的 / いつ選ぶか / 依頼文` の表で追加する。
 
 ## Final Self-Check
 
-- 前回出力があれば取り込み、Closed / Still Open / Reclassified / New に分類した。
-- 前回サマリーとの差分を踏まえて、今回の主改善軸と `Concrete Improvement Target` または `Concrete Improvement` を明記した。
-- Coverage Matrix の各軸を `Covered / N/A / Open` に分類し、`N/A` には理由、`Open` には対応分類がある。
-- 発見 gap を `Fix now / Guard now / Block` に分類した。
-- 実行可能 mode では、少なくとも 1 つの具体改善または `Guard now` 成果物を完了した。
-- 機能名 / 機能要件 / UIUX / docs sync / cleanup / 同観点 sweep のうち、対象に関係するものを見た。
-- 実行可能 mode では `Fix now` を修正・再検証まで完了し、残件に入れていない。No-Edit mode では未修正として明記した。
-- `Guard now` / `Block` には試行内容、AI 代替、次の確認がある。
-- Run Ledger に Prior State Used / Closed This Run / Still Open / New Axis Covered / Next Run Focus があり、最大 10 行に収まっている。
-- Local State の使用/更新/省略理由を Run Ledger に書いた。
-- state file は `.git/info/refine-product-state.md` の 1 つだけで、`Last Run Detail` / `Recent Runs` の履歴圧縮、stable ID upsert、上限件数を守った。
-- `Handoff Packet` は必要条件（Block / User decision / 重要な Guard now / 非自明な再開経路）を満たす場合だけ出し、前回本文を全文転載していない。
-- `.prompt.md` 単体運用を維持し、`handoffs:` frontmatter や custom agent 前提の記述を追加していない。
-- 一時資材、dev server、task terminal を片付けた。残す場合は理由を書いた。
+- 前回状態を `Closed / Still Open / Reclassified / New` に動かし、今回の主改善軸と具体改善を示した。
+- Coverage を `Covered / N/A / Open`、gap を `Fix now / Guard now / Block` に分類した。
+- Executable は具体改善または Guard 成果物を完了し、`Fix now = 0` まで再検証した。No-Edit は未修正と明記した。
+- `Guard now / Block` に試行、代替、次確認があり、Run Ledger は最大10行で state の使用・更新・省略理由を含む。
+- state file は `.git/info/refine-product-state.md` だけを使い、履歴圧縮、stable ID、上限を守った。
+- Handoff は必要条件を満たす場合だけ出し、前回本文を転載していない。
+- 一時資材、dev server、task terminalを片付け、残す場合は理由を書いた。
 
 ## Run Boundary
 
