@@ -31,6 +31,7 @@ description: "ターミナル操作と Copilot debug log の低頻度トラブ�
 - stdout や active terminal の最終コマンドは、目的の実行と一致する command・実行ID・cwd・開始時刻を照合して使う。別ターミナルや前回実行の成功を流用しない。重要な結果は実 artifact、Git object、公開 API 等でも確認し、必要な根拠が揃ったら同じ裏取りを繰り返さない。
 - PowerShell script を編集した後は、`[scriptblock]::Create((Get-Content -Raw -Encoding UTF8 <file>))` で構文確認してから実行する。
 - PowerPoint / Excel / VS Code で開かれた Office ファイルを解析するときは、ロックフリーな一時コピーを作り、解析後に削除する。成果物の上書きが必要なら版番を上げる。
+- OneDrive 配下で `クラウド ファイル プロバイダーが実行されていません` により `Get-Content` / `read_file` が失敗したら、クライアント起動を1回試し、直らなければ読取の迂回を重ねず止める。読めた範囲、未読ファイル、再開条件（OneDrive 復旧後に再実行）を残す。新規ファイルは作れても、未読の既存ファイルへの追記・リンク更新はしない。
 
 ## Copilot Debug Logs
 

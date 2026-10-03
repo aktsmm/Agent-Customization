@@ -8,7 +8,7 @@ applyTo: "**"
 <!-- repository: https://github.com/aktsmm/Agent-Customization -->
 <!-- license: CC BY-NC-SA 4.0 -->
 <!-- copyright: Copyright (c) 2025 aktsmm -->
-<!-- updated: 2026-09-29 -->
+<!-- updated: 2026-10-01 -->
 
 # Agent Context Efficiency
 
@@ -53,6 +53,7 @@ applyTo: "**"
 - review / critic へ委譲するときは、成果物だけでなく**判断根拠の原本**（元データのテキスト化、ダンプ、元仕様）も artifact として渡す。成果物だけだと内部整合性しか見られず、「現状認識が実物と食い違う」型の欠陥が丸ごと残る。read-only agent は terminal を持たないので、暗号化ファイルや COM / 外部コマンド経由でしか読めない対象は先にテキスト化しておく。
 - 引用一致、件数、存在確認のように決定論的に判定できる項目は script で verify し、subagent には意味論と設計の妥当性を任せる。
 - `runSubagent` は model 省略時に producer と同じモデルを継承する。critic は別ファミリを明示指定する。利用可能なモデル名は、存在しない model 名で 1 回 probe すればエラー応答に一覧が返る。
+- 簡単な検索・一覧化・要約を subagent に委譲するときは、ユーザーまたは workflow に model の明示指定がない限り、利用可能な低コストモデルを明示指定し、producer の高性能モデルを継承させない。
 - 作業途中で新規に切り出した成果物は未レビュー。元ファイルが gate を通っていても、切り出し先は別途 gate にかける。
 - 独立タスクは分け、BLOCKED は原因か条件を変えてから再実行する。
 - サブエージェントが `thinking` / `redacted_thinking` の 400 や model not found で落ちた場合は、サブエージェント不可と断定せず、利用可能一覧の exact model name か別モデル経路で 1 回だけ再試行する。
