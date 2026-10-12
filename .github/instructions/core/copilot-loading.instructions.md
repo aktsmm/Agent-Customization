@@ -8,7 +8,7 @@ applyTo: "**/*.prompt.md,**/*.instructions.md,**/*.agent.md,**/*.toolsets.jsonc,
 <!-- repository: https://github.com/aktsmm/Agent-Customization -->
 <!-- license: CC BY-NC-SA 4.0 -->
 <!-- copyright: Copyright (c) 2025 aktsmm -->
-<!-- updated: 2026-08-24 -->
+<!-- updated: 2026-10-12 -->
 
 # Copilot CLI / VS Code インストラクション読み込みルール
 
@@ -21,7 +21,7 @@ applyTo: "**/*.prompt.md,**/*.instructions.md,**/*.agent.md,**/*.toolsets.jsonc,
 | 置き場 | VS Code Chat | Copilot CLI | 用途 |
 | --- | --- | --- | --- |
 | `$HOME/.copilot/copilot-instructions.md` | 読む（常時） | 読む（常時） | **共通**。always-on なので短く保つ |
-| `$HOME/.copilot/instructions/**` | 読まない | 読む（再帰） | **CLI 固有** |
+| `$HOME/.copilot/instructions/**` | 設定依存（この環境では無効） | 読む（再帰） | この環境ではCLI専用 |
 | `%APPDATA%/Code/User/prompts/**` | 読む | 読まない | **VS Code 固有** |
 
 - 両方で必要な詳細ルールは自動同期されない。片方を編集したら同じターンでもう片方も更新する

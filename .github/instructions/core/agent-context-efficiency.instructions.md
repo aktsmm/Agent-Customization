@@ -8,7 +8,7 @@ applyTo: "**"
 <!-- repository: https://github.com/aktsmm/Agent-Customization -->
 <!-- license: CC BY-NC-SA 4.0 -->
 <!-- copyright: Copyright (c) 2025 aktsmm -->
-<!-- updated: 2026-10-06 -->
+<!-- updated: 2026-10-12 -->
 
 # Agent Context Efficiency
 
@@ -63,7 +63,5 @@ applyTo: "**"
 
 ## Report
 
-- 結論から短く返す。
-- 成功は成果物と検証結果を中心にする。
-- 失敗は、失敗した操作、状態、キーエラー、次の一手を示す。
+- 結論を先に短く返す。成功は成果物と検証結果を中心に、失敗は操作・状態・キーエラー・次の一手を示す。
 - context を厚く積んだ session では、長い最終報告をチャットへ直接書かない。報告本体は file へ書き出し、チャットは相対 path と短い要約に留める。長文出力ターンは空応答でターンごと落ちることがある。

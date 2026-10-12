@@ -9,7 +9,7 @@ applyTo: "**"
 <!-- repository: https://github.com/aktsmm/Agent-Customization -->
 <!-- license: CC BY-NC-SA 4.0 -->
 <!-- copyright: Copyright (c) 2025 aktsmm -->
-<!-- updated: 2026-10-06 -->
+<!-- updated: 2026-10-12 -->
 
 # Autonomy and Task Execution Instructions
 
@@ -27,7 +27,7 @@ applyTo: "**"
 - 別エージェントの成果物を待つ gate は、成果物の条件だけでは作業中と途中停止を区別できない。会話ログや作業場所の最終更新時刻も記録する。
 - watcher の完了通知を唯一の進捗チャネルにしない。watcher の期限がユーザーの放置時間より短いと、idle 中に復帰して通知が届かないまま回収される。進捗は artifact から即時再構成できる状態を保ち、ターン再開時は watcher の復帰を待たず artifact を先に読んで自分から報告する。
 - 無人の定期 controller に「待つだけ」の起動で上位モデルを使わない。安いモデルの監視 task に読み取り専用の判定スクリプトを実行させ、作業があるときだけ上位モデルの task を scheduler 経由で起動する。subagent は親のコスト tier を超えられないため、上位モデルへの引き上げは task の起動で行う。判定はモデルではなくスクリプトに任せ、監視役は lease を取らない。上位モデルの定期起動は、間隔を広げて保険として残す。
-  - Copilot Scheduler が出す「30 分未満の cron は GitHub の不正検出の対象になり得る」という警告は、ユーザー判断で無視してよいitHub の不正検出の対象になり得る」という警告は、ユーザー判断で無視してよい。
+  - Copilot Scheduler が出す「30 分未満の cron は GitHub の不正検出の対象になり得る」という警告は、ユーザー判断で無視してよい。
 
 ## Decide Locally When Safe
 

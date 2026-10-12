@@ -1,5 +1,5 @@
 ---
-description: "Microsoft 365 の照会・操作と Scheduler の定期収集で使う。WorkIQ の対話時クラウド優先・定期実行時 CLI 優先、schema確認、読み戻しを扱う"
+description: "Microsoft 365 の照会・操作と Scheduler の定期収集で使う。読み取りLocal優先、必要機能だけCloud、無人実行の停止条件、schema確認・読み戻しを扱う"
 ---
 
 <!-- syncToGlobal: true -->
@@ -15,14 +15,15 @@ description: "Microsoft 365 の照会・操作と Scheduler の定期収集で�
 
 ## Connection
 
-- 対話時はクラウドHTTP MCPを優先する。
+- 通常の情報取得・要約は対話／無人を問わずローカルCLI／stdio MCPを優先する。
+- 原文・構造化データの取得や書き込み等、ローカルにない機能が必要な場合だけ、対話時にクラウドHTTP MCPを使う。認証失敗・拒否は機能不足として扱わない。
 - Copilot Scheduler 等の無人・定期実行の読み取り収集は、最初からローカルCLI／stdio MCPを選ぶ。この定期収集ではクラウドやブラウザへの自動切替を禁止し、要求された原文・一覧等をローカルで取得できなければ未確認として停止する。
 - 必要なMCPツールが非公開なら、自然言語の照会には利用可能な `workiq ask` を使える。
 - 接続ごとに現在の公開ツールを確認し、選択した接続のツールだけを使う。以下のMCP用ルールをCLI照会のためにクラウドで実行しない。CLIを自動削除しない。
 
 ## Queries
 
-- MCPでは所在・原文の探索は `retrieve`、既知エンティティは `fetch`、根拠未提供の統合要約・推論の委譲は `ask`。提供済み資料で足りれば再照会しない。
+- ローカルでは公開カタログのask系ツールを使う。クラウドでは原文・所在の探索は `retrieve`、既知エンティティは `fetch`、統合要約・推論の委譲は `ask`。提供済み資料で足りれば再照会しない。
 - 選択したMCPで、不明なパスは `search_paths`、作成・更新・削除・actionの前は `get_schema`。必要なツールがなければ操作は未確認とする。
 - 取得は `$select` と少数の `$top` で絞り、独立した既知項目は `fetch` で一括取得してよい。未知の論点は1論点1照会とし、日付・会議・案件、件数上限と根拠を指定する。
 - `InefficientFilter` 対策は `$orderby` を外す。`$search` のメールIDが404なら `conversationId` で現在のIDを引き直す。
