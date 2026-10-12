@@ -38,6 +38,7 @@ description: "ターミナル操作と Copilot debug log の低頻度トラブ�
 - Copilot の想定外挙動（instruction 未適用、tool 誤選択、workflow 停止など）を調査するときは、対象 session の debug log を確認する。
 - debug log では `tool_call` と `agent_response` を分けて読む。`agent_response` には pending tool call が現れることがあり、実行済み `tool_call` と混同しやすい。
 - user / memory / assistant text に tool 名が出ただけでは実行済みとみなさない。実際の実行有無は `tool_call` entry と結果で確認する。
+- コスト調査は `llm_request` の `attrs.inputTokens` / `cachedTokens` / `outputTokens` を session の `main.jsonl` と `runSubagent-*.jsonl` ごとに合算する。最初の request の `inputTokens` が、指示・memory 一覧・ツール定義からなる常時文脈の量になる。
 - `main.jsonl` は数十 MB になる。workspace 外なので `grep_search` は効かない。`Select-String` の streaming と `ConvertFrom-Json` で処理し、`Get-Content -Raw` や `readFileSync` の全読みを避ける。1 行が巨大なので表示は `Substring` で切る。
 
 ### Silent Stop（空応答でターンが終わる）
@@ -47,6 +48,10 @@ description: "ターミナル操作と Copilot debug log の低頻度トラブ�
 - コンテキスト超過と決めつけない。同 session の `models.json` にある `capabilities.limits.max_context_window_tokens` と `max_prompt_tokens` で実上限を確認する。
 - 発生ターンの偏りを見る。長い最終報告やまとめを書くターンに集中し、tool call だけの短いターンでは起きない場合、`Try Again` は同条件の再実行なので同じ位置で再発する。長文をチャットへ書かせずファイル出力 + 短い要約にする、別モデルファミリへ切り替える、新 session に切る、のいずれかで条件を変える。
 - `llm_request` の `requestOptions`（`thinking` の type / display、`effort`）と `requestShape.messageCount` を併せて記録する。巨大 prompt と高 effort の thinking が重なるほど再現しやすい。
+
+## Copilot CLI
+
+- `copilot -p` は cwd 外のファイルを view できず permission denied になる。読ませる path は `--add-dir <dir>` で許可する。cwd が repo 内だとその repo の `.github/hooks` が読まれ、hook の起動コマンドが無い環境では hook エラー扱いで全 tool が拒否される。
 
 ## Credentials and Environment
 

@@ -63,6 +63,7 @@ All Mode は先に private repo の `scripts/Commit-DirtySkills.ps1` をdry-run�
 - `ExcludeSkills` / private-only / internal-only / MS 社内向け skill は public sync から除外し、EMU private sync の候補として扱う
 - sync-only 実行中に README / assets / index / SKILL 本文の編集はしない
 - remote不明、選択対象のdirty/未push/監査失敗、予期しない削除、authoringが必要なら停止する。primary-onlyの元checkoutのbehind/detached/選択外dirtyは、最新remote SHAと配布configを固定した読取snapshotで隔離できれば継続する。broadはbranch・clean・currentを維持する。
+- public 側の手元 checkout が remote より遅れていて script が止まったら、clean かつ ahead 0 を確認して `git pull --ff-only` で最新化し、同じ引数で再実行する。dirty・ahead・divergence があれば停止する。
 - 手動コピーで public repo を直接触らず、script か一時 script variant で完結させる
 
 ## EMU Private Sync Gate

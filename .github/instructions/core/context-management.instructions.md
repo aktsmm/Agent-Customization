@@ -8,7 +8,7 @@ applyTo: "**/*.prompt.md,**/*.instructions.md,**/*.agent.md,**/SKILL.md,**/copil
 <!-- repository: https://github.com/aktsmm/Agent-Customization -->
 <!-- license: CC BY-NC-SA 4.0 -->
 <!-- copyright: Copyright (c) 2025 aktsmm -->
-<!-- updated: 2026-10-01 -->
+<!-- updated: 2026-10-06 -->
 
 # Customization Authoring Instructions
 
@@ -23,6 +23,7 @@ Customization 資産を編集するときの量、粒度、自己完結性のル
 - always-on と `applyTo` 付き instruction で同じ rule を強く重複定義しない。
 - 同じ rule を `copilot-instructions.md` と `AGENTS.md` の両方に書かない。
 - 既存節を置換・圧縮できないかを先に検討し、言い換えただけの新節を足さない。
+- 長く使う指示を削るときは、結果が検証済みの項目だけを消す。実装済みでも未検証の項目は、証明すべき要件として残す。助動詞（may / must）や範囲の限定は変えない。旧全文は版管理で辿れるようにし、新旧の比較は別の reviewer に任せる。理由: 「実装済み」を「完了」と取り違えて、有効な規則を削りやすい。
 - 明示呼び出し前提の `.prompt.md` 同士は、自己矛盾・更新漏れ・description 競合が無ければ役割近接だけで統合しない。
 - 主要 instruction は ~120 行を目安にする。500 行を超えたら強い refactor サイン。
 - 「行数が増える = 改善」とみなさない。
@@ -39,6 +40,7 @@ Customization 資産を編集するときの量、粒度、自己完結性のル
 - AI と script / hook の切り分けは、判断や曖昧さ解消は AI、再現性や fail fast が重要な純作業は script / hook を優先する。
 - skill の本体には自明な手順より、よく踏む Gotchas、参照ファイル、scripts / assets の所在を優先して書く。
 - skill の host 固有拡張（例: `context: fork`）は共通仕様と分け、本文・references・scripts は portable に保ち、compatibility と未対応 host の fallback を明記する。
+- skill は他 skill の名前・パスを参照しない（description、使わない場面、references、scripts のコメントを含む）。対象外は一般語で書き、他 skill を SSOT として委譲せず必要な規則は数行で内包する。自 skill 内は `<skill-dir>/` か相対パスで書く。理由: skill は単体で配布・コピーされ、参照先の無い環境で壊れたり誤ルーティングの元になる。
 - review 用 prompt / checklist / skill は設計レビューの置き場にする。既定の対話挙動を変えたい rule は always-on entry か scoped instruction に置く。
 
 ## Writing Rules

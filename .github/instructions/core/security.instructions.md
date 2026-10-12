@@ -17,7 +17,7 @@ applyTo: "**"
 ## Secrets
 
 - API キー、パスワード、トークン、接続文字列をコードやドキュメントに書かない。
-- `.env`、秘密鍵、証明書、シークレットを Git に追加しない。
+- `.env`、秘密鍵、証明書、シークレットを Git に追加しない。例外は、本人が秘密の保管先として明示的に許可した private / internal repo だけ。その場合も commit 前に visibility が PUBLIC でないことを確認し、その repo を public にしない・公開同期 / public fork / 公開 mirror の対象にしない。
 - 機密値は環境変数や Key Vault / GitHub Secrets / Secret Manager などから取得する。
 - `.gitignore` に `.env*`, `*.pem`, `*.key`, `secrets/` などを含める。
 
@@ -42,3 +42,4 @@ applyTo: "**"
 ## Git Safety
 
 - 公開リポジトリへ同期する前に、秘密情報・顧客情報・個人環境情報が含まれないか確認する。
+- 秘密を含む repo の visibility を public へ変える操作はしない。履歴に残った秘密は削除コミットでは消えないため、公開が必要なら履歴を引き継がない別 repo を作る。

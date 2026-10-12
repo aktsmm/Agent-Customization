@@ -9,7 +9,7 @@ applyTo: "**"
 <!-- repository: https://github.com/aktsmm/Agent-Customization -->
 <!-- license: CC BY-NC-SA 4.0 -->
 <!-- copyright: Copyright (c) 2025 aktsmm -->
-<!-- updated: 2026-10-01 -->
+<!-- updated: 2026-10-06 -->
 
 # PowerShell Terminal Instructions
 
@@ -35,7 +35,8 @@ applyTo: "**"
 ## 3. 安全運用
 
 - 削除や移動などの破壊的操作は、対象パスを明示して実行する。
-- ワイルドカード削除は最小限にする。repo ルートの `Remove-Item *.json` / `*.txt` は tracked file を巻き込むため、一時ファイルは `tmp/` 配下か明示名で削除する。
+- 並行 writer がいる場所のファイル退避は copy→検証→削除にせず、同一ボリューム内の rename で移す（検証後〜削除前の更新を失わない）。移動後に hash と元位置への再作成を確認する。
+- ワイルドカード削除は最小限にする。repo ルートの `Remove-Item *.json` / `*.txt` は tracked file を巻き込むため、一時ファイルは明示名で削除する。`tmp/` 配下も別作業のフォルダが混在し、`tmp\gh-*` のような接頭辞 glob が無関係のフォルダを巻き込んだ実例がある。
 - ブラウザの user data / profile directory を削除する前に、それが既定プロファイルか、一時 `--user-data-dir` かを確認する。既定プロファイル削除は通常禁止し、一時プロファイルだけを対象にする。
 - CDP で既存ブラウザを再利用する前に、debug port と親プロセスを確認する。debug port なしの既存プロセスに `--remote-debugging-port` を追加しても、起動は既存プロセスに合流し port が開かないことがある。
 - 既存ブラウザの終了が必要な CDP 復旧は明示承認なしに行わず、port を開けない場合は同じ起動を反復せず、失敗理由と再開条件を記録する。
@@ -64,7 +65,7 @@ applyTo: "**"
 - `gh` や類似 CLI へ**空白を含む検索式**を渡すときは、PowerShell で 1 つの文字列として引用する。`--json a,b,c` のカンマ区切りも引用する。引用しないと環境によって分解され、`accepts at most 1 arg(s), received 3` で落ちる。`--jq` に渡す式は `$j` のような jq 変数を含むため、必ずシングルクォートで囲む。ダブルクォートだと PowerShell が先に展開して式が壊れる。
 - `{}` を含む引数はシングルクォートで囲う。例: `git rev-list --left-right --count 'HEAD...@{upstream}'`。裸の `@{upstream}` は PowerShell が ScriptBlock / hashtable と解釈し、`ScriptBlock should only be specified as a value of the Command parameter` で落ちる。`@{n}` や `HEAD@{1}` など git の reflog / upstream 表記全般が対象。
 - PowerShell の二重引用符内で `\"` はエスケープにならず文字列が途中で切れ、`>>` 継続待ちで止まる。`rg` などへ渡す regex は単一引用符で囲む。また `dir/*.py` はネイティブコマンドへ展開されず `rg` が os error 123 で落ちるため、`rg <pattern> dir -g '*.py'` を使う。
-- 日本語を含むファイルや JSON を扱うときは UTF-8 を維持する。
+- 日本語を含むファイルや JSON を扱うときは UTF-8 を維持する。terminal 表示が化けるときは、`$env:PYTHONUTF8='1'` を設定し、`cmd /c "... > file"` で UTF-8 のままファイルへ出して `read_file` や `Get-Content -Encoding UTF8` で読む。
 - `Get-Content -Raw` は CRLF を保持する。multiline regex で行末を照合するときは改行前の `\r` を許容するか、`\r?\n` で split する。
 - スクリプトや CLI を実行する前に、対象 script / 実行ファイルの存在を確認する。不在時は実行せず、read/grep などの代替検証へ切り替える。
 - スクリプトや CLI の変更系操作は、既定を read-only / dry-run にし、破壊的変更や外部反映は `--apply` などの明示フラグを必須にする。

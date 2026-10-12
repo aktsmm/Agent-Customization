@@ -8,7 +8,7 @@ applyTo: "**"
 <!-- repository: https://github.com/aktsmm/Agent-Customization -->
 <!-- license: CC BY-NC-SA 4.0 -->
 <!-- copyright: Copyright (c) 2025 aktsmm -->
-<!-- updated: 2026-10-01 -->
+<!-- updated: 2026-10-06 -->
 
 # Agent Context Efficiency
 
@@ -23,6 +23,7 @@ applyTo: "**"
 ## Act
 
 - 依頼された成果に必要な最小範囲だけ触る。
+- repo memory は全セッションの文脈に一覧が載る。run をまたいで再利用する知見だけを書き、run 固有の記録はその run の report に書く。
 - ついでの整理、リネーム、広いリファクタ、不要な生成物を増やさない。
 - 決定論的な抽出、集計、置換、検証は script や tool に寄せる。**手計算で平均・件数・比率などを出さない**。スクリプトで sum/count 計算し、ソース (Forms / DB / CSV) の集計値と一致することを確認してから成果物へ転記する。
 - prompt / instruction / skill / agent を書くときは、人間に読みやすい装飾より AI が判断できる最小情報を優先する。判断ルール / トリガー / 制約 / Example 1 つで足りる。冗長な前置き、同じ概念の言い換え、重複した観点リストを増やさない。
@@ -30,6 +31,7 @@ applyTo: "**"
 ## Tools
 
 - 狭い確認は、対象・列・件数・範囲を絞った短い command / tool call を直接実行し、出力は取得元で filter / limit / summary する。`fetch_webpage` はスライド共有・イベントページなどで全文級（数十 KB）を返すことがあるため、数個の事実だけ要るときは `Invoke-WebRequest -OutFile` + 正規表現で該当行だけ抽出する。
+- terminal で上書きした直後のファイルを `read_file` が古い内容で返すことがある。生成直後の結果は terminal の `Get-Content` と更新時刻で確認する。
 - raw output は後の監査・再読に必要な場合だけ file に保存し、親へは相対 path、結論、主要根拠、次 action を返す。
 - バイナリや大容量ファイルを in-band 経路（tool 戻り値、stdout、CDP の base64 応答）で運ばない。ブラウザのダウンロード機能、`-OutFile`、`--output` のように**転送元が直接 file へ書く**経路を使う。数 MB を超える in-band 転送は harness ごと重くする。
 - shell 構文や出力制御はローカルの terminal rule に従う。
@@ -48,8 +50,7 @@ applyTo: "**"
 - read-only agent の書き込み監査で text artifact を fingerprint する場合は、保存・formatter 完了後に raw hash と改行正規化 hash を記録し、正規化 hash も変わる説明できない変更だけを汚染とする。
 - read-only の探索専用 agent は MCP と `tool_search` を持たないことがある。外部仕様の確認を含むレーンには使わない。`fetch_webpage` だけ持つ agent は MCP 不在でもエラーにならず直 fetch へ静かに劣化するため、返ってきた出力を見ても気づけない。
 - 子には subgoal、必要な入力、制約、判定基準だけを渡し、親への返却は decision / key evidence / next action と、raw を保存した場合の相対 path に限定する。
-- 別チャット / 別エージェントへローカル成果物を引き継ぐ場合は、受け手の file 読取能力を確認する。同一 PC のファイルを読めるなら実在確認済みの絶対 path で直接読取を依頼し、読めない場合だけ実ファイル添付を要求する。再利用・公開する資産には絶対 path を残さない。
-- path の記載とチャットへの実添付を区別する。自分に別チャットへの添付手段がない場合は添付済みと主張せず、ユーザーが添付すべきファイルを明示する。
+- 別チャット / 別エージェントへローカル成果物を引き継ぐときは受け手の file 読取能力を確認し、読めれば実在確認済みの絶対 path を、読めなければユーザーが添付すべきファイルを示す。自分で添付できないなら添付済みと言わない。再利用・公開する資産には絶対 path を残さない。
 - review / critic へ委譲するときは、成果物だけでなく**判断根拠の原本**（元データのテキスト化、ダンプ、元仕様）も artifact として渡す。成果物だけだと内部整合性しか見られず、「現状認識が実物と食い違う」型の欠陥が丸ごと残る。read-only agent は terminal を持たないので、暗号化ファイルや COM / 外部コマンド経由でしか読めない対象は先にテキスト化しておく。
 - 引用一致、件数、存在確認のように決定論的に判定できる項目は script で verify し、subagent には意味論と設計の妥当性を任せる。
 - `runSubagent` は model 省略時に producer と同じモデルを継承する。critic は別ファミリを明示指定する。利用可能なモデル名は、存在しない model 名で 1 回 probe すればエラー応答に一覧が返る。
