@@ -1,6 +1,6 @@
 ---
-description: "VS Code User Data の prompts/instructions/agents/SKILL を編集・新規作成するときに使う metadata ルールと保存先の既定スコープ。`description` / `applyTo` / `name` / HTML メタ / `syncToGlobal` / personal default の SSOT"
-applyTo: "**/*.prompt.md,**/*.instructions.md,**/*.agent.md,**/SKILL.md"
+description: "~/.copilot の instructions / agents / SKILL を編集・新規作成するときに使う metadata ルールと保存先の既定スコープ。`description` / `applyTo` / `name` / HTML メタ / `syncToGlobal`（公開可否）の SSOT"
+applyTo: "**/*.instructions.md,**/*.agent.md,**/SKILL.md"
 ---
 
 <!-- syncToGlobal: true -->
@@ -8,19 +8,19 @@ applyTo: "**/*.prompt.md,**/*.instructions.md,**/*.agent.md,**/SKILL.md"
 <!-- repository: https://github.com/aktsmm/Agent-Customization -->
 <!-- license: CC BY-NC-SA 4.0 -->
 <!-- copyright: Copyright (c) 2025 aktsmm -->
-<!-- updated: 2026-07-13 -->
+<!-- updated: 2026-10-18 -->
 
-# グローバル（APPDATA）プロンプトのメタデータ・保存先運用
+# 個人（~/.copilot）資産のメタデータ・保存先運用
 
-%APPDATA%/Code/User/prompts/ 配下の `*.prompt.md` / `*.agent.md` / `*.instructions.md` を編集・新規作成するときの metadata ルールと保存先の既定スコープ。
+`~/.copilot/` 配下の `*.instructions.md` / `*.agent.md` / `SKILL.md` を編集・新規作成するときの metadata ルールと保存先の既定スコープ。
 
 ## Scope
 
 - YAML frontmatter、HTML metadata、`syncToGlobal`、保存先の既定だけを扱う。
 - 読み込み経路や配置戦略は扱わない。
 - workspace 固有の `.github/instructions/**/*.instructions.md`、`.github/copilot-instructions.md`、`AGENTS.md` には持ち込まない。
-- 個人用の VS Code カスタマイズは、明示指定がなければ `%APPDATA%/Code/User/prompts/` を第一候補にする
-- skills は personal skill の公式保存先を使う
+- 個人用のカスタマイズは、明示指定がなければ `~/.copilot/`（instructions / skills / agents）を第一候補にする
+- `*.prompt.md` は Agent Host で読まれないため新規に作らず、skill にする
 - 単純なひな型作成では、最小構成で作ってから不足分だけ確認する
 
 ## YAML Frontmatter
@@ -33,11 +33,11 @@ VS Code が認識する `description` / `applyTo` / `name` は、HTML コメン�
 - UI 表示や semantic matching に使う説明は `description` に書く
 - 手動添付・参照専用にしたい場合だけ `applyTo` を省略してよい
 
-### `.prompt.md` / `.agent.md`
+### `.agent.md`
 
-- slash command / agent picker の説明は YAML `description` に書く
+- agent picker の説明は YAML `description` に書く
 - `description` は人間向け要約ではなく、モデルの trigger surface として書く
-- 必要に応じて `name` / `argument-hint` / `tools` / `model` などを YAML に書く
+- 必要に応じて `name` / `tools` / `model` などを YAML に書く
 - `model` は現在環境で exact display name を確認した場合だけ書く。テンプレートや例では実在名を固定せず、placeholder か省略を使う
 
 ### `SKILL.md`
@@ -74,7 +74,7 @@ VS Code が認識する `description` / `applyTo` / `name` は、HTML コメン�
   - 例: `AZURE_TENANT_ID=<set-in-env>` / `GITHUB_TOKEN=<set-in-env>`
   - 参照が必要な場合は「環境変数/設定で渡す」旨を本文に書く（値は書かない）
 - 既存 file に secret / 個人情報 / 環境固有値がある場合でも、少なくとも `syncToGlobal: true` は付けない
-- 同期フローの責務は同期 prompt 側にある。この instruction は「同期しない設定になっていること」のチェックだけを要求する
+- 同期フローの責務は同期 skill（`sync-copilot-customizations`）側にある。この instruction は「同期しない設定になっていること」のチェックだけを要求する
 
 ## Minimal Example
 

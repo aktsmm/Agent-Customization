@@ -15,7 +15,7 @@ applyTo: "**/*.py,**/pyproject.toml,**/requirements*.txt"
 
 ## 基本ルール
 
-- Python プロジェクトでは仮想環境を必須とし、グローバル環境や `pip install --user` へ直接インストールしない。
+- Python プロジェクトでは仮想環境を必須とし、グローバル環境や `pip install --user` へ直接インストールしない。例外は、この PC で COM / CDP 用に既にグローバル Python へ入れている `pywin32` / `playwright` / `websocket-client` の利用で、詳細は `local-terminal-environment` に従う。
 - 既存の `.venv`、`pyproject.toml`、`uv.lock`、`requirements*.txt` と repo の実行手順を先に確認し、既存の管理方式を尊重する。
 - 新規プロジェクトは `uv add`、`uv sync`、`uv run` を基本とし、`pyproject.toml` と `uv.lock` で管理する。既存の requirements ベース環境では `uv venv` + `uv pip` を使い、uv がない場合だけ標準 `venv` + `pip` を使う。
 - 依存を追加・変更したら、repo が採用する `pyproject.toml`、lock file、または `requirements*.txt` に記録する。

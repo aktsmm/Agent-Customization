@@ -38,7 +38,6 @@ applyTo: "**"
 
 ## Copilot Customization
 
-- Prompt: `<verb>-<target>[-detail].prompt.md`
 - Instruction: `<subject>[-detail].instructions.md`
 - Agent: `<role>[-detail].agent.md`
 - Skill folder: lower-case kebab-case。

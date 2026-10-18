@@ -1,6 +1,6 @@
 ---
-description: "Customization 資産（instructions / prompts / agents / SKILL / copilot-instructions / AGENTS）を作成・編集するときの量、粒度、自己完結性のルール。always-on は短く、具体例は最小限にする"
-applyTo: "**/*.prompt.md,**/*.instructions.md,**/*.agent.md,**/SKILL.md,**/copilot-instructions.md,**/AGENTS.md"
+description: "Customization 資産（instructions / agents / SKILL / copilot-instructions / AGENTS）を作成・編集するときの量、粒度、自己完結性のルール。always-on は短く、具体例は最小限にする"
+applyTo: "**/*.instructions.md,**/*.agent.md,**/SKILL.md,**/copilot-instructions.md,**/AGENTS.md"
 ---
 
 <!-- syncToGlobal: true -->
@@ -8,7 +8,7 @@ applyTo: "**/*.prompt.md,**/*.instructions.md,**/*.agent.md,**/SKILL.md,**/copil
 <!-- repository: https://github.com/aktsmm/Agent-Customization -->
 <!-- license: CC BY-NC-SA 4.0 -->
 <!-- copyright: Copyright (c) 2025 aktsmm -->
-<!-- updated: 2026-10-06 -->
+<!-- updated: 2026-10-14 -->
 
 # Customization Authoring Instructions
 
@@ -18,39 +18,40 @@ Customization 資産を編集するときの量、粒度、自己完結性のル
 
 - 毎ターン読まれる instruction は短く保ち、context rot と命令競合を避ける。
 - 各 file は単体で「扱うこと / 扱わないこと」を判断できる形にする。
-- Global User Data の prompt / instruction は、他の global file が読まれる前提にしない。
+- 個人（`~/.copilot`）の instruction / skill は、他の global file が読まれる前提にしない。
 - 同じ概念は同一責務内で二重定義しない。境界文の小さな重複は、参照依存を避けるためなら許容する。
 - always-on と `applyTo` 付き instruction で同じ rule を強く重複定義しない。
 - 同じ rule を `copilot-instructions.md` と `AGENTS.md` の両方に書かない。
-- 既存節を置換・圧縮できないかを先に検討し、言い換えただけの新節を足さない。
+- 正常・例外・停止時の判断や行動を促す強さを変えない不要・自明な説明だけを削除し、必要な残りを置換・圧縮する。根拠・承認範囲・未検証要件・停止／復旧条件・必要な実例・運用メタコメントは残し、言い換えただけの新節を足さない。
+- レビュー・編集では、自律性のため意図的に残した裁量を権限境界の曖昧さと区別し、固定の試行上限がないこと自体を欠陥としない。明示依頼なしに上限や承認手順を追加しない。
 - 長く使う指示を削るときは、結果が検証済みの項目だけを消す。実装済みでも未検証の項目は、証明すべき要件として残す。助動詞（may / must）や範囲の限定は変えない。旧全文は版管理で辿れるようにし、新旧の比較は別の reviewer に任せる。理由: 「実装済み」を「完了」と取り違えて、有効な規則を削りやすい。
-- 明示呼び出し前提の `.prompt.md` 同士は、自己矛盾・更新漏れ・description 競合が無ければ役割近接だけで統合しない。
+- 明示呼び出し前提の skill 同士は、自己矛盾・更新漏れ・description 競合が無ければ役割近接だけで統合しない。
 - 主要 instruction は ~120 行を目安にする。500 行を超えたら強い refactor サイン。
 - 「行数が増える = 改善」とみなさない。
 
 ## Scope and Primitive
 
 - 詳細手順、長い recipe、persona、ドメイン固有規則は always-on に置かない。
-- workspace の instruction と `AGENTS.md` には、その repo 固有の内容だけを書く。どの repo でも成り立つ汎用ルールは User Data 側に置き、workspace に重複して書かない。
+- workspace の instruction と `AGENTS.md` には、その repo 固有の内容だけを書く。どの repo でも成り立つ汎用ルールは個人（`~/.copilot`）側に置き、workspace に重複して書かない。
 - always-on の入口 file には routing と少数の global guardrails だけ残す。
 - `tasks.json` のような registry file を実行履歴や試行錯誤ログの置き場にしない。
-- prompt / instruction / skill / agent / hook は最小の primitive を選ぶ。単純な primitive で解けるなら agent 化しない。
-- skill / prompt / agent は 1 つの用途カテゴリに寄せる。
-- 具体的な判定表・例・手順は always-on ではなく scoped instruction、prompt、agent、skill、または references に逃がす。
+- instruction / skill / agent / hook は最小の primitive を選ぶ。単純な primitive で解けるなら agent 化しない。
+- skill / agent は 1 つの用途カテゴリに寄せる。
+- 具体的な判定表・例・手順は always-on ではなく scoped instruction、agent、skill、または references に逃がす。
 - AI と script / hook の切り分けは、判断や曖昧さ解消は AI、再現性や fail fast が重要な純作業は script / hook を優先する。
 - skill の本体には自明な手順より、よく踏む Gotchas、参照ファイル、scripts / assets の所在を優先して書く。
 - skill の host 固有拡張（例: `context: fork`）は共通仕様と分け、本文・references・scripts は portable に保ち、compatibility と未対応 host の fallback を明記する。
 - skill は他 skill の名前・パスを参照しない（description、使わない場面、references、scripts のコメントを含む）。対象外は一般語で書き、他 skill を SSOT として委譲せず必要な規則は数行で内包する。自 skill 内は `<skill-dir>/` か相対パスで書く。理由: skill は単体で配布・コピーされ、参照先の無い環境で壊れたり誤ルーティングの元になる。
-- review 用 prompt / checklist / skill は設計レビューの置き場にする。既定の対話挙動を変えたい rule は always-on entry か scoped instruction に置く。
+- review 用 checklist / skill は設計レビューの置き場にする。既定の対話挙動を変えたい rule は always-on entry か scoped instruction に置く。
 
 ## Writing Rules
 
 - 1 主張 = 1 文にする。
 - 命令形・具体的・実行可能に書く。
-- ルールには短い理由を添える。
+- 理由は、書かないと判断が変わる場合だけ 1 文添える。
 - 構造は distinct headings + bullet points にする。
 - whitespace は AI から見えない。改行だけで意味を表そうとしない。
-- 失敗事例は「ルール 1 行 + 理由 1 行」に圧縮する。
+- 失敗事例は「ルール 1 行」に圧縮し、理由は判断が変わる場合だけ添える。
 - 例は原則 1 つにする。判断基準を主、例を補助にする。
 - 環境固有値（ID、パス、Tenant、コース名など）を例に埋めない。
 
@@ -70,10 +71,10 @@ Customization 資産を編集するときの量、粒度、自己完結性のル
 
 | 対象 | 残すもの | 逃がし先 |
 | --- | --- | --- |
-| `%APPDATA%/Code/User/prompts/*.instructions.md` | 全会話に効く短い原則 | `applyTo` を絞った instruction、prompt、agent |
-| `$HOME/.copilot/copilot-instructions.md` | CLI 全体の最低限ルール | 同上 |
+| `$HOME/.copilot/instructions/*.instructions.md`（`applyTo` なしのもの） | 全会話に効く短い原則 | `applyTo` を絞った instruction、agent、skill |
+| `$HOME/.copilot/copilot-instructions.md` | 個人の全会話に効く最低限ルール | 同上 |
 | `.github/copilot-instructions.md` | repo-wide の routing と guardrails | `.github/instructions/**` |
-| `AGENTS.md` | agent / workflow の薄い registry と入口 | 各 `.agent.md`、prompt、skill |
+| `AGENTS.md` | agent / workflow の薄い registry と入口 | 各 `.agent.md`、skill |
 
 判断: 「これは casual chat にも効いてほしいか？」が No なら always-on に書かない。
 
@@ -85,7 +86,7 @@ Customization 資産を編集するときの量、粒度、自己完結性のル
 
 ## Prompt Compression Granularity
 
-`*.prompt.md` / `*.agent.md` / `SKILL.md` は手動呼び出し型だが、冗長さは判断精度と保守性を下げる。
+`*.agent.md` / `SKILL.md` は手動呼び出し型だが、冗長さは判断精度と保守性を下げる。
 
 - 残す: semantic match 用 metadata、トリガー、判断ルール、スコープ、モード分岐、禁止事項。
 - 圧縮する: metadata と重複する前置き、同じ概念の再掲、細かすぎる手順番号、言い換え中心の表。
@@ -95,7 +96,7 @@ Customization 資産を編集するときの量、粒度、自己完結性のル
 
 知見を反映する前に、必ずこの順で検討する。
 
-1. 削除: 古い・陳腐化した節を消せないか。
+1. 削除: 判断に不要な記述を先に除く。履歴は古さだけで消さず、現行判断への影響と原文の保存を確認し、未保存の追記は保持する。
 2. 統合/圧縮: 既存節の置換・圧縮で済まないか。
 3. 分離: 責務や対象を切り分ける必要があるか。
 4. 参照化: 低頻度の深い detail だけを外へ逃がす必要があるか。

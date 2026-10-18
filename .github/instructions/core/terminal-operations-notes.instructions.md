@@ -26,28 +26,20 @@ description: "ターミナル操作と Copilot debug log の低頻度トラブ�
 
 ## Output and Completion
 
-- `run_in_terminal` の sync 実行が `Command produced no output` を返したり、async 実行が prompt 復帰前に idle した場合も、直ちに失敗扱いにせず expected artifact を先に確認する。artifact が生成済みなら render/capture 問題として扱い、未生成なら dedicated terminal や短い follow-up command で観測を補強する。完了まで待たせたい長い無出力処理は、stderr へ2秒以下の間隔で心拍を出すと sync 実行が約2分まで待つ。
+- `powershell` の sync 実行が `Command produced no output` を返したり、async 実行が prompt 復帰前に idle した場合も、直ちに失敗扱いにせず expected artifact を先に確認する。artifact が生成済みなら render/capture 問題として扱い、未生成なら `read_powershell` や短い follow-up command で観測を補強する。完了まで待たせたい長い無出力処理は、stderr へ2秒以下の間隔で心拍を出すと sync 実行が約2分まで待つ。
 - 長い `npm` / `node` / test suite で stdout capture が不安定な場合は、`cmd /c "... && echo OK"` や `Write-Output "name-exit=$LASTEXITCODE"` のような success marker を付け、末尾の marker か exit code を正本にする。`> $null` や `Select-Object -Last N` を使う場合も marker か exit code の確認を省略しない。
 - stdout や active terminal の最終コマンドは、目的の実行と一致する command・実行ID・cwd・開始時刻を照合して使う。別ターミナルや前回実行の成功を流用しない。重要な結果は実 artifact、Git object、公開 API 等でも確認し、必要な根拠が揃ったら同じ裏取りを繰り返さない。
 - PowerShell script を編集した後は、`[scriptblock]::Create((Get-Content -Raw -Encoding UTF8 <file>))` で構文確認してから実行する。
 - PowerPoint / Excel / VS Code で開かれた Office ファイルを解析するときは、ロックフリーな一時コピーを作り、解析後に削除する。成果物の上書きが必要なら版番を上げる。
-- OneDrive 配下で `クラウド ファイル プロバイダーが実行されていません` により `Get-Content` / `read_file` が失敗したら、クライアント起動を1回試し、直らなければ読取の迂回を重ねず止める。読めた範囲、未読ファイル、再開条件（OneDrive 復旧後に再実行）を残す。新規ファイルは作れても、未読の既存ファイルへの追記・リンク更新はしない。
+- OneDrive 配下で `クラウド ファイル プロバイダーが実行されていません` により `Get-Content` / `view` が失敗したら、クライアント起動を1回試し、直らなければ読取の迂回を重ねず止める。読めた範囲、未読ファイル、再開条件（OneDrive 復旧後に再実行）を残す。新規ファイルは作れても、未読の既存ファイルへの追記・リンク更新はしない。
 
-## Copilot Debug Logs
+## Copilot ログと Silent Stop
 
-- Copilot の想定外挙動（instruction 未適用、tool 誤選択、workflow 停止など）を調査するときは、対象 session の debug log を確認する。
-- debug log では `tool_call` と `agent_response` を分けて読む。`agent_response` には pending tool call が現れることがあり、実行済み `tool_call` と混同しやすい。
-- user / memory / assistant text に tool 名が出ただけでは実行済みとみなさない。実際の実行有無は `tool_call` entry と結果で確認する。
-- コスト調査は `llm_request` の `attrs.inputTokens` / `cachedTokens` / `outputTokens` を session の `main.jsonl` と `runSubagent-*.jsonl` ごとに合算する。最初の request の `inputTokens` が、指示・memory 一覧・ツール定義からなる常時文脈の量になる。
-- `main.jsonl` は数十 MB になる。workspace 外なので `grep_search` は効かない。`Select-String` の streaming と `ConvertFrom-Json` で処理し、`Get-Content -Raw` や `readFileSync` の全読みを避ける。1 行が巨大なので表示は `Substring` で切る。
-
-### Silent Stop（空応答でターンが終わる）
-
-- 「session が勝手に止まる」は error ではなく silent stop のことがある。`"status":"error"` 検索では 0 件になるため、エラー不在を正常の根拠にしない。
-- 検出は join で行う。`llm_request` の `spanId` に対して `agent_response` は `agent-msg-<spanId>` で対応する。`status:"ok"` かつ `outputTokens > 0` なのに対応する `agent_response` が無いものが silent stop で、出力が thinking だけで text も tool_call も返らないまま `turn_end` している。
-- コンテキスト超過と決めつけない。同 session の `models.json` にある `capabilities.limits.max_context_window_tokens` と `max_prompt_tokens` で実上限を確認する。
-- 発生ターンの偏りを見る。長い最終報告やまとめを書くターンに集中し、tool call だけの短いターンでは起きない場合、`Try Again` は同条件の再実行なので同じ位置で再発する。長文をチャットへ書かせずファイル出力 + 短い要約にする、別モデルファミリへ切り替える、新 session に切る、のいずれかで条件を変える。
-- `llm_request` の `requestOptions`（`thinking` の type / display、`effort`）と `requestShape.messageCount` を併せて記録する。巨大 prompt と高 effort の thinking が重なるほど再現しやすい。
+- Copilot の想定外挙動（instruction 未適用、tool 誤選択、workflow 停止など）を調査するときは、対象 session のログを確認する。Agent Host は `%APPDATA%\Code\logs\<日時>\agenthost.log`（MCP の接続状態、モデル一覧、`Tool started` が記録される）、セッション状態は `$HOME\.copilot\session-state\<sessionId>\` にある
+- user / memory / assistant text に tool 名が出ただけでは実行済みとみなさない。実際の実行有無は log の tool 実行記録と結果で確認する
+- ログは数十 MB になることがある。`Select-String` の streaming で絞り、全文読み込みを避け、表示は `Substring` で切る
+- 「session が勝手に止まる」は error ではなく、出力が thinking だけで text も tool call も返らない空応答（silent stop）のことがある。error 検索が 0 件でも正常の根拠にしない。コンテキスト超過と決めつけず、モデルの実上限を確認する
+- 長い最終報告やまとめを書くターンに集中し、tool call だけの短いターンでは起きない場合、`Try Again` は同条件の再実行なので同じ位置で再発する。長文をチャットへ書かせずファイル出力 + 短い要約にする、別モデルファミリへ切り替える、新 session に切る、のいずれかで条件を変える
 
 ## Copilot CLI
 

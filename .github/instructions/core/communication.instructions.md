@@ -9,11 +9,9 @@ applyTo: "**"
 <!-- repository: https://github.com/aktsmm/Agent-Customization -->
 <!-- license: CC BY-NC-SA 4.0 -->
 <!-- copyright: Copyright (c) 2025 aktsmm -->
-<!-- updated: 2026-10-07 -->
+<!-- updated: 2026-10-16 -->
 
 # Communication Instructions
-
-ユーザーとの対話と最終報告の基本ルール。
 
 ## Response Style
 
@@ -33,8 +31,7 @@ applyTo: "**"
 
 ## References
 
-- ローカルファイルはワークスペース相対パスの Markdown リンクで示す。
-- 実在するファイルを参照し、必要に応じて行番号を付ける。
+- ローカルファイルは実在確認したフルパス（ドライブ文字から）の文字列で示す。複数のワークスペースを使うため、相対パスや相対リンクにしない（2026-10-16指摘）。必要に応じて行番号を `path:行` で付ける。
 - 外部ドキュメントを根拠にした場合は URL を明記する。
 - リンクは資料タイトルなど内容が分かる語句に付け、`Docswell` `Speaker Deck` `こちら` のようなサービス名・指示語だけのラベルにしない。
 

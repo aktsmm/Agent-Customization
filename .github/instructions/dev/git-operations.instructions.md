@@ -9,11 +9,9 @@ applyTo: "**"
 <!-- repository: https://github.com/aktsmm/Agent-Customization -->
 <!-- license: CC BY-NC-SA 4.0 -->
 <!-- copyright: Copyright (c) 2025 aktsmm -->
-<!-- updated: 2026-10-06 -->
+<!-- updated: 2026-10-14 -->
 
 # Git Operations Instructions
-
-エージェントが Git 操作を安全・一貫して行うための最小ルールです。
 
 ## Core Rules
 
@@ -66,5 +64,6 @@ applyTo: "**"
 - private repo、release、PR/Issue 操作で権限エラーや `Repository not found`（VS Code の同期ボタン含む）が出たら、repo 名を疑う前に `gh auth status` で active account と credential を確認し、必要なら `gh auth switch -u <owner>` で戻す。
 - `GITHUB_TOKEN` / `GH_TOKEN` が keyring 認証を上書きしている場合は、そのシェルだけ両変数を `$null` にして再確認してよい。
 - GitHub API は成功するのに clone / push が失敗する場合は、Git transport の credential を切り分ける。PR/Issue 確認では `-R <owner>/<repo>` を明示してよい。
+- `gh api` は `-f` / `-F` を付けると既定が POST になり、`search/issues` などの GET 専用 endpoint が private repo で 404 になる。読み取りは `-X GET` を明示する（repo 不在や権限不足と誤判定しない）。
 - 長いマークダウンを `--body` で直接渡すとシェルの問題が起きやすいので、`--body-file` でファイル経由で渡す。
 

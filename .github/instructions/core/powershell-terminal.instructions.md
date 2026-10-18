@@ -65,7 +65,7 @@ applyTo: "**"
 - `gh` 等の空白を含む検索式と `--json a,b,c` は、分解を防ぐため1つの文字列として引用する。`--jq` はシングルクォートで囲み、`$j` 等の変数をPowerShellに展開させない。
 - `{}` を含む引数はPowerShellの解釈を防ぐためシングルクォートで囲む。Git の reflog / upstream も対象（例: `git rev-list --left-right --count 'HEAD...@{upstream}'`）。
 - PowerShell の二重引用符内で `\"` はエスケープにならず文字列が途中で切れ、`>>` 継続待ちで止まる。`rg` などへ渡す regex は単一引用符で囲む。また `dir/*.py` はネイティブコマンドへ展開されず `rg` が os error 123 で落ちるため、`rg <pattern> dir -g '*.py'` を使う。
-- 日本語を含むファイルや JSON を扱うときは UTF-8 を維持する。terminal 表示が化けるときは、`$env:PYTHONUTF8='1'` を設定し、`cmd /c "... > file"` で UTF-8 のままファイルへ出して `read_file` や `Get-Content -Encoding UTF8` で読む。
+- 日本語を含むファイルや JSON を扱うときは UTF-8 を維持する。terminal 表示が化けるときは、`$env:PYTHONUTF8='1'` を設定し、`cmd /c "... > file"` で UTF-8 のままファイルへ出して `view` や `Get-Content -Encoding UTF8` で読む。
 - `Get-Content -Raw` は CRLF を保持する。multiline regex で行末を照合するときは改行前の `\r` を許容するか、`\r?\n` で split する。
 - スクリプトや CLI の変更系操作は、既定を read-only / dry-run にし、破壊的変更や外部反映は `--apply` などの明示フラグを必須にする。
 - 不要な async / timeout terminal は作業完了前に閉じ、共有 terminal は不要と断定できる場合だけ対象にする。残す場合は理由と停止方法を報告する。
