@@ -7,7 +7,7 @@ description: "Microsoft 365 の照会・操作と Scheduler の定期収集で�
 <!-- repository: https://github.com/aktsmm/Agent-Customization -->
 <!-- license: CC BY-NC-SA 4.0 -->
 <!-- copyright: Copyright (c) 2025 aktsmm -->
-<!-- updated: 2026-10-12 -->
+<!-- updated: 2026-10-22 -->
 
 # Microsoft WorkIQ Instructions
 
@@ -28,6 +28,7 @@ description: "Microsoft 365 の照会・操作と Scheduler の定期収集で�
 - 取得は `$select` と少数の `$top` で絞り、独立した既知項目は `fetch` で一括取得してよい。未知の論点は1論点1照会とし、日付・会議・案件、件数上限と根拠を指定する。
 - `InefficientFilter` 対策は `$orderby` を外す。`$search` のメールIDが404なら `conversationId` で現在のIDを引き直す。
 - 人・組織は現在のPeople／managerで氏名・所属・メール・階層を確認する。過去CCや役職でM1／M2を推測しない。漢字名は過去の実成果物を照合し、根拠がなければ英字のまま。社内呼称とプロフィール表示名を区別する。
+- 漢字名のメール検索が0件でも「なし」と断定せず、英字（ローマ字）表記で再検索する。送信済みメールの埋め込み添付（`itemAttachment`）は、`$expand=attachments($select=id,name,size)` で一覧し、`fetch_blob` の `/me/messages/{messageId}/attachments/{attachmentId}/$value` でMIME（.eml）として保存できる。
 - ユーザーの404は `/users?$filter=mail eq '<address>'` でidを引き直す。グループは `/groups?$filter=mail eq '<address>'`。`$filter`値はURLエンコードし、managerは `/users/{id}/manager` で1段ずつたどる。
 
 ## Mutations
