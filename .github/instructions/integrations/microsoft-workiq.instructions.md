@@ -7,7 +7,7 @@ description: "Microsoft 365 の照会・操作と Scheduler の定期収集で�
 <!-- repository: https://github.com/aktsmm/Agent-Customization -->
 <!-- license: CC BY-NC-SA 4.0 -->
 <!-- copyright: Copyright (c) 2025 aktsmm -->
-<!-- updated: 2026-10-22 -->
+<!-- updated: 2026-10-26 -->
 
 # Microsoft WorkIQ Instructions
 
@@ -27,6 +27,7 @@ description: "Microsoft 365 の照会・操作と Scheduler の定期収集で�
 - 選択したMCPで、不明なパスは `search_paths`、作成・更新・削除・actionの前は `get_schema`。必要なツールがなければ操作は未確認とする。
 - 取得は `$select` と少数の `$top` で絞り、独立した既知項目は `fetch` で一括取得してよい。未知の論点は1論点1照会とし、日付・会議・案件、件数上限と根拠を指定する。
 - `InefficientFilter` 対策は `$orderby` を外す。`$search` のメールIDが404なら `conversationId` で現在のIDを引き直す。
+- 下書き・送信済みの存在確認は、自然言語の照会ではなく `fetch` で `/me/mailFolders/drafts|sentitems/messages` を `$select` と日時（`sentDateTime ge …`）で絞って読む（ローカル版 `ask_work_iq` は存在する下書きを0件と返した）。件名に `#` を含む `$filter` は `#` 以降が切れて400になったので、日時で絞る。
 - 人・組織は現在のPeople／managerで氏名・所属・メール・階層を確認する。過去CCや役職でM1／M2を推測しない。漢字名は過去の実成果物を照合し、根拠がなければ英字のまま。社内呼称とプロフィール表示名を区別する。
 - 漢字名のメール検索が0件でも「なし」と断定せず、英字（ローマ字）表記で再検索する。送信済みメールの埋め込み添付（`itemAttachment`）は、`$expand=attachments($select=id,name,size)` で一覧し、`fetch_blob` の `/me/messages/{messageId}/attachments/{attachmentId}/$value` でMIME（.eml）として保存できる。
 - ユーザーの404は `/users?$filter=mail eq '<address>'` でidを引き直す。グループは `/groups?$filter=mail eq '<address>'`。`$filter`値はURLエンコードし、managerは `/users/{id}/manager` で1段ずつたどる。
@@ -36,7 +37,8 @@ description: "Microsoft 365 の照会・操作と Scheduler の定期収集で�
 - 依頼された対象・操作だけを変更する。読み取りの事前承認は書き込み・EULA同意を代替しない。削除等は個別確認が必要。メールは送信せず下書き保存まで。
 - 本人・既存状態・重複を確認し、状態を独立確認できなければ変更しない。変更後は返されたIDを選択したMCPの `fetch` で読み戻し、依頼内容と照合する。
 - 予定は日時・タイムゾーン・参加者・リマインダー・公開範囲を照合し、UTCは指定タイムゾーンへ換算する。テスト予定の未指定項目は参加者なし・リマインダーなし・非公開・空き時間扱いとし、既存予定を変更しない。
-
+- 参加者を含む予定の作成・更新（`attendees` の追加も）は招待を即送信する。承認済みの宛先だけで行い、先に参加者なしで保存して読み戻す。Teams 会議が不要なら `isOnlineMeeting: false` を明示し、送信後は送信済みアイテム（`eventMessageRequest`）と予定の宛先・オンライン会議を読み戻す。
+- Teams投稿は、本人が文面と宛先チャットを承認し投稿を明示許可した場合だけ行う。`get_schema`とチャットのメンバー取得でuserIdを確認し（過去メモや推測のIDを使わない）、HTMLでメンションは `mentions` と本文の `<at id>` を対応させ、`mentionText` は呼び名にして表示名と重複させない。読みやすさは `<br>` 区切りより、項目ごとに `<p>` を分け間に `<p><br></p>` を入れる。見た目の修正は削除・再投稿せず、更新で本文とmentionsを再送する。投稿・更新後は `fetch` で本文・メンション先・編集時刻を読み戻す。
 ## Evidence
 
 - 生成回答を逐語引用や原文・完全な一覧として扱わず、原文を確認して `retrieve` の引用を保持する。確定事項は受領資料・議事録とも照合する。
