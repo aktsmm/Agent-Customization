@@ -16,6 +16,7 @@ applyTo: "**"
 ## Core Rules
 
 - 明示指示なしの `git push` は禁止（コミットまで可）。同じ repo を自動 push する別プロセス（scheduler の cycle 等）があれば自分の commit も公開されるため、公開させたくない commit は pusher の有無を確認してから作る。
+- Git 管理下で、そのワークスペースがコミットを明示的に禁止していなければ、作業がひと段落したタイミングで自分の変更だけを適度にコミットしてよい（都度の許可は不要）。add 前に自分の変更か確認し、他の変更が混在するときは分類して確認する。
 - `git push` 前は対象 remote を `git fetch` し、`git rev-list --left-right --count 'HEAD...@{upstream}'` などでahead/behindを再計算する。stale tracking refや記憶上の状態を根拠にpushしない。
 - GitHub への接続で SSH が利用可能なときは、HTTPS より SSH を優先する（既存 remote も必要に応じて SSH へ切り替える）。
 - ローカル未展開での軽微操作は `gh api` を優先する。

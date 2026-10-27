@@ -7,7 +7,7 @@ description: "Microsoft 365 の照会・操作と Scheduler の定期収集で�
 <!-- repository: https://github.com/aktsmm/Agent-Customization -->
 <!-- license: CC BY-NC-SA 4.0 -->
 <!-- copyright: Copyright (c) 2025 aktsmm -->
-<!-- updated: 2026-10-26 -->
+<!-- updated: 2026-10-27 -->
 
 # Microsoft WorkIQ Instructions
 
@@ -20,6 +20,7 @@ description: "Microsoft 365 の照会・操作と Scheduler の定期収集で�
 - Copilot Scheduler 等の無人・定期実行の読み取り収集は、最初からローカルCLI／stdio MCPを選ぶ。この定期収集ではクラウドやブラウザへの自動切替を禁止し、要求された原文・一覧等をローカルで取得できなければ未確認として停止する。
 - 必要なMCPツールが非公開なら、自然言語の照会には利用可能な `workiq ask` を使える。
 - 接続ごとに現在の公開ツールを確認し、選択した接続のツールだけを使う。以下のMCP用ルールをCLI照会のためにクラウドで実行しない。CLIを自動削除しない。
+- Copilot CLI（`copilot -p`）からクラウドMCPを使う観測（CLI 1.0.103）: 許可は `--allow-tool='workiq'` のサーバー単位で通り、`workiq(fetch)` のツール単位指定は「ツールがない」になった。書き込みは `--deny-tool='workiq(create_entity)'` 等で明示拒否して読み取りだけ試す。同じ照会が「MCP接続切断」で2回続いたら再試行を重ねず別経路へ切り替える。
 
 ## Queries
 
@@ -31,6 +32,7 @@ description: "Microsoft 365 の照会・操作と Scheduler の定期収集で�
 - 人・組織は現在のPeople／managerで氏名・所属・メール・階層を確認する。過去CCや役職でM1／M2を推測しない。漢字名は過去の実成果物を照合し、根拠がなければ英字のまま。社内呼称とプロフィール表示名を区別する。
 - 漢字名のメール検索が0件でも「なし」と断定せず、英字（ローマ字）表記で再検索する。送信済みメールの埋め込み添付（`itemAttachment`）は、`$expand=attachments($select=id,name,size)` で一覧し、`fetch_blob` の `/me/messages/{messageId}/attachments/{attachmentId}/$value` でMIME（.eml）として保存できる。
 - ユーザーの404は `/users?$filter=mail eq '<address>'` でidを引き直す。グループは `/groups?$filter=mail eq '<address>'`。`$filter`値はURLエンコードし、managerは `/users/{id}/manager` で1段ずつたどる。
+- 個人・外部のTeamsアカウントはテナントのディレクトリに無く、`/users` の照会やチャットメンバー取得が0件・表示名なしになることがある（Teams画面には外部として表示されていた）。「見つからない」と報告せず、Teamsのメンバー一覧で表示名と外部表示を確認し、追加・確認は画面で行う。追加時に過去履歴の共有は後から変えられないため、追加前に決める。
 
 ## Mutations
 
