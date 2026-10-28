@@ -57,6 +57,7 @@ description: "Microsoft 365 の照会・操作と Scheduler の定期収集で�
 - 認証はユーザー委任のみ。アプリ単独認証やサービスプリンシパル化による無人化は採らない。MFAを自動操作しない。
 - Scheduler 履歴の `success` はプロンプト送信成功であり、収集成功や認証成功の証拠ではない。復旧判定は「認証操作なしで取得できた」「成果物に取得状態が残った」「別の定期 runでも成立」で行う。
 - クラウド版が `AADSTS65002`（VS Code の client が事前承認されていない）で認証できないときは、管理者承認や別経路へ迂回せず、MCP 設定で Work IQ の client を固定する（`copilot-loading` の MCP 節）。
+- 認証 UI が開かず、renderer.log に「authorization server metadata issuer does not match」が出る場合は、client 固定では直らない（2026-10-27 に VS Code 1.144 系で観測。Work IQ が advertise する `organizations` 宛の issuer と、Entra が返すテナント宛の issuer が不一致）。stdio ブリッジ経由の迂回も同じ issuer エラーで失敗した。修正を含む VS Code へ更新するまでクラウド版は未復旧とし、読み取りはローカル版を使う。
 
 ## Interactive Alternatives
 

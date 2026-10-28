@@ -1,5 +1,5 @@
 ---
-description: "ターミナル操作と Copilot debug log の低頻度トラブルシュートメモ。VSCE 拡張機能 publish (vsce publish / VSCE_PAT / VSIX) 、Chrome Web Store publish (CWS)、CDP、stale token、stdout capture、Edge profile、SPA dialog、chat session の silent stop（空応答）調査を必要時に参照する"
+description: "ターミナル操作と Copilot debug log の低頻度トラブルシュートメモ。VSCE 拡張機能 publish (vsce publish / VSCE_PAT / VSIX) 、Chrome Web Store publish (CWS)、CDP、stale token、stdout capture、Edge profile、SPA dialog、Git staging 失敗（Filename too long）、chat session の silent stop（空応答）調査を必要時に参照する"
 ---
 
 <!-- syncToGlobal: true -->
@@ -23,6 +23,11 @@ description: "ターミナル操作と Copilot debug log の低頻度トラブ�
 - `HEAD.lock` rename failure が繰り返されても、lock fileが残っているとは限らない。2回目の同一promptでは`n`を返し、`HEAD`、branch、`git status --short --branch`、worktree/staged diff、rebase/merge metadata、lockの存在と所有processを読み取る。
 - failed rebaseでHEADが不変のままindex/worktreeだけ変わった場合は、変更前がcleanで、全変更pathのindex内容がfetched remoteと一致すると証明できたときだけ、その半適用stateをHEADへ戻す。未コミット変更や一致しないpathがあれば自動復旧せず停止する。
 - push rejected後はfetchしてahead/behindと変更path重複を再確認する。競合なしならHEADをdetachしないnormal mergeを使い、validator・clean state・remote到達を再確認する。`reset --hard`、blanket restore、active lock削除、force pushで復旧しない。
+
+## Git Staging Failure Diagnosis
+
+- VS Code の「LF will be replaced by CRLF」ダイアログは `core.autocrlf` の警告で、コミット失敗の原因とは限らない。VS Code の Git ログは失敗した操作を残さないことがあるため、端末で対象 path を `git -c gc.auto=0 add` して終了コードと stderr を直接確認する。
+- `Filename too long` は Windows の 260 文字制限で、生成物の長い ATS path などが原因になる。再現する範囲だけ `-c core.longpaths=true` で確認し、効いた場合のみ repo local に永続化する（global 設定は変えない）。生成側が長い名前を作るなら、安定 hash 付きで短縮する。
 
 ## Output and Completion
 
