@@ -8,7 +8,7 @@ applyTo: "**"
 <!-- repository: https://github.com/aktsmm/Agent-Customization -->
 <!-- license: CC BY-NC-SA 4.0 -->
 <!-- copyright: Copyright (c) 2025 aktsmm -->
-<!-- updated: 2026-10-16 -->
+<!-- updated: 2026-10-28 -->
 
 # Agent Context Efficiency
 
@@ -24,7 +24,7 @@ applyTo: "**"
 
 - 依頼された成果に必要な最小範囲だけ触る。ついでの整理、リネーム、広いリファクタ、不要な生成物を増やさない。
 - repo memory には run をまたいで再利用する知見だけを書く。run 固有の記録はその run の report に書く。
-- 決定論的な抽出、集計、置換、検証は script や tool に寄せる。**手計算で平均・件数・比率などを出さない**。スクリプトで sum/count 計算し、ソース (Forms / DB / CSV) の集計値と一致することを確認してから成果物へ転記する。
+- 決定論的な抽出、集計、置換、検証は script や tool に寄せる。**手計算で平均・件数・比率などを出さない**。スクリプトで sum/count 計算し、ソース (Forms / DB / CSV) の集計値と一致することを確認してから成果物へ転記する。ただし、ユーザーが差分を見て承認する編集（原稿の文言修正など）は、script で複数ファイルを一括書き換えせず、編集ツールで対象ごとに適用する。script 経由の書き込みはエディターの差分パネル（Keep / Undo）に出ない。script は候補の抽出と適用後の検証に使う。
 - prompt / instruction / skill / agent を書くときは、人間に読みやすい装飾より AI が判断できる最小情報を優先する。判断ルール / トリガー / 制約 / Example 1 つで足りる。冗長な前置き、同じ概念の言い換え、重複した観点リストを増やさない。
 
 ## Tools

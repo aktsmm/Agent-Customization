@@ -57,12 +57,15 @@ description: "Microsoft 365 の照会・操作と Scheduler の定期収集で�
 - 認証はユーザー委任のみ。アプリ単独認証やサービスプリンシパル化による無人化は採らない。MFAを自動操作しない。
 - Scheduler 履歴の `success` はプロンプト送信成功であり、収集成功や認証成功の証拠ではない。復旧判定は「認証操作なしで取得できた」「成果物に取得状態が残った」「別の定期 runでも成立」で行う。
 - クラウド版が `AADSTS65002`（VS Code の client が事前承認されていない）で認証できないときは、管理者承認や別経路へ迂回せず、MCP 設定で Work IQ の client を固定する（`copilot-loading` の MCP 節）。
+- クラウド版は読み取りが成功しても、書き込みだけ `AuthenticationRequired`（再サインイン要）になることがある。書込み可否は実書込みでしか判定できないため、承認外の試し書きはしない。承認済みの投稿・下書きに限り、MCP 一覧の Start で本人に再サインインを依頼するか、サインイン済みブラウザ（Teams web など）から同じ内容を送り、画面で本文・宛先を照合する。ローカル版（`ask_work_iq` のみ）に書き込みツールはない。
+- クラウド版の `Access denied for <verb> path`（ブック書込み・共有リンク作成・ブックの読取りで観測、2026-11-06）は許可パスの制限で、認証失敗ではない。再試行や別経路での回避をせず、他人所有のファイルは自分所有の新規ファイルで目的を満たし、共有リンクはユーザーに依頼またはサインイン済みブラウザで作る。
 - 認証 UI が開かず、renderer.log に「authorization server metadata issuer does not match」が出る場合は、client 固定では直らない（2026-10-27 に VS Code 1.144 系で観測。Work IQ が advertise する `organizations` 宛の issuer と、Entra が返すテナント宛の issuer が不一致）。stdio ブリッジ経由の迂回も同じ issuer エラーで失敗した。修正を含む VS Code へ更新するまでクラウド版は未復旧とし、読み取りはローカル版を使う。
 
 ## Interactive Alternatives
 
 以下は対話時に必要なMCP機能が不在の場合だけ使い、拒否の回避には使わない。
 
+- 共有リンクのファイル読み取り: クラウド版の `fetch` / `fetch_blob` で `/shares/u!<リンクをbase64url化>/driveItem` と `/driveItem/content` が読める（2026-11-06 観測）。ラベル暗号化の OLE ならExcel COMの読み取り専用で開く。読めても書込み権限は別。
 - ファイル取得・保存: 承認済みブラウザでSharePoint RESTの `GetFolderByServerRelativeUrl(...)/Files` または `_api/search/query` を使える。Azure CLIトークンのファイル権限を保証せず、403を無条件に再試行しない。
 - ディレクトリ: `az account get-access-token --resource https://graph.microsoft.com` 等の承認済み認証で権限を確認し、Graphのユーザー・manager・グループを照会できる。トークンは表示・保存せず、ファイルの403からディレクトリも不能としない。
 
