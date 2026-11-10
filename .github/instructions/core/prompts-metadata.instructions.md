@@ -31,7 +31,7 @@ VS Code が認識する `description` / `applyTo` / `name` は、HTML コメン�
 
 - 常時またはファイル条件で自動適用したい場合は `applyTo` を必ず書く
 - UI 表示や semantic matching に使う説明は `description` に書く
-- 手動添付・参照専用にしたい場合だけ `applyTo` を省略してよい
+- `applyTo` を省略すると常時ロードされる。使う場面が読めない環境事実や復旧メモは省略でよい。場面で絞りたい手順は skill にする
 
 ### `.agent.md`
 
@@ -91,5 +91,5 @@ applyTo: "**"
 <!-- copyright: ... -->
 ```
 
-- ローカル専用 file は `applyTo` を省略し、`syncToGlobal: true` を付けない。
+- ローカル専用 file は `syncToGlobal: true` を付けない。常時効かせないなら `instructions/` の外に置く（`applyTo` の省略は常時ロード）。
 - `SKILL.md` は YAML Frontmatter の規則に従い、自作 skill では `license`、`metadata.author`、同梱する `LICENSE.txt` を保持する。fork 元がある場合は元のライセンスを使う。

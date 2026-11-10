@@ -69,4 +69,4 @@ applyTo: "**"
 - `Get-Content -Raw` は CRLF を保持する。multiline regex で行末を照合するときは改行前の `\r` を許容するか、`\r?\n` で split する。
 - スクリプトや CLI の変更系操作は、既定を read-only / dry-run にし、破壊的変更や外部反映は `--apply` などの明示フラグを必須にする。
 - 不要な async / timeout terminal は作業完了前に閉じ、共有 terminal は不要と断定できる場合だけ対象にする。残す場合は理由と停止方法を報告する。
-- 低頻度の shell 復旧、credential、publish、CDP、Office ロックは、該当タスクで専用の手動参照 instruction を使う。
+- 低頻度の shell 復旧、credential、publish、CDP、Office ロックは、該当タスクで `terminal-operations-notes` の内容に従う（常時ロード）。

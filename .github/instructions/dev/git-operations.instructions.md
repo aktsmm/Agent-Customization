@@ -19,7 +19,7 @@ applyTo: "**"
 - Git 管理下で、そのワークスペースがコミットを明示的に禁止していなければ、作業がひと段落したタイミングで自分の変更だけを適度にコミットしてよい（都度の許可は不要）。add 前に自分の変更か確認し、他の変更が混在するときは分類して確認する。
 - `git push` 前は対象 remote を `git fetch` し、`git rev-list --left-right --count 'HEAD...@{upstream}'` などでahead/behindを再計算する。stale tracking refや記憶上の状態を根拠にpushしない。
 - GitHub への接続で SSH が利用可能なときは、HTTPS より SSH を優先する（既存 remote も必要に応じて SSH へ切り替える）。
-- ローカル未展開での軽微操作は `gh api` を優先する。
+- ローカル未展開での軽微な操作・変更は `gh api` を優先する（機能・Docs・repo / Issue / PR の調査は GitHub MCP でよい）。
 - 成果物に絶対パスを埋め込まない（相対パスで扱う）。
 - Playwright MCP はワークスペース直下に `.playwright-mcp/`（console log / snapshot）を生成し、自動 commit などで履歴へ混入する。ブラウザ自動化を使う repo は初回に `.gitignore` へ追加し、追跡済みなら `git rm -r --cached -- .playwright-mcp` で外す（ファイルは残る）。完了前に自分が作った未追跡分は `git clean -n` で確認してから削除する。
 - Git hook は `.sample` のままでは実行されない。クローン再現性が必要な場合は、repo 管理下（例: `hooks/pre-commit`）に実体を置き、README で `.git/hooks/` へのコピー手順を案内する。

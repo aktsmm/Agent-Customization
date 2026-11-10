@@ -19,7 +19,7 @@ applyTo: "**/*.instructions.md,**/*.agent.md,**/*.toolsets.jsonc,**/SKILL.md,**/
 | ファイル | スコープ | 備考 |
 | --- | --- | --- |
 | `$HOME/.copilot/copilot-instructions.md` | 個人 | 常時ロード。短く保つ |
-| `$HOME/.copilot/instructions/**/*.instructions.md` | 個人 | 再帰的にロードされる。`applyTo` が無い file は常時ロード扱いになるため、参照専用にしたい file は description を絞る |
+| `$HOME/.copilot/instructions/**/*.instructions.md` | 個人 | 再帰的にロードされる。`applyTo` が無い file は常時ロードされ、`description` は読み込みの選別に使われない（選別されるのは skill の description）。使う場面が読めない環境事実や復旧メモは常時ロードでよい。場面で絞りたい手順は skill にする |
 | `.github/copilot-instructions.md` | ワークスペース | repo-wide の短い原則 |
 | `.github/instructions/**/*.instructions.md` | ワークスペース | `applyTo` 付きの scoped rule |
 | `AGENTS.md` | ワークスペース | agent / workflow の入口 |

@@ -33,7 +33,7 @@ Web 検索、ページ取得、最新情報確認、出典付き調査を行う�
 
 ## Provider Priority
 
-1. GitHub / GitHub Enterprise の機能、API、リポジトリ、Issue / PR、Actions、セキュリティ機能を調べるときは GitHub MCP を第一候補にする。公式 Docs は `github_support_docs_search`、リポジトリや Issue / PR は対応する GitHub MCP tool を使い、MCP または必要な toolset が利用できない場合だけ GitHub 公式 URL の直接取得、次に汎用 Web 検索へ進む。
+1. GitHub / GitHub Enterprise の機能、API、リポジトリ、Issue / PR、Actions、セキュリティ機能を調べるときは GitHub MCP を第一候補にする。公式 Docs は `github_support_docs_search`、リポジトリや Issue / PR の調査は対応する GitHub MCP tool を使い、MCP または必要な toolset が利用できない場合だけ GitHub 公式 URL の直接取得、次に汎用 Web 検索へ進む。変更を伴う操作やローカル未展開の軽微な取得は `gh`（`gh api`）を使う。
 2. Microsoft / Azure / Microsoft 365 関連は Microsoft Learn MCP（`microsoft_docs_search` など）を優先する。新機能、GA、Preview、Retirement は `mrc-mcp` の Azure Updates / M365 roadmap ツールを使う。
 3. OpenAI / ChatGPT / Codex / OpenAI API 関連は `openaiDeveloperDocs`（OpenAI Docs MCP）を優先する。利用不可または公式 Docs 外の情報が必要な場合は、OpenAI 公式 URL を直接取得してから汎用 Web 検索へ進む。
 4. Anthropic / Claude / Claude Code / Anthropic API 関連は、Platform Docs には `anthropicDocs`、Claude Code Docs には `claudeCodeDocs` を優先する。利用不可または公式 Docs 外の情報が必要な場合は、Anthropic 公式 URL を直接取得してから汎用 Web 検索へ進む。
