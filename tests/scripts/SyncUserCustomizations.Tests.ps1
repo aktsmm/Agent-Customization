@@ -50,6 +50,20 @@ Describe 'Sync-UserCustomizations' {
         $r.Text | Should Match 'audit: PASS \(0 candidate'
     }
 
+    It 'maps reference instructions to existing mirrors and excludes local-only notes' {
+        $refs = Join-Path (Split-Path $script:Fx.Source -Parent) 'references'
+        New-Item -ItemType Directory -Path $refs | Out-Null
+        $head = "---`ndescription: fixture`n---`n<!-- syncToGlobal: true -->`n"
+        [IO.File]::WriteAllText((Join-Path $refs 'beta.instructions.md'), "$head# Beta`nsame`n")
+        [IO.File]::WriteAllText((Join-Path $refs 'local.instructions.md'), "---`n---`n<!-- syncToGlobal: false -->`n# Local`n")
+        $referenceFixture = [pscustomobject]@{ Repo = $script:Fx.Repo; Source = $refs; Remote = $script:Fx.Remote }
+
+        $r = Invoke-Sync $referenceFixture
+        $r.Exit | Should Be 0
+        $r.Text | Should Match 'same=1'
+        $r.Text | Should Match 'excluded=1'
+    }
+
     It 'detects a case-only difference' {
         $p = Join-Path $script:Fx.Source 'alpha.prompt.md'
         [IO.File]::WriteAllText($p, ([IO.File]::ReadAllText($p) -replace 'Self-Contained', 'Self-contained'))

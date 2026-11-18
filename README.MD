@@ -29,7 +29,7 @@ GitHub Copilot / VS Code 用の prompts、agents、instructions、skills を管�
 | ------------ | ------------------------------------------- | ----------------------------------------------- | ---------------------------- |
 | Prompts      | `.github/prompts/*.prompt.md`               | `%APPDATA%/Code/User/prompts/*.prompt.md`       | 対象外                       |
 | Agents       | `.github/agents/*.agent.md`                 | `%APPDATA%/Code/User/prompts/*.agent.md`        | 対象外                       |
-| Instructions | `.github/instructions/**/*.instructions.md` | `%APPDATA%/Code/User/prompts/*.instructions.md` | `~/.copilot/instructions/**` |
+| Instructions | `.github/instructions/**/*.instructions.md` | `%APPDATA%/Code/User/prompts/*.instructions.md` | `~/.copilot/instructions/**` (auto-loaded); manual references in `~/.copilot/references/**` (read on demand) |
 | Skills       | `.github/skills/`                           | 対象外                                          | 必要に応じて別フロー         |
 
 > Note: この repo を VS Code で開くと、`.github/instructions/` や `.github/prompts/` の assets が workspace customization として認識される可能性があります。この repo は主に保守・同期用として扱い、通常の開発作業 workspace とは分ける前提です。
@@ -54,7 +54,7 @@ GitHub Copilot / VS Code 用の prompts、agents、instructions、skills を管�
 
 ### User Data から repo へ反映する
 
-逆方向（User Data → この repo）は `scripts/Sync-UserCustomizations.ps1` を使います。引数なしは読み取りのみで、`-Apply` で変更分だけをミラーして commit / push します。`syncToGlobal: true` のファイルだけが対象で、監査ヒット時や既存の未コミット差分がある場合は書き込まず停止します。テストは `tests/scripts/` にあります。
+逆方向（User Data → この repo）は `scripts/Sync-UserCustomizations.ps1` を使います。`-Source` に `~/.copilot/instructions` または `~/.copilot/references` を指定でき、参照メモは同名の既存 `.github/instructions/` mirror を更新します。引数なしは読み取りのみで、`-Apply` で変更分だけをミラーして commit / push します。`syncToGlobal: true` のファイルだけが対象で、監査ヒット時や既存の未コミット差分がある場合は書き込まず停止します。テストは `tests/scripts/` にあります。
 
 ### 個別 asset を確認する
 

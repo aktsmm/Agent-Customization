@@ -8,7 +8,7 @@ applyTo: "**/*.instructions.md,**/*.agent.md,**/*.toolsets.jsonc,**/SKILL.md,**/
 <!-- repository: https://github.com/aktsmm/Agent-Customization -->
 <!-- license: CC BY-NC-SA 4.0 -->
 <!-- copyright: Copyright (c) 2025 aktsmm -->
-<!-- updated: 2026-10-18 -->
+<!-- updated: 2026-11-19 -->
 
 # Copilot 読み込みルール
 
@@ -36,6 +36,7 @@ applyTo: "**/*.instructions.md,**/*.agent.md,**/*.toolsets.jsonc,**/SKILL.md,**/
 | `$HOME/.copilot/skills/*/SKILL.md` | `skill` ツール、`/名前` | 個人 skill |
 | `.github/skills/*/SKILL.md` | 同上 | ワークスペース skill |
 | `$HOME/.copilot/agents/*.agent.md`、`.github/agents/*.agent.md` | agent 名の指定 | エージェント定義 |
+| `$HOME/.copilot/references/**` | 用途に合う入口からファイルパスを指定 | 自動ロードされない個人用参照メモ |
 
 - 都度呼び出し専用にする skill は frontmatter に `disable-model-invocation: true` を付ける。`/名前` でのみ実行され、モデルは関連性で自動読み込みしない
 
@@ -60,6 +61,7 @@ applyTo: "**/*.instructions.md,**/*.agent.md,**/*.toolsets.jsonc,**/SKILL.md,**/
 | --- | --- |
 | すべての会話に効く個人の短い原則 | `$HOME/.copilot/copilot-instructions.md` |
 | 個人の詳細ルール | `$HOME/.copilot/instructions/**` |
+| 個人の手動参照メモ | `$HOME/.copilot/references/**` |
 | 個人の再利用 workflow | `$HOME/.copilot/skills/` |
 | repo-wide の短い rule | `.github/copilot-instructions.md` |
 | 特定ファイル群に効く rule | `.github/instructions/**/*.instructions.md` |

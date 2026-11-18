@@ -21,6 +21,7 @@
 - 旧 `prompts_sync/`, `agents_sync/`, `instructions_sync/` は使用しない。
 - VS Code の slash command / custom agent / helper instruction は `%APPDATA%/Code/User/prompts/` を主な同期先にする。
 - GitHub Copilot CLI でも自動ロードしたい instruction は `~/.copilot/instructions/` にも同期する。
+- 個人の手動参照メモは `~/.copilot/references/` に置き、自動ロードせず、必要時に明示的に読む。`syncToGlobal: true` なら `-Source` にこのフォルダを指定して既存の同名 instruction mirror へ同期できる。
 - CLI / VS Code / cloud agent で共通化したい workflow は `~/.copilot/skills/` または `.github/skills/` を使う。
 - `.github/.sync-ignore` は、同期対象外・孤立ファイル除外のために維持する。
 
