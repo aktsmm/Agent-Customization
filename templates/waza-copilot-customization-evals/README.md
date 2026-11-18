@@ -1,6 +1,6 @@
 # Waza Copilot Customization Evals Template
 
-Minimal companion project for `/prompt evaluate-waza-copilot-customizations`.
+Minimal companion project for the `evaluate-waza-copilot-customizations` skill.
 
 このテンプレートは、Copilot customization files を `waza` で static / runtime 評価するための最小 scaffold です。
 
@@ -36,14 +36,14 @@ waza --version
 Then point the eval target to your User Data or workspace customizations.
 
 ```powershell
-$env:WAZA_CUSTOMIZATIONS_TARGET = Join-Path $env:APPDATA 'Code\User\prompts'
+$env:WAZA_CUSTOMIZATIONS_TARGET = Join-Path $HOME '.copilot'
 waza run evals\copilot-customizations\eval.yaml --output results\customizations-eval.json --no-update-check -v
 ```
 
 ## Runtime Example
 
 ```powershell
-$env:WAZA_CUSTOMIZATIONS_TARGET = Join-Path $env:APPDATA 'Code\User\prompts\evaluate-waza-copilot-customizations.prompt.md'
+$env:WAZA_CUSTOMIZATIONS_TARGET = Join-Path $HOME '.copilot\skills\evaluate-waza-copilot-customizations\SKILL.md'
 
 pwsh -NoProfile -ExecutionPolicy Bypass -File evals\copilot-customizations\scripts\write-runtime-task.ps1 -TargetPath $env:WAZA_CUSTOMIZATIONS_TARGET -OutputPath evals\copilot-customizations\runtime-tasks\runtime-target.yaml
 
@@ -59,5 +59,5 @@ waza run evals\copilot-customizations\runtime-eval.yaml --output results\runtime
 
 ## Related Docs
 
-- [Waza prompt setup guide](../../docs/waza-copilot-customizations-setup.md)
+- [Waza skill setup guide](../../docs/waza-copilot-customizations-setup.md)
 - [microsoft/waza](https://github.com/microsoft/waza)

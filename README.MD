@@ -86,6 +86,7 @@ GitHub Copilot / VS Code 用の prompts、agents、instructions、skills を管�
 ### Skills
 
 - [agentic-workflow-guide](.github/skills/agentic-workflow-guide/SKILL.md)
+- Waza 評価（`evaluate-waza-copilot-customizations` skill、private skills repo 管理）: [セットアップ](docs/waza-copilot-customizations-setup.md) / [companion template](templates/waza-copilot-customization-evals/README.md)
 
 ## 運用ルール
 
