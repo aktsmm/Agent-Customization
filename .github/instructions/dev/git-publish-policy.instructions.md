@@ -36,8 +36,8 @@ description: "Git の公開同期ポリシー（repo visibility、.github/.vscod
 ## Internal Notes in Public Repositories
 
 - 内部メモ、cross-repo handoff、調査下書き、監査途中資料を public repo の tracked tree に作らない。
-- 内部成果物は、書き始める前に `.git/info/` または repo が明示した ignore 済み local directory へ置く。
-- 内容を書き込む前に `git check-ignore -v <path>` で追跡対象外であることを確認する。
+- 内部成果物は Git のメタデータ領域（`git rev-parse --git-path info` で特定）か、repo が指定した ignore 済みの作業ツリー内ディレクトリに置く。
+- 作業ツリー内の候補だけ、書く前に `git check-ignore -q -- <path>` の終了コード 0 を確認する。Git のメタデータ領域にはこの検査を適用しない。
 - commit / push 前は `git status --short` の未追跡 document を用途分類し、内部資料を公開差分へ混ぜない。
 
 ## If Already Published

@@ -9,7 +9,7 @@ applyTo: "**"
 <!-- repository: https://github.com/aktsmm/Agent-Customization -->
 <!-- license: CC BY-NC-SA 4.0 -->
 <!-- copyright: Copyright (c) 2025 aktsmm -->
-<!-- updated: 2026-10-12 -->
+<!-- updated: 2026-11-19 -->
 
 # PowerShell Terminal Instructions
 
@@ -26,6 +26,7 @@ applyTo: "**"
 - 連結は `;`（`&&` は使わない）、出力破棄は `$null`（`/dev/null` は使わない）を使う。
 - 検証対象の native command を `;` で連結するときは、各実行直後に `$LASTEXITCODE` を確認するか、単発実行に分ける。前の失敗でも後続が実行され、最後の成功が結果を上書きするため。
 - `foreach (...) { ... } | Format-Table` のように statement form 直後へ pipe しない。結果を変数に受けてから pipe するか、pipeline-native な `ForEach-Object` を使う（`An empty pipe element is not allowed` 回避）。
+- `pwsh -File script.ps1 -Names a,b` は、カンマ区切りが配列でなく 1 つの文字列になる。配列パラメーターを渡すときは `pwsh -NoProfile -Command "& '<script>' -Names @('a','b')"` を使う。
 - `python -c "..."` に複数行コードを埋め込まない。1行で済まなければスクリプトファイルと編集ツールを使う。
 - regex（例: `(?<!...)`）、f-string の `{}`、`|` を含む Python コードは1行でも `-c` に渡さない。PowerShellが先に解釈して失敗するため、一時スクリプトで実行し、完了後に削除する。
 
@@ -69,4 +70,6 @@ applyTo: "**"
 - `Get-Content -Raw` は CRLF を保持する。multiline regex で行末を照合するときは改行前の `\r` を許容するか、`\r?\n` で split する。
 - スクリプトや CLI の変更系操作は、既定を read-only / dry-run にし、破壊的変更や外部反映は `--apply` などの明示フラグを必須にする。
 - 不要な async / timeout terminal は作業完了前に閉じ、共有 terminal は不要と断定できる場合だけ対象にする。残す場合は理由と停止方法を報告する。
-- 低頻度の shell 復旧、credential、publish、CDP、Office ロックは、該当タスクで `terminal-operations-notes` の内容に従う（常時ロード）。
+- 中断された tool 呼び出しのプロセスは裏で動き続けることがある。再実行や同名の一時ファイル・一時 index の作成前に、実行中プロセスを確認する。一時ファイル名は固定せず GUID 付きにし、他の実行に消される前提で使う。
+- 二重引用符内の `$name:` は scope 付き変数として解釈され構文エラーになる。`${name}:` と書く。`git cat-file --batch-check` のようなプロセスへ同期的に入出力するときは、約4KB のパイプ上限で詰まるため 30 件程度ずつ書いて読む。数千件の path を渡す git は、コマンド行ではなく `--pathspec-from-file` と `--pathspec-file-nul` を使う。
+- 低頻度の shell 復旧、credential、publish、CDP、Office ロックは、該当時に `$HOME\.copilot\references\terminal-operations-notes.instructions.md` を読む。

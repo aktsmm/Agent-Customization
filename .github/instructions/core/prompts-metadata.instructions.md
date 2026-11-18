@@ -29,8 +29,8 @@ VS Code が認識する `description` / `applyTo` / `name` は、HTML コメン�
 
 ### `.instructions.md`
 
-- 常時またはファイル条件で自動適用したい場合は `applyTo` を必ず書く
-- UI 表示や semantic matching に使う説明は `description` に書く
+- ファイル条件で適用する場合は `applyTo` に対象 glob を書く。
+- `description` は用途の説明に使う。`applyTo` の代わりにはならない。
 - `applyTo` を省略すると常時ロードされる。使う場面が読めない環境事実や復旧メモは省略でよい。場面で絞りたい手順は skill にする
 
 ### `.agent.md`

@@ -38,22 +38,18 @@ Web 検索、ページ取得、最新情報確認、出典付き調査を行う�
 3. OpenAI / ChatGPT / Codex / OpenAI API 関連は `openaiDeveloperDocs`（OpenAI Docs MCP）を優先する。利用不可または公式 Docs 外の情報が必要な場合は、OpenAI 公式 URL を直接取得してから汎用 Web 検索へ進む。
 4. Anthropic / Claude / Claude Code / Anthropic API 関連は、Platform Docs には `anthropicDocs`、Claude Code Docs には `claudeCodeDocs` を優先する。利用不可または公式 Docs 外の情報が必要な場合は、Anthropic 公式 URL を直接取得してから汎用 Web 検索へ進む。
 5. 公開 X 投稿・検索は FxTwitter API v2（X Corp. 非公式の第三者サービス）を優先してよい。既知投稿は `/2/status/{id}`、検索は `/2/search?q=<URL-encoded-query>&feed=latest&count=<1-100>`（次ページは `cursor.bottom`）で `code: 200` だけ採用する。`since:` / `until:`（YYYY-MM-DD）と `from:<handle>` が使えるが、実応答は `count=100` でも約 20 件で止まるため、期間・handle・キーワードで分割して再検索し、ハッシュタグ検索だけで網羅と判断しない。人気投稿も `latest` で集めて反応数でローカル sort し、反応数は候補発見にのみ使う。認証情報を渡さず、非公開・削除済み・大量継続収集に使わない。出典は原 X URL とリンク先の一次情報で確認する。
-6. 汎用 Web 検索は `brave-search` MCP（`brave_web_search` など）を第一候補にする。レスポンス、構造化結果、再現性のバランスが良い。
+6. 汎用 Web 検索は `brave-search` MCP（`brave_web_search` など）を優先する。失敗時は Fallbacks に従う。
 7. 既知の公式 URL がある場合は、検索を挟まず `web_fetch` で直接取得してよい。
-8. Brave が 429 を返したら、失敗した query を直列で 1 回だけ再試行する。複数 query の並列実行直後は特にこの経路を使い、同じ 429 が続くか利用不可なら DuckDuckGo HTML へ切り替える。
-9. それでも検索候補が必要なときは、組み込みの `web_search` ツールを URL 収集の補助として使う。
 
 ## Fallbacks
 
-Brave が使えない場合は、DuckDuckGo HTML から候補 URL を集め、重要な判断では取得した元ページを別途 Fetch して確認する。
+Brave の 429 は、失敗した query を直列で 1 回だけ再試行する（並列実行直後も同じ）。429 が続くか Brave が利用不可なら DuckDuckGo HTML で候補 URL を集め、重要な判断は元ページを Fetch して確認する。
 
 ```text
 https://html.duckduckgo.com/html/?q=<URL-encoded-query>
 ```
 
-それでも候補が必要な場合だけ、組み込みの `web_search` ツールを URL 収集専用に使う。
-
-- `web_search` は Brave / DuckDuckGo より優先しない。read-only な URL 収集に限定し、build / test / install / deploy / format / mutation には使わない。
+- Brave / DuckDuckGo で候補が足りない場合に限り、組み込みの `web_search` を read-only の URL 収集専用に使う。build / test / install / deploy / format / mutation には使わない。
 - 既知 URL の Fetch がブロック、タイムアウト、または利用不可なら、PowerShell では `Invoke-WebRequest -Uri <url> -Method Get -OutFile <tmp> -PassThru` を第一候補にする。HTTP ステータス、リダイレクト先、保存した本文を同じ経路で確認できる。
 - `Invoke-WebRequest` が失敗した場合は、`curl.exe -L --fail -o <tmp> <url>` を第二候補にする。TLS 検証を無効にするオプションは使わず、両方失敗した場合は未検証とする。
 - 日本語ページ、大容量ページ、バイナリは標準出力へパイプせず、`-OutFile` または `-o` で一時ファイルへ保存する。UTF-8 と期待する本文、応答サイズ、本文終端を確認し、重要な取得では別経路のバイト数またはハッシュも照合して一時ファイルを削除する。

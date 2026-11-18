@@ -17,6 +17,7 @@ applyTo: "**"
 
 - 明示指示なしの `git push` は禁止（コミットまで可）。同じ repo を自動 push する別プロセス（scheduler の cycle 等）があれば自分の commit も公開されるため、公開させたくない commit は pusher の有無を確認してから作る。
 - Git 管理下で、そのワークスペースがコミットを明示的に禁止していなければ、作業がひと段落したタイミングで自分の変更だけを適度にコミットしてよい（都度の許可は不要）。add 前に自分の変更か確認し、他の変更が混在するときは分類して確認する。
+- 別 worktree で動く自動実行では、着手前に利用先の checkout・ブランチ・基準コミットを照合する。依頼に反映が含まれる場合は、作業側の保存・コミットを完了とせず、利用先で対象ファイルと反映コミットを検証する。競合や他の未コミット編集があれば上書きせず、未反映として報告する。
 - `git push` 前は対象 remote を `git fetch` し、`git rev-list --left-right --count 'HEAD...@{upstream}'` などでahead/behindを再計算する。stale tracking refや記憶上の状態を根拠にpushしない。
 - GitHub への接続で SSH が利用可能なときは、HTTPS より SSH を優先する（既存 remote も必要に応じて SSH へ切り替える）。
 - ローカル未展開での軽微な操作・変更は `gh api` を優先する（機能・Docs・repo / Issue / PR の調査は GitHub MCP でよい）。
@@ -53,6 +54,7 @@ applyTo: "**"
 - `git stash` だけに依存しない。
 - 別作業や別セッションの変更が同居しうるときは、add 後・commit 前に `git diff --cached --stat` で対象と行数が想定どおりか確認する。単一ファイルの add でも、同じファイルの別作業の変更を巻き込む。pathspec なしの `git commit` は他者が stage 済みの変更も含める。乖離したら `git restore --staged <file>` で戻す。
 - 大量の `git status` 出力に対しては、`git add -A` 前に「自分が触ったもの」「別ツール由来（skill 同期、formatter、別 IDE）」「未追跡の一時ファイル」を分類してユーザーに確認する。混在 dirty を一括で commit すると、後で範囲を分離するのが困難になる。
+- `GIT_INDEX_FILE` の一時 index で commit する自作 script は、commit 前に一時 index の存在と、staged 削除が依頼パス内だけであることを検証する。index が消えると全ファイル削除の空ツリー commit になる。大量 commit 後は `git ls-tree -r HEAD --name-only` の件数が減っていないか確認する。空ツリーが紛れたら履歴を書き換えず、直前の正常ツリーに後続の版を重ねた tree を `git commit-tree` し、旧値指定の `git update-ref` で進めて修復する。
 
 ## Encoding
 
@@ -66,5 +68,6 @@ applyTo: "**"
 - `GITHUB_TOKEN` / `GH_TOKEN` が keyring 認証を上書きしている場合は、そのシェルだけ両変数を `$null` にして再確認してよい。
 - GitHub API は成功するのに clone / push が失敗する場合は、Git transport の credential を切り分ける。PR/Issue 確認では `-R <owner>/<repo>` を明示してよい。
 - `gh api` は `-f` / `-F` を付けると既定が POST になり、`search/issues` などの GET 専用 endpoint が private repo で 404 になる。読み取りは `-X GET` を明示する（repo 不在や権限不足と誤判定しない）。
+- `Resource protected by organization SAML enforcement`（HTTP 403）は microsoft / MicrosoftDocs など SAML 必須 org の未認可で、repo 不在や削除ではない。エラー出力の SSO 認可 URL をユーザーに承認してもらい、別 token や別経路で迂回しない。認可前でも `gh search`（repo 指定なし）は公開項目を返すが、`--repo` 付き検索と `gh api` / `gh issue view` は失敗する。検索結果に出ないことを「クローズ・削除済み」の根拠にせず、個別に取得して 403（未認可）・410（削除）・state で切り分ける。外部起票を数えるときは bot が大量起票する自分の自動化リポを `-- '-user:<自分>'` で除外する（`--limit` に埋もれる）。
 - 長いマークダウンを `--body` で直接渡すとシェルの問題が起きやすいので、`--body-file` でファイル経由で渡す。
 
