@@ -17,9 +17,9 @@
 
 ## グローバル同期の方針
 
-- Repo 側の正本は `.github/prompts/`, `.github/agents/`, `.github/instructions/` に置く。
+- Repo 側の正本は `.github/agents/`, `.github/instructions/`, `.github/skills/` に置く。`*.prompt.md` は Agent Host で読まれないため廃止し、再利用する workflow は skill にする。
 - 旧 `prompts_sync/`, `agents_sync/`, `instructions_sync/` は使用しない。
-- VS Code の slash command / custom agent / helper instruction は `%APPDATA%/Code/User/prompts/` を主な同期先にする。
+- VS Code の custom agent / helper instruction は `%APPDATA%/Code/User/prompts/` を主な同期先にする。
 - GitHub Copilot CLI でも自動ロードしたい instruction は `~/.copilot/instructions/` にも同期する。
 - 個人の手動参照メモは `~/.copilot/references/` に置き、自動ロードせず、必要時に明示的に読む。`syncToGlobal: true` なら `-Source` にこのフォルダを指定して既存の同名 instruction mirror へ同期できる。
 - CLI / VS Code / cloud agent で共通化したい workflow は `~/.copilot/skills/` または `.github/skills/` を使う。
@@ -48,28 +48,6 @@
 | [local-network-troubleshoot.instructions.md](.github/instructions/integrations/local-network-troubleshoot.instructions.md) | ローカルネットワーク接続トラブルシュート                                |
 | [microsoft-docs.instructions.md](.github/instructions/integrations/microsoft-docs.instructions.md)                         | Microsoft 公式ドキュメント参照（MCP ツール活用、ソース明記）            |
 | [edge-cdp.instructions.md](.github/instructions/integrations/edge-cdp.instructions.md)                                     | Edge CDP / ブラウザ自動化関連ルール                                     |
-
-## Prompts
-
-| ファイル                                                                                                         | 説明                                       |
-| ---------------------------------------------------------------------------------------------------------------- | ------------------------------------------ |
-| [convert-to-tweet.prompt.md](.github/prompts/convert-to-tweet.prompt.md)                                         | セッション内容を X ポスト用に変換          |
-| [export-copilot-session-dialogue.prompt.md](.github/prompts/export-copilot-session-dialogue.prompt.md)           | セッション対話ログ・成果エクスポート       |
-| [export-knowledge.prompt.md](.github/prompts/export-knowledge.prompt.md)                                         | 知見エクスポート（ドメイン自動判定）       |
-| [export-session-log.prompt.md](.github/prompts/export-session-log.prompt.md)                                     | 汎用作業ログ（AI 可読・構造化）            |
-| [export-sync-to-public-skills.prompt.md](.github/prompts/export-sync-to-public-skills.prompt.md)                 | 知見を公開スキルリポジトリに反映           |
-| [evaluate-waza-copilot-customizations.prompt.md](.github/prompts/evaluate-waza-copilot-customizations.prompt.md) | Waza で Copilot customization を評価       |
-| [git-commit.prompt.md](.github/prompts/git-commit.prompt.md)                                                     | Git コミット（Push なし）                  |
-| [git-commit-push.prompt.md](.github/prompts/git-commit-push.prompt.md)                                           | Git コミット＆プッシュ                     |
-| [git-pull.prompt.md](.github/prompts/git-pull.prompt.md)                                                         | Git プル                                   |
-| [refactor-context.prompt.md](.github/prompts/refactor-context.prompt.md)                                         | コンテキスト最適化（instructions 等）      |
-| [refine-product-100.prompt.md](.github/prompts/refine-product-100.prompt.md)                                     | 100% パスを目指す製品品質改善              |
-| [retro-user.prompt.md](.github/prompts/retro-user.prompt.md)                                                     | User Data 資産へ学びを反映するレトロ       |
-| [retro-workspace.prompt.md](.github/prompts/retro-workspace.prompt.md)                                           | workspace 資産へ学びを反映するレトロ       |
-| [review-agents-and-instructions.prompt.md](.github/prompts/review-agents-and-instructions.prompt.md)             | エージェント・instructions のレビュー      |
-| [security-structure-map-review.prompt.md](.github/prompts/security-structure-map-review.prompt.md)               | 構造マップ起点の防御的セキュリティレビュー |
-| [wrap-up-work.prompt.md](.github/prompts/wrap-up-work.prompt.md)                                                 | セッション終了時クリーンアップ             |
-| [write-tests.prompt.md](.github/prompts/write-tests.prompt.md)                                                   | テストコード生成                           |
 
 ## Skills
 

@@ -10,7 +10,6 @@ GitHub Copilot / VS Code 用の prompts、agents、instructions、skills を管�
 
 | パス                              | 目的                                                            |
 | --------------------------------- | --------------------------------------------------------------- |
-| `.github/prompts/`                | VS Code User Data に同期する slash prompts                      |
 | `.github/agents/`                 | VS Code User Data に同期する custom agents                      |
 | `.github/instructions/`           | VS Code / CLI に同期する自動適用 instructions                   |
 | `.github/skills/`                 | Copilot Skills                                                  |
@@ -21,18 +20,17 @@ GitHub Copilot / VS Code 用の prompts、agents、instructions、skills を管�
 | `templates/`                      | companion project や補助テンプレート                            |
 | `output_sessions/`                | セッションログ・作業記録の出力先（gitignore 対象）              |
 
-旧 `prompts_sync/`, `agents_sync/`, `instructions_sync/` は廃止しました。現在は通常の `.github/prompts/`, `.github/agents/`, `.github/instructions/` を正本として扱います。
+旧 `prompts_sync/`, `agents_sync/`, `instructions_sync/` は廃止しました。現在は通常の `.github/agents/`, `.github/instructions/` を正本として扱います。`*.prompt.md` は Agent Host で読まれないため廃止し、再利用する workflow は skill にします。
 
 ## 同期先
 
 | 種別         | Repo 側                                     | VS Code User Data                               | Copilot CLI                  |
 | ------------ | ------------------------------------------- | ----------------------------------------------- | ---------------------------- |
-| Prompts      | `.github/prompts/*.prompt.md`               | `%APPDATA%/Code/User/prompts/*.prompt.md`       | 対象外                       |
 | Agents       | `.github/agents/*.agent.md`                 | `%APPDATA%/Code/User/prompts/*.agent.md`        | 対象外                       |
 | Instructions | `.github/instructions/**/*.instructions.md` | `%APPDATA%/Code/User/prompts/*.instructions.md` | `~/.copilot/instructions/**` (auto-loaded); manual references in `~/.copilot/references/**` (read on demand) |
 | Skills       | `.github/skills/`                           | 対象外                                          | 必要に応じて別フロー         |
 
-> Note: この repo を VS Code で開くと、`.github/instructions/` や `.github/prompts/` の assets が workspace customization として認識される可能性があります。この repo は主に保守・同期用として扱い、通常の開発作業 workspace とは分ける前提です。
+> Note: この repo を VS Code で開くと、`.github/instructions/` の assets が workspace customization として認識される可能性があります。この repo は主に保守・同期用として扱い、通常の開発作業 workspace とは分ける前提です。
 
 ## 使い方
 
@@ -71,30 +69,6 @@ GitHub Copilot / VS Code 用の prompts、agents、instructions、skills を管�
 - [fact-checker](.github/agents/fact-checker.agent.md) — 事実・出典・リンク確認
 - [ReportWriter](.github/agents/ReportWriter.agent.md) — 調査結果のレポート化
 
-### Prompts
-
-- [git-commit](.github/prompts/git-commit.prompt.md)
-- [git-commit-push](.github/prompts/git-commit-push.prompt.md)
-- [git-pull](.github/prompts/git-pull.prompt.md)
-- [write-tests](.github/prompts/write-tests.prompt.md)
-- [export-session-log](.github/prompts/export-session-log.prompt.md)
-- [export-copilot-session-dialogue](.github/prompts/export-copilot-session-dialogue.prompt.md)
-- [export-knowledge](.github/prompts/export-knowledge.prompt.md)
-- [export-sync-to-public-skills](.github/prompts/export-sync-to-public-skills.prompt.md)
-- [generate-x-tweet-growth-post](.github/prompts/generate-x-tweet-growth-post.prompt.md)
-- [convert-to-tweet](.github/prompts/convert-to-tweet.prompt.md)
-- [evaluate-waza-copilot-customizations](.github/prompts/evaluate-waza-copilot-customizations.prompt.md)
-  - セットアップ: [docs/waza-copilot-customizations-setup.md](docs/waza-copilot-customizations-setup.md)
-  - companion template: [templates/waza-copilot-customization-evals/README.md](templates/waza-copilot-customization-evals/README.md)
-- [review-workflow-runtime](.github/prompts/review-workflow-runtime.prompt.md)
-- [review-workflow-structure](.github/prompts/review-workflow-structure.prompt.md)
-- [refine-product-100](.github/prompts/refine-product-100.prompt.md)
-- [retro-workspace](.github/prompts/retro-workspace.prompt.md)
-- [retro-user](.github/prompts/retro-user.prompt.md)
-- [security-structure-map-review](.github/prompts/security-structure-map-review.prompt.md)
-- [wrap-up-work](.github/prompts/wrap-up-work.prompt.md)
-- [refactor-context](.github/prompts/refactor-context.prompt.md)
-
 ### Instructions
 
 - [core](.github/instructions/core/)
@@ -115,7 +89,7 @@ GitHub Copilot / VS Code 用の prompts、agents、instructions、skills を管�
 
 ## 運用ルール
 
-- 新しい prompt / agent / instruction は、まず `.github/prompts/`, `.github/agents/`, `.github/instructions/` のどこが正しいかを判断する。
+- 新しい agent / instruction は、まず `.github/agents/`, `.github/instructions/` のどちらが正しいかを判断する。再利用する workflow は `.github/skills/` に置く。
 - `syncToGlobal: false` の資産は公開・同期対象外として扱う。
 - 機密情報、顧客情報、個人アカウント実値、環境固有 ID の実値を入れない。
 - User Data 側だけに残すもの、削除済みとして扱うものは `.github/.sync-ignore` にファイル名で記録する。

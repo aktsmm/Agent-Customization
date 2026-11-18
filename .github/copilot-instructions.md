@@ -8,7 +8,6 @@
 | ディレクトリ            | 説明                                               |
 | ----------------------- | -------------------------------------------------- |
 | `.github/agents/`       | カスタムエージェント定義（`.agent.md`）            |
-| `.github/prompts/`      | 再利用可能なプロンプト（`.prompt.md`）             |
 | `.github/instructions/` | ドメイン別インストラクション（`.instructions.md`） |
 | `.github/skills/`       | Agent Skills（特殊スキル定義）                     |
 | `output_sessions/`      | セッションログ・作業記録の出力先                   |
