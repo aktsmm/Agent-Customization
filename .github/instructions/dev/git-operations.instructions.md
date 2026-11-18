@@ -9,7 +9,7 @@ applyTo: "**"
 <!-- repository: https://github.com/aktsmm/Agent-Customization -->
 <!-- license: CC BY-NC-SA 4.0 -->
 <!-- copyright: Copyright (c) 2025 aktsmm -->
-<!-- updated: 2026-10-14 -->
+<!-- updated: 2026-11-19 -->
 
 # Git Operations Instructions
 
@@ -36,6 +36,13 @@ applyTo: "**"
 - release tag を作る前に、その tag が指す commit と現在の HEAD を比較する。既存 tag が HEAD より古いなら tag の付け替えではなく version bump で進める。
 - package publish では ignore 設定や packer の想定を信じ切らず、実 tarball の中身を列挙して runtime artifact だけが入っていることを確認する。
 - npm package の `files` を使う repo では、必要な runtime artifact を include pattern で明示し、sourcemap などの開発資材が混入しないことを pack 後に確認する。
+
+## Issue-Linked Delivery
+
+- ユーザーが Issue に紐づく release / PR / merge を明示指示した作業は、配布・マージの完了を実物（公開物のバイト照合、merge 済み commit など）で確認してから、その Issue へ結果をコメントし、完了なら閉じる。この指示範囲内の Issue 操作に追加の確認はしない。release 指示のない push / tag / publish は行わず、Issue も閉じない。
+- コメントは Issue の言語に合わせ、release / commit / PR へのリンクと、確認できた検証・未検証を分けて書く。未確認を検証済みと書かない。
+- 一部のチャネルだけ公開、失敗、未照合、PR 未マージなどの部分状態では閉じない。部分状態と再開条件を報告する。
+- 閉じる順序は コメント → `gh issue close --reason completed` とし、投稿後に state とコメント数を読み戻して確認する。PR 作成だけでは完了扱いにしない。
 
 ## Conventional Commits
 
