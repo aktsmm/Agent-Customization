@@ -52,7 +52,7 @@ GitHub Copilot / VS Code 用の prompts、agents、instructions、skills を管�
 
 ### User Data から repo へ反映する
 
-逆方向（User Data → この repo）は `scripts/Sync-UserCustomizations.ps1` を使います。`-Source` に `~/.copilot/instructions` または `~/.copilot/references` を指定でき、参照メモは同名の既存 `.github/instructions/` mirror を更新します。引数なしは読み取りのみで、`-Apply` で変更分だけをミラーして commit / push します。`syncToGlobal: true` のファイルだけが対象で、監査ヒット時や既存の未コミット差分がある場合は書き込まず停止します。テストは `tests/scripts/` にあります。
+逆方向（User Data → この repo）は `scripts/Sync-UserCustomizations.ps1` を使います。`-Source` 省略時は `~/.copilot/instructions`、`~/.copilot/references`、`~/.copilot/agents` をまとめて対象にし、参照メモは同名の既存 `.github/instructions/` mirror を、agent は `.github/agents/` を更新します。複数フォルダで同じファイル名があれば停止し、どのソースにも無い repo 側のファイルは削除候補として報告するだけで削除しません。引数なしは読み取りのみで、`-Apply` で変更分だけをミラーして commit / push します。`syncToGlobal: true` のファイルだけが対象で、監査ヒット時や既存の未コミット差分がある場合は書き込まず停止します。テストは `tests/scripts/` にあります。
 
 ### 個別 asset を確認する
 

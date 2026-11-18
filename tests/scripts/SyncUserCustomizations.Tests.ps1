@@ -136,6 +136,55 @@ Describe 'Sync-UserCustomizations' {
         Test-Path -LiteralPath (Join-Path $script:Fx.Repo '.github\prompts\alpha.prompt.md') | Should Be $true
     }
 
+    It 'treats files from every source as present, so agents and references are not deletion candidates' {
+        $base = Split-Path $script:Fx.Source -Parent
+        $agents = Join-Path $base 'agents'
+        New-Item -ItemType Directory -Path $agents | Out-Null
+        New-Item -ItemType Directory -Path (Join-Path $script:Fx.Repo '.github\agents') -Force | Out-Null
+        $head = "---`ndescription: fixture`n---`n<!-- syncToGlobal: true -->`n"
+        [IO.File]::WriteAllText((Join-Path $script:Fx.Repo '.github\agents\role.agent.md'), "$head# Role`n")
+        [IO.File]::WriteAllText((Join-Path $agents 'role.agent.md'), "$head# Role`n")
+        git -C $script:Fx.Repo add . | Out-Null
+        git -C $script:Fx.Repo commit -q -m 'test: add agent'
+        git -C $script:Fx.Repo push -q origin master 2>&1 | Out-Null
+
+        $sources = "@('$($script:Fx.Source)','$agents')"
+        $out = & pwsh -NoProfile -Command "& '$script:Script' -RepoDir '$($script:Fx.Repo)' -Source $sources -ExpectedGitHubRepo 'remote.git'" 2>&1 | ForEach-Object { $_.ToString() }
+        $LASTEXITCODE | Should Be 0
+        $text = $out -join "`n"
+        $text | Should Match 'same=3'
+        $text | Should Match 'deletion candidates \(report only\): 0'
+
+        $single = Invoke-Sync $script:Fx
+        $single.Text | Should Match 'deletion candidates \(report only\): 1'
+    }
+
+    It 'stops when the same file name exists in two sources' {
+        $other = Join-Path (Split-Path $script:Fx.Source -Parent) 'references'
+        New-Item -ItemType Directory -Path $other | Out-Null
+        Copy-Item -LiteralPath (Join-Path $script:Fx.Source 'beta.instructions.md') -Destination $other
+        $sources = "@('$($script:Fx.Source)','$other')"
+        $out = & pwsh -NoProfile -Command "& '$script:Script' -RepoDir '$($script:Fx.Repo)' -Source $sources -ExpectedGitHubRepo 'remote.git'" 2>&1 | ForEach-Object { $_.ToString() }
+        $LASTEXITCODE | Should Not Be 0
+        ($out -join "`n") | Should Match 'Duplicate file name across sources: beta\.instructions\.md'
+    }
+
+    It 'uses the standard ~/.copilot folders when -Source is omitted and skips missing ones' {
+        $fakeHome = Join-Path (Split-Path $script:Fx.Source -Parent) 'home'
+        New-Item -ItemType Directory -Path (Join-Path $fakeHome '.copilot') | Out-Null
+        Copy-Item -LiteralPath $script:Fx.Source -Destination (Join-Path $fakeHome '.copilot\instructions') -Recurse
+        $oldProfile = $env:USERPROFILE; $oldHome = $env:HOME
+        try {
+            $env:USERPROFILE = $fakeHome; $env:HOME = $fakeHome
+            $out = & pwsh -NoProfile -File $script:Script -RepoDir $script:Fx.Repo -ExpectedGitHubRepo 'remote.git' 2>&1 | ForEach-Object { $_.ToString() }
+        }
+        finally { $env:USERPROFILE = $oldProfile; $env:HOME = $oldHome }
+        $LASTEXITCODE | Should Be 0
+        $text = $out -join "`n"
+        $text | Should Match 'sources: .*instructions'
+        $text | Should Match 'same=2'
+    }
+
     It 'stops when origin does not match the expected GitHub repo' {
         $out = & pwsh -NoProfile -File $script:Script -RepoDir $script:Fx.Repo -Source $script:Fx.Source -ExpectedGitHubRepo 'someone/else' 2>&1 | ForEach-Object { $_.ToString() }
         $LASTEXITCODE | Should Not Be 0

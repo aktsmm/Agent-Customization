@@ -5,15 +5,19 @@
     Default is read-only: precheck, classify, compare (case-sensitive, EOL-normalized), audit,
     and report. With -Apply it copies only the changed public-safe files, stages explicit
     paths, commits and pushes, then re-verifies the whole mirror.
-    Deletion candidates are reported only; they are never removed automatically.
+    Without -Source, ~/.copilot/instructions, ~/.copilot/references and ~/.copilot/agents are
+    mirrored together (missing folders are skipped); a file name must be unique across sources.
+    Deletion candidates are repo files absent from every source; they are reported only and
+    never removed automatically.
 .EXAMPLE
-    .\scripts\Sync-UserCustomizations.ps1            # report only
+    .\scripts\Sync-UserCustomizations.ps1            # report only, all default sources
     .\scripts\Sync-UserCustomizations.ps1 -Apply     # mirror + commit + push
+    pwsh -Command "& .\scripts\Sync-UserCustomizations.ps1 -Source @('D:\a','D:\b')"
 #>
 [CmdletBinding()]
 param(
     [string]$RepoDir = '',
-    [string]$Source = (Join-Path $env:APPDATA 'Code\User\prompts'),
+    [string[]]$Source = @(),
     [string]$Message = 'chore(sync): mirror user customizations',
     [string]$ExpectedGitHubRepo = '',
     [switch]$Apply
@@ -69,7 +73,11 @@ function Get-SyncPlan {
             $instructionIndex[$_.Name] += $_.FullName
         }
     }
-    $files = Get-ChildItem -LiteralPath $Source -File | Where-Object { $n = $_.Name; @($Kinds | Where-Object { $n.EndsWith($_) }).Count -gt 0 }
+    $files = @(foreach ($dir in $script:Sources) {
+        Get-ChildItem -LiteralPath $dir -File | Where-Object { $n = $_.Name; @($Kinds | Where-Object { $n.EndsWith($_) }).Count -gt 0 }
+    })
+    $duplicate = @($files | Group-Object Name | Where-Object Count -gt 1)
+    if ($duplicate.Count) { throw "Duplicate file name across sources: $(($duplicate | ForEach-Object Name) -join ', ')" }
     foreach ($f in $files) {
         $text = [IO.File]::ReadAllText($f.FullName)
         $class =
@@ -103,7 +111,13 @@ function Get-SyncPlan {
 if (-not $RepoDir) { $RepoDir = Resolve-Env 'SYNC_USER_CUSTOMIZATIONS_REPO_DIR' }
 if (-not $RepoDir -or -not (Test-Path -LiteralPath $RepoDir)) { throw 'Repo dir is unset or missing: pass -RepoDir or set SYNC_USER_CUSTOMIZATIONS_REPO_DIR.' }
 $script:RepoDir = (Resolve-Path -LiteralPath $RepoDir).Path
-$Source = (Resolve-Path -LiteralPath $Source).Path
+$script:Sources = @(
+    if ($Source.Count) { $Source | ForEach-Object { (Resolve-Path -LiteralPath $_).Path } }
+    else {
+        'instructions', 'references', 'agents' | ForEach-Object { Join-Path $HOME ".copilot\$_" } |
+            Where-Object { Test-Path -LiteralPath $_ -PathType Container } | ForEach-Object { (Resolve-Path -LiteralPath $_).Path }
+    })
+if (-not $script:Sources.Count) { throw 'No source folder found: pass -Source or create ~/.copilot/instructions, references or agents.' }
 
 # 1. Precheck
 $branch = (Invoke-Git @('branch', '--show-current') | Select-Object -First 1).Trim()
@@ -114,6 +128,7 @@ $dirty = @(Invoke-Git @('status', '--porcelain'))
 Invoke-Git @('fetch', 'origin') | Out-Null
 $counts = (Invoke-Git @('rev-list', '--left-right', '--count', "HEAD...refs/remotes/origin/$branch") | Select-Object -First 1).Trim()
 Write-Host "repo: $script:RepoDir  branch: $branch  origin: $origin"
+Write-Host "sources: $($script:Sources -join '; ')"
 Write-Host "dirty(user-owned): $($dirty.Count)  ahead/behind: $counts"
 if ($dirty.Count) { Write-Warning 'Existing uncommitted changes are user-owned and will not be mixed in.'; $dirty | ForEach-Object { Write-Host "  $_" } }
 
@@ -127,7 +142,7 @@ $candidates | ForEach-Object { Write-Host ("  {0,-8} {1}  -> {2}" -f $_.status, 
 $review | ForEach-Object { Write-Warning "needs-review: $($_.name) $($_.note)" }
 
 # Deletion candidates are report-only: a repo-only asset cannot be told apart from a stale mirror.
-$sourceNames = @(Get-ChildItem -LiteralPath $Source -File | ForEach-Object { $_.Name })
+$sourceNames = @($script:Sources | ForEach-Object { Get-ChildItem -LiteralPath $_ -File | ForEach-Object { $_.Name } })
 $orphans = @(
     foreach ($dir in '.github\prompts', '.github\agents', '.github\instructions') {
         $full = Join-Path $script:RepoDir $dir
