@@ -8,7 +8,7 @@ applyTo: "**/*.instructions.md,**/*.agent.md,**/SKILL.md,**/copilot-instructions
 <!-- repository: https://github.com/aktsmm/Agent-Customization -->
 <!-- license: CC BY-NC-SA 4.0 -->
 <!-- copyright: Copyright (c) 2025 aktsmm -->
-<!-- updated: 2026-10-14 -->
+<!-- updated: 2026-11-20 -->
 
 # Customization Authoring Instructions
 
@@ -71,7 +71,7 @@ Customization 資産を編集するときの量、粒度、自己完結性のル
 
 | 対象 | 残すもの | 逃がし先 |
 | --- | --- | --- |
-| `$HOME/.copilot/instructions/*.instructions.md`（`applyTo` なしのもの） | 全会話に効く短い原則 | `applyTo` を絞った instruction、agent、skill |
+| `$HOME/.copilot/instructions/**/*.instructions.md` のうち対象hostで常時適用されるもの | 全会話に効く短い原則 | `applyTo` を絞った instruction、agent、skill |
 | `$HOME/.copilot/copilot-instructions.md` | 個人の全会話に効く最低限ルール | 同上 |
 | `.github/copilot-instructions.md` | repo-wide の routing と guardrails | `.github/instructions/**` |
 | `AGENTS.md` | agent / workflow の薄い registry と入口 | 各 `.agent.md`、skill |

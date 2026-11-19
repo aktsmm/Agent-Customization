@@ -8,25 +8,28 @@ applyTo: "**/*.instructions.md,**/*.agent.md,**/*.toolsets.jsonc,**/SKILL.md,**/
 <!-- repository: https://github.com/aktsmm/Agent-Customization -->
 <!-- license: CC BY-NC-SA 4.0 -->
 <!-- copyright: Copyright (c) 2025 aktsmm -->
-<!-- updated: 2026-11-19 -->
+<!-- updated: 2026-11-20 -->
 
 # Copilot 読み込みルール
 
 資産が「どこから読まれるか」と「どこに置くか」を判断するための整理。VS Code の Agent Host と Copilot CLI は同じ Copilot 用フォルダを読む。
 
-## 自動で読まれる file
+## 検出・適用される file
 
 | ファイル | スコープ | 備考 |
 | --- | --- | --- |
 | `$HOME/.copilot/copilot-instructions.md` | 個人 | 常時ロード。短く保つ |
-| `$HOME/.copilot/instructions/**/*.instructions.md` | 個人 | 再帰的にロードされる。`applyTo` が無い file は常時ロードされ、`description` は読み込みの選別に使われない（選別されるのは skill の description）。使う場面が読めない環境事実や復旧メモは常時ロードでよい。場面で絞りたい手順は skill にする |
+| `$HOME/.copilot/instructions/**/*.instructions.md` | 個人 | 再帰的に検出する。Copilotでは `applyTo` でファイル適用を指定する。省略時の組込みは対象harnessで確認し、Localの用途別読込と混同しない |
 | `.github/copilot-instructions.md` | ワークスペース | repo-wide の短い原則 |
 | `.github/instructions/**/*.instructions.md` | ワークスペース | `applyTo` 付きの scoped rule |
 | `AGENTS.md` | ワークスペース | agent / workflow の入口 |
 | `CLAUDE.md` / `GEMINI.md` | 互換 | 互換 file |
 
 - `*.prompt.md` は Agent Host では読まれない。再利用する workflow は skill にする
-- VS Code の `chat.instructionsFilesLocations` / `chat.agentSkillsLocations` は旧 Local harness 用で、Agent Host の読み込みには効かない
+- `description` によるタスク関連度の選別はLocal向けに説明された仕様とし、Copilot / CLIでも同じ挙動になるとは推測しない。Localでは `applyTo` と別の読込経路であり、AND条件ではない
+- ファイルの検出、要求への組込み、指示への準拠を別状態として確認する。仕様の確認だけで実際の読込を検証済みにしない
+- VS Code の `chat.instructionsFilesLocations` / `chat.agentFilesLocations` は追加探索先としてサポートされ、検出したファイルをeditorがAgent Hostへ転送する。CLI単体はVS Codeの探索設定を引き継がないため、nativeなharnessフォルダを優先する
+- `chat.agentSkillsLocations` は非推奨。skillは追加探索先を増やさず、対象harnessのnativeフォルダを使う
 - 追加ディレクトリを CLI に読ませるときは `COPILOT_CUSTOM_INSTRUCTIONS_DIRS` を使う
 
 ## 明示的に呼んだときだけ読まれる file
@@ -74,6 +77,7 @@ applyTo: "**/*.instructions.md,**/*.agent.md,**/*.toolsets.jsonc,**/SKILL.md,**/
 Verified: 2026-10-18。URL は仕様更新の確認用で、実行に必要なルールは本文を正本とする。
 
 - VS Code: Migrate customizations to the Copilot harness: https://code.visualstudio.com/docs/agent-customization/migrate-customizations
+- VS Code custom instructions reference: https://code.visualstudio.com/docs/agents/reference/custom-instructions-reference
 - VS Code Agent Skills: https://code.visualstudio.com/docs/agent-customization/agent-skills
 - GitHub Copilot CLI custom instructions: https://docs.github.com/en/copilot/how-tos/copilot-cli/customize-copilot/add-custom-instructions
 - GitHub Copilot CLI MCP servers: https://docs.github.com/en/copilot/how-tos/copilot-cli/customize-copilot/add-mcp-servers

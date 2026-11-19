@@ -9,7 +9,7 @@ applyTo: "**"
 <!-- repository: https://github.com/aktsmm/Agent-Customization -->
 <!-- license: CC BY-NC-SA 4.0 -->
 <!-- copyright: Copyright (c) 2025 aktsmm -->
-<!-- updated: 2026-11-19 -->
+<!-- updated: 2026-11-20 -->
 
 # PowerShell Terminal Instructions
 
@@ -29,6 +29,7 @@ applyTo: "**"
 - `pwsh -File script.ps1 -Names a,b` は、カンマ区切りが配列でなく 1 つの文字列になる。配列パラメーターを渡すときは `pwsh -NoProfile -Command "& '<script>' -Names @('a','b')"` を使う。
 - `python -c "..."` に複数行コードを埋め込まない。1行で済まなければスクリプトファイルと編集ツールを使う。
 - regex（例: `(?<!...)`）、f-string の `{}`、`|` を含む Python コードは1行でも `-c` に渡さない。PowerShellが先に解釈して失敗するため、一時スクリプトで実行し、完了後に削除する。
+- PowerShellの変数名は大文字小文字を区別しない。parameterと大文字小文字だけ違うローカル変数を併用せず、一時値は別名にする。
 
 ## 3. 安全運用
 
@@ -67,6 +68,8 @@ applyTo: "**"
 - `{}` を含む引数はPowerShellの解釈を防ぐためシングルクォートで囲む。Git の reflog / upstream も対象（例: `git rev-list --left-right --count 'HEAD...@{upstream}'`）。
 - PowerShell の二重引用符内で `\"` はエスケープにならず文字列が途中で切れ、`>>` 継続待ちで止まる。`rg` などへ渡す regex は単一引用符で囲む。また `dir/*.py` はネイティブコマンドへ展開されず `rg` が os error 123 で落ちるため、`rg <pattern> dir -g '*.py'` を使う。
 - 日本語を含むファイルや JSON を扱うときは UTF-8 を維持する。terminal 表示が化けるときは、`$env:PYTHONUTF8='1'` を設定し、`cmd /c "... > file"` で UTF-8 のままファイルへ出して `view` や `Get-Content -Encoding UTF8` で読む。
+- `.ps1` はBOMなしUTF-8で保存し、日本語を含む場合はANSI解釈するWindows PowerShell 5.1ではなく `pwsh` で実行する。対応するtaskの `command` も `pwsh` にし、構文は `[System.Management.Automation.Language.Parser]::ParseFile()` で検証する。
+- `Write-Host` 主体のscriptの証跡は通常のpipelineではなく全ストリームリダイレクト `*> path.txt` で保存し、生成ファイルのバイト数を確認する。複数行ブロック実行後の表示が欠けた場合も、再実行前に単独のreadで実際の書き込み結果を確認する。
 - `Get-Content -Raw` は CRLF を保持する。multiline regex で行末を照合するときは改行前の `\r` を許容するか、`\r?\n` で split する。
 - スクリプトや CLI の変更系操作は、既定を read-only / dry-run にし、破壊的変更や外部反映は `--apply` などの明示フラグを必須にする。
 - 不要な async / timeout terminal は作業完了前に閉じ、共有 terminal は不要と断定できる場合だけ対象にする。残す場合は理由と停止方法を報告する。
