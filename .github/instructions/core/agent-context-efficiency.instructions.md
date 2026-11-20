@@ -32,6 +32,7 @@ applyTo: "**"
 - 狭い確認は、対象・列・件数・範囲を絞った短い command / tool call を直接実行し、出力は取得元で filter / limit / summary する。`web_fetch` はスライド共有・イベントページなどで全文級（数十 KB）を返すことがあるため、数個の事実だけ要るときは `Invoke-WebRequest -OutFile` + 正規表現で該当行だけ抽出する。
 - terminal で上書きした直後のファイルを `view` が古い内容で返すことがある。生成直後の結果は terminal の `Get-Content` と更新時刻で確認する。
 - `edit` の部分置換は、`new_str` に元の周囲の行（関数の定義行など）を含め忘れて壊す失敗が繰り返し起きる。`old_str` は最小にして、置換後に対象行と前後を terminal で読み戻して確認する。
+- ブラウザ画面の読み取りは、DOM のテキスト・属性を1回のスクリプトでまとめて取る。スクリーンショットは、見た目の確認（レイアウト、描画結果、画像のみのボタン）が必要なときだけ使う。
 - raw output は後の監査・再読に必要な場合だけ file に保存する。
 - バイナリや大容量ファイルを in-band 経路（tool 戻り値、stdout、CDP の base64 応答）で運ばない。ブラウザのダウンロード機能、`-OutFile`、`--output` のように**転送元が直接 file へ書く**経路を使う。
 - セッション中に編集ツール / MCP / 取得ツールが無効化される場合がある。同じ tool + input は1回だけ再試行し、2回連続失敗なら別ルートへ切り替える（例: `create` 不可 → terminal 経由でファイル生成、Playwright MCP 不可 → Python + CDP、`read_powershell` 不可 → ログをファイル出力して `view`）。
