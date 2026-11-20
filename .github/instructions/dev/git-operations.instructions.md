@@ -9,7 +9,7 @@ applyTo: "**"
 <!-- repository: https://github.com/aktsmm/Agent-Customization -->
 <!-- license: CC BY-NC-SA 4.0 -->
 <!-- copyright: Copyright (c) 2025 aktsmm -->
-<!-- updated: 2026-11-19 -->
+<!-- updated: 2026-11-20 -->
 
 # Git Operations Instructions
 
@@ -17,12 +17,14 @@ applyTo: "**"
 
 - 明示指示なしの `git push` は禁止（コミットまで可）。同じ repo を自動 push する別プロセス（scheduler の cycle 等）があれば自分の commit も公開されるため、公開させたくない commit は pusher の有無を確認してから作る。
 - Git 管理下で、そのワークスペースがコミットを明示的に禁止していなければ、作業がひと段落したタイミングで自分の変更だけを適度にコミットしてよい（都度の許可は不要）。add 前に自分の変更か確認し、他の変更が混在するときは分類して確認する。
-- 別 worktree で動く自動実行では、着手前に利用先の checkout・ブランチ・基準コミットを照合する。依頼に反映が含まれる場合は、作業側の保存・コミットを完了とせず、利用先で対象ファイルと反映コミットを検証する。競合や他の未コミット編集があれば上書きせず、未反映として報告する。
+- 別 worktree で動く自動実行では、着手前に利用先の checkout・ブランチ・基準コミットを照合する。依頼に反映が含まれる場合は、作業側の保存・コミットを完了とせず、利用先で対象ファイルと反映コミットを検証する。競合や他の未コミット編集があれば上書きせず、未反映として報告する。別 worktree から承認済みの push を行った場合は、送信先を追跡する元の checkout の ahead/behind も確認し、リモート反映の成否と分けて報告する。
+- 大規模リポジトリで worktree を作るときは、必要なパスだけの checkout を優先する。checkout 中断後の大量削除はコミットしない。作業用 worktree を片づける前に、実行中の処理、固有の変更（未追跡を含む）、未反映コミットの有無を確認する。不要と確認できた登録済み worktree は `git worktree remove` で片づける。片づけ自体のコミットは不要。
 - `git push` 前は対象 remote を `git fetch` し、`git rev-list --left-right --count 'HEAD...@{upstream}'` などでahead/behindを再計算する。stale tracking refや記憶上の状態を根拠にpushしない。
 - GitHub への接続で SSH が利用可能なときは、HTTPS より SSH を優先する（既存 remote も必要に応じて SSH へ切り替える）。
 - ローカル未展開での軽微な操作・変更は `gh api` を優先する（機能・Docs・repo / Issue / PR の調査は GitHub MCP でよい）。
 - 成果物に絶対パスを埋め込まない（相対パスで扱う）。
 - Playwright MCP はワークスペース直下に `.playwright-mcp/`（console log / snapshot）を生成し、自動 commit などで履歴へ混入する。ブラウザ自動化を使う repo は初回に `.gitignore` へ追加し、追跡済みなら `git rm -r --cached -- .playwright-mcp` で外す（ファイルは残る）。完了前に自分が作った未追跡分は `git clean -n` で確認してから削除する。
+- `git check-ignore -q` は単一パスだけ受け付ける（複数パスは `--quiet is only valid with a single pathname` で失敗する）。複数パスは `-q` なしで出力件数を対象数と照合する。
 - Git hook は `.sample` のままでは実行されない。クローン再現性が必要な場合は、repo 管理下（例: `hooks/pre-commit`）に実体を置き、README で `.git/hooks/` へのコピー手順を案内する。
 - 公開同期、repo visibility、`.github` / `.vscode` の公開判断は、実行前に対象と公開範囲を確認し、必要時は `git-publish-policy.instructions.md` を参照する。
 
